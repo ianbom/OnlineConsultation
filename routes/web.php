@@ -3,6 +3,9 @@
 use App\Http\Controllers\Admin\CounselorController as AdmCounselorController;
 use App\Http\Controllers\Admin\CounselorWorkDayController as AdmCounselorWorkDayController;
 use App\Http\Controllers\Admin\DashboardController as AdmDashboardController;
+use App\Http\Controllers\Counselor\DashboardController as CounselorDashboardController;
+use App\Http\Controllers\Counselor\ProfileController as CounselorProfileController;
+use App\Http\Controllers\Counselor\WorkDayController as CounselorWorkDayController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -23,9 +26,16 @@ Route::get('/tes', function () {
 });
 
 Route::prefix('admin')->as('admin.')->group(function () {
-    Route::get('/dashboard', [AdmDashboardController::class, 'index'])->name('admin.dashboard');
-    Route::resource('counselor', AdmCounselorController::class);
+    Route::get('/dashboard', [AdmDashboardController::class, 'index'])->name('dashboard');
+    Route::resource('profile', AdmCounselorController::class);
     Route::resource('workday', AdmCounselorWorkDayController::class);
+});
+
+Route::prefix('counselor')->as('counselor.')->group(function () {
+    Route::get('/dashboard', [CounselorDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/profile', [CounselorProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile/update', [CounselorProfileController::class, 'update'])->name('profile.update');
+    Route::get('/workday-schedule', [CounselorWorkDayController::class, 'index'])->name('workday.index');
 });
 
 
