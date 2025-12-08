@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\CounselorController as AdmCounselorController;
+use App\Http\Controllers\Admin\CounselorWorkDayController as AdmCounselorWorkDayController;
+use App\Http\Controllers\Admin\DashboardController as AdmDashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -16,10 +19,14 @@ Route::get('/', function () {
 
 
 Route::get('/tes', function () {
-    return view('analytics');
+    return view('admin.dashboard.dashboard');
 });
 
-
+Route::prefix('admin')->as('admin.')->group(function () {
+    Route::get('/dashboard', [AdmDashboardController::class, 'index'])->name('admin.dashboard');
+    Route::resource('counselor', AdmCounselorController::class);
+    Route::resource('workday', AdmCounselorWorkDayController::class);
+});
 
 
 
