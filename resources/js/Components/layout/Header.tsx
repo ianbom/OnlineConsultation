@@ -40,14 +40,21 @@ export function Header() {
           md:px-6
         "
       >
-        <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-            <Heart className="h-5 w-5 text-primary-foreground" />
+       <Link href="/" className="flex items-center gap-2">
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg overflow-hidden">
+            <img
+              src={'LogoPqNew.png'}
+              alt="PersonaQuality Logo"
+              className="h-40 w-40 object-contain"
+            />
           </div>
-          <span className="font-display text-xl font-semibold text-foreground">
-            MindCare
+
+          <span className="font-display text-lg font-medium text-foreground">
+            PersonaQuality
           </span>
         </Link>
+
+
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1">

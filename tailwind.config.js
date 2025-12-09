@@ -13,52 +13,58 @@ export default {
 
     theme: {
         extend: {
-            colors: {
+            container: {
+      center: true,
+      padding: "1rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
+        colors: {
           primary: {
-            DEFAULT: "#395A7F",
-            light: "#eaf1ff",
-            "dark-light": "rgba(67,97,238,.15)",
-          },
-          secondary: {
-            DEFAULT: "#6E9FC1",
-            light: "#ebe4f7",
-            "dark-light": "rgb(128 93 202 / 15%)",
-          },
-          third: {
-            DEFAULT: "#A3CAE9",
-            light: "#f8f9fa",
-            "dark-light": "rgba(248,249,250,.15)",
-          },
-          neutral: {
-            DEFAULT: "#E9ECEE",
-            light: "#eaeaec",
-            "dark-light": "rgba(59,63,92,.15)",
-          },
-          darkness: {
-            DEFAULT: "#ACACAC",
-            light: "#f8f9fa",
-            "dark-light": "rgba(248,249,250,.15)",
-          },
-          success: {
-            DEFAULT: "#00ab55",
-            light: "#ddf5f0",
-            "dark-light": "rgba(0,171,85,.15)",
-          },
-          danger: {
-            DEFAULT: "#e7515a",
-            light: "#fff5f5",
-            "dark-light": "rgba(231,81,90,.15)",
-          },
-          warning: {
-            DEFAULT: "#e2a03f",
-            light: "#fff9ed",
-            "dark-light": "rgba(226,160,63,.15)",
-          },
-          info: {
-            DEFAULT: "#2196f3",
-            light: "#e7f7ff",
-            "dark-light": "rgba(33,150,243,.15)",
-          },
+                    DEFAULT: "#7A0026",   // maroon utama
+                    dark: "#4E0018",      // maroon gelap
+                    light: "#B3123D",     // maroon terang
+                },
+
+                /** SECONDARY – CREAM / BEIGE **/
+                secondary: {
+                    DEFAULT: "#F5E6D3",   // cream utama
+                    light: "#FAF3E8",      // cream lebih lembut
+                    dark: "#D9C2A8",       // beige gelap
+                },
+
+                /** DARK / TEXT **/
+                dark: {
+                    DEFAULT: "#1A1A1A",
+                    light: "#333333",
+                    black: "#000000",
+                },
+
+                /** NEUTRAL GRAYS **/
+                neutral: {
+                    DEFAULT: "#E5E5E5",
+                    light: "#F2F2F2",
+                    dark: "#C2C2C2",
+                },
+
+                /** STATUS COLORS (optional UI) **/
+                success: {
+                    DEFAULT: "#16A34A",
+                    light: "#DCFCE7",
+                },
+                danger: {
+                    DEFAULT: "#DC2626",
+                    light: "#FEE2E2",
+                },
+                warning: {
+                    DEFAULT: "#EAB308",
+                    light: "#FEF9C3",
+                },
+                info: {
+                    DEFAULT: "#2563EB",
+                    light: "#DBEAFE",
+                },
           dark: {
             DEFAULT: "#3b3f5c",
             light: "#eaeaec",
@@ -79,33 +85,13 @@ export default {
         fontFamily: {
           nunito: ["Nunito", 'sans-serif'],
           poppins: ["Poppins", 'sans-serif'],
-          // Keep the default sans stack unchanged (Figtree + system sans)
           sans: ['Figtree', ...defaultTheme.fontFamily.sans],
         },
-
-
-        spacing: {
-          4.5: "18px",
-        },
-        boxShadow: {
-          "3xl":
-            "0 2px 2px rgb(224 230 237 / 46%), 1px 6px 7px rgb(224 230 237 / 46%)",
-        },
-        typography: {
-          DEFAULT: {
-            css: {
-              h1: { fontSize: "40px" },
-              h2: { fontSize: "32px" },
-              h3: { fontSize: "28px" },
-              h4: { fontSize: "24px" },
-              h5: { fontSize: "20px" },
-              h6: { fontSize: "16px" },
-            },
-          },
-        },
-            // (old nunito entry removed)
         },
     },
 
     plugins: [forms],
+    presets: [
+    require('./tailwind.react.config.js')
+  ],
 };

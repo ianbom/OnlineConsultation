@@ -28,7 +28,7 @@ Route::get('/tes', function () {
 
 Route::prefix('admin')->as('admin.')->group(function () {
     Route::get('/dashboard', [AdmDashboardController::class, 'index'])->name('dashboard');
-    Route::resource('profile', AdmCounselorController::class);
+    Route::resource('counselor', AdmCounselorController::class);
     Route::resource('workday', AdmCounselorWorkDayController::class);
 });
 
@@ -50,7 +50,7 @@ Route::prefix('client')->as('client.')->group(function () {
 
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    return Inertia::render('DashboardClient');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {

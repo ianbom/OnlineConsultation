@@ -1,4 +1,4 @@
-import '../css/app.css';
+import './index.css';
 import './bootstrap';
 
 import { createInertiaApp } from '@inertiajs/react';
@@ -18,7 +18,7 @@ createInertiaApp({
         const root = createRoot(el);
 
         root.render(
-            <div className="font-nunito">
+            <div className="font-poppins">
                 <App {...props} />
             </div>
         );

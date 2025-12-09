@@ -9,10 +9,9 @@ interface PageLayoutProps {
 
 export function PageLayout({ children, title, description }: PageLayoutProps) {
   return (
-    <div className="min-h-screenbg-neutral-100 font-nunito">
+    <div className="min-h-screen bg-background">
       <Header />
-
-      <main
+     <main
         className="
           max-w-screen-xl
           mx-auto
@@ -32,7 +31,6 @@ export function PageLayout({ children, title, description }: PageLayoutProps) {
             )}
           </div>
         )}
-
         {children}
       </main>
     </div>

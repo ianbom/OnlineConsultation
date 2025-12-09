@@ -82,7 +82,7 @@ export default function Dashboard() {
           {/* Upcoming Schedule */}
           <Card>
             <CardHeader className="flex-row items-center justify-between pb-4">
-              <CardTitle className="text-lg font-nunito" >Upcoming Sessions</CardTitle>
+              <CardTitle className="text-lg" >Upcoming Sessions</CardTitle>
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/bookings">
                   View All <ChevronRight className="h-4 w-4 ml-1" />
