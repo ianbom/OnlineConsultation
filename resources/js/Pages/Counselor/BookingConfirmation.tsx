@@ -10,47 +10,35 @@ import {
   ChevronLeft,
   Calendar,
   Clock,
-  CreditCard,
-  Wallet,
-  Building2,
-  CheckCircle2,
 } from "lucide-react";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 
 import { User, Counselor, Schedule } from "@/Interfaces";
 
-
 interface Props {
   counselor: Counselor;
   schedules: Schedule[];
 }
 
-
-
 export default function BookingConfirmation({ counselor, schedules }: Props) {
   const [notes, setNotes] = useState("");
   const [consultationType, setConsultationType] = useState<"online" | "offline">("offline");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-
-  // Hitung total durasi dan biaya
-  const totalDuration = schedules.length * 60; // dalam menit
+  const totalDuration = schedules.length * 60;
   const sessionFee = counselor.price_per_session * schedules.length;
-  const total = sessionFee
+  const total = sessionFee;
 
-  // Ambil specialization dan ubah menjadi array
   const specializations = counselor.specialization.split(',').map(s => s.trim());
 
-  // Format tanggal dari schedule pertama
   const firstSchedule = schedules[0];
   const formattedDate = format(new Date(firstSchedule.date), "EEEE, d MMMM yyyy", { locale: idLocale });
 
-  // Gabungkan waktu dari semua schedule
   const timeRange = schedules.length > 0
     ? `${schedules[0].start_time.slice(0, 5)} - ${schedules[schedules.length - 1].end_time.slice(0, 5)}`
     : "";
 
-  // Format harga ke Rupiah
   const formatRupiah = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
@@ -60,15 +48,26 @@ export default function BookingConfirmation({ counselor, schedules }: Props) {
   };
 
   const handleProceed = () => {
-    const scheduleIds = schedules.map(s => s.id).join(',');
-    router.visit(`/payment/${counselor.id}/${scheduleIds}?method=${notes}`);
+    setIsSubmitting(true);
+
+    // Prepare data sesuai dengan BookingRequest validation
+    const data = {
+      schedule_id: schedules[0].id,
+      second_schedule_id: schedules.length > 1 ? schedules[1].id : null,
+      consultation_type: consultationType,
+      notes: notes || null,
+    };
+
+    // Submit ke controller store
+    router.post(route('client.book.schedule', counselor.id), data, {
+      onFinish: () => setIsSubmitting(false),
+      onError: (errors) => {
+        console.error('Booking errors:', errors);
+        setIsSubmitting(false);
+      }
+    });
   };
 
-  const handleBack = () => {
-    router.visit(`/counselor/${counselor.id}/schedule`);
-  };
-
-  // Ambil URL foto profil
   const profilePicUrl = counselor.user.profile_pic
     ? `/storage/${counselor.user.profile_pic}`
     : undefined;
@@ -83,7 +82,6 @@ export default function BookingConfirmation({ counselor, schedules }: Props) {
             Kembali ke Jadwal
           </Link>
         </Button>
-
 
         <h1 className="font-display text-2xl font-semibold text-foreground mb-6">
           Konfirmasi Booking
@@ -177,8 +175,7 @@ export default function BookingConfirmation({ counselor, schedules }: Props) {
 
           <CardContent className="space-y-3">
             <div className="flex flex-col gap-3">
-
-            {/* Offline Option */}
+              {/* Offline Option */}
               <button
                 onClick={() => setConsultationType("offline")}
                 className={`
@@ -227,13 +224,9 @@ export default function BookingConfirmation({ counselor, schedules }: Props) {
                   </p>
                 </div>
               </button>
-
-
-
             </div>
           </CardContent>
         </Card>
-
 
         {/* Notes for Counselor */}
         <Card className="mb-6">
@@ -256,10 +249,14 @@ export default function BookingConfirmation({ counselor, schedules }: Props) {
           </CardContent>
         </Card>
 
-
         {/* Proceed Button */}
-        <Button className="w-full" size="lg" onClick={handleProceed}>
-          Lanjut ke Pembayaran
+        <Button
+          className="w-full"
+          size="lg"
+          onClick={handleProceed}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Memproses..." : "Lanjut ke Pembayaran"}
         </Button>
       </div>
     </PageLayout>

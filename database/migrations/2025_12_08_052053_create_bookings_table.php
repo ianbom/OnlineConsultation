@@ -11,44 +11,32 @@ return new class extends Migration
      */
     public function up(): void
     {
-         Schema::create('bookings', function (Blueprint $table) {
-        $table->id();
+        Schema::create('bookings', function (Blueprint $table) {
+            $table->id();
 
-        $table->foreignId('client_id')
-              ->constrained('users')
-              ->cascadeOnDelete();
+            $table->foreignId('client_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('counselor_id')->constrained('counselors')->cascadeOnDelete();
 
-        $table->foreignId('counselor_id')
-              ->constrained('counselors')
-              ->cascadeOnDelete();
+            $table->foreignId('schedule_id')->constrained('schedules')->cascadeOnDelete();
+            $table->foreignId('second_schedule_id')
+                  ->nullable()
+                  ->constrained('schedules')
+                  ->nullOnDelete();
 
-        $table->foreignId('schedule_id')
-              ->constrained('schedules')
-              ->cascadeOnDelete();
+            $table->foreignId('previous_schedule_id')->nullable()->constrained('schedules')->nullOnDelete();
+            $table->foreignId('previous_second_schedule_id')->nullable()->constrained('schedules')->nullOnDelete();
 
-        $table->foreignId('previous_schedule_id')
-              ->nullable()
-              ->constrained('schedules')
-              ->nullOnDelete();
+            $table->integer('price');
+            $table->integer('duration_hours'); 
+            $table->enum('consultation_type', ['online','offline']);
+            $table->string('meeting_link')->nullable();
+            $table->enum('link_status', ['pending','sent'])->default('pending');
 
-        $table->integer('price'); // harga final
-        $table->integer('duration_hours'); // 1 atau 2 jam
+            $table->enum('status', ['pending_payment', 'paid', 'cancelled', 'completed', 'rescheduled']);
 
-        $table->enum('consultation_type', ['online','offline']);
-
-        $table->string('meeting_link')->nullable();
-
-        $table->enum('link_status', ['pending','sent'])
-              ->default('pending');
-
-        $table->enum('status', [
-            'pending_payment', 'paid', 'cancelled', 'completed', 'rescheduled'
-        ]);
-
-        $table->text('notes')->nullable();
-
-        $table->timestamps();
-    });
+            $table->text('notes')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**

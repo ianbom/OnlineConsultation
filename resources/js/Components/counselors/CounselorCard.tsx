@@ -37,7 +37,7 @@ export function CounselorCard({
           <Avatar className="h-12 w-12 rounded-lg border">
             <AvatarImage src={photoUrl} alt={name} className="object-cover" />
             <AvatarFallback className="rounded-lg text-sm font-medium bg-primary/10 text-primary">
-              {name.split(" ").map((n) => n[0]).join("")}
+              {name.split(",").map((n) => n.trim()[0]).join("")}
             </AvatarFallback>
           </Avatar>
 
