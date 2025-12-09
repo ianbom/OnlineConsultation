@@ -21,6 +21,12 @@ class CounselorProfileService
             $data['profile_pic'] = $data['profile_pic']->store('profile_pics', 'public');
         }
 
+        if (!empty($data['password'])) {
+        $user->update([
+            'password' => bcrypt($data['password'])
+        ]);
+    }
+
         // Update User
         $user->update([
             'name'        => $data['name'],
@@ -34,7 +40,7 @@ class CounselorProfileService
             'education'        => $data['education'],
             'specialization'   => $data['specialization'],
             'description'      => $data['description'],
-            'price_per_session'=> $data['price_per_session'],
+
         ]);
 
         return $user->fresh(); // return updated data

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateCounselorProfileRequest extends FormRequest
 {
@@ -21,17 +22,28 @@ class UpdateCounselorProfileRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'name'        => 'required|string|max:255',
-            'email'       => 'required|email',
-            'phone'       => 'nullable|string|max:20',
-            'profile_pic' => 'nullable|image|max:2048',
+        $userId = Auth::id();
 
-            // Counselor table fields:
-            'education'      => 'required|string|max:255',
-            'specialization' => 'required|string|max:255',
-            'description'    => 'required|string',
-            'price_per_session' => 'required|integer|min:0',
-        ];
+        return [
+        'name'              => 'required|string|max:255',
+        'email'             => 'required|email|unique:users,email,' . $userId,
+        'phone'             => 'nullable|string|max:20',
+        'profile_pic'       => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+
+        // Counselor table fields:
+        'education'         => 'required|string|max:255',
+        'specialization'    => 'required|string|max:255',
+        'description'       => 'required|string',
+
+        // Password optional - only validated if provided
+        'password'          => 'nullable|min:8|confirmed',
+    ];
     }
+
+    public function messages(){
+    return [
+        'password.confirmed' => 'Konfirmasi password tidak sesuai.',
+        'password.min'       => 'Password minimal 8 karakter.',
+    ];
+        }
 }

@@ -33,6 +33,7 @@ class ProfileController extends Controller
         $this->counselorProfileService->update($user, $request->validated());
         return redirect()->back()->with('success', 'Profil berhasil diperbarui!');
         } catch (\Throwable $th) {
+        return response()->json(['error' => 'Terjadi kesalahan saat memperbarui profil: ' . $th->getMessage()], 500);
         return redirect()->back()->with('error', 'Terjadi kesalahan saat memperbarui profil: ' . $th->getMessage());
         }
 
