@@ -48,6 +48,18 @@ class BookingController extends Controller
         return Inertia::render('Booking/BookingDetail', [
             'booking' => $booking,
         ]);
+    }
 
+    public function bookingHistory(){
+        $client = Auth::user();
+
+        $bookings = Booking::with('counselor.user', 'schedule', 'secondSchedule', 'payment')
+            ->where('client_id', $client->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return Inertia::render('Booking/BookingHistory', [
+            'bookings' => $bookings,
+        ]);
     }
 }

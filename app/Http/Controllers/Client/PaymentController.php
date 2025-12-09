@@ -39,7 +39,7 @@ class PaymentController extends Controller
 
                 // Update booking
                 $booking->update([
-                    'status' => 'completed',
+                    'status' => 'paid',
                 ]);
 
                 return redirect()->back()->with('success', 'Pembayaran berhasil diverifikasi.');

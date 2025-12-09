@@ -4,16 +4,15 @@ import { Card, CardContent } from "@/Components/ui/card";
 import { Badge } from "@/Components/ui/badge";
 import { Button } from "@/Components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
-import { format } from "date-fns";
 
 interface BookingCardProps {
-  id: string;
+  id: number;
   counselorName: string;
   counselorPhoto: string;
   date: string;
   time: string;
-  duration: number;
-  status: "upcoming" | "completed" | "cancelled" | "pending";
+  duration: string;
+  status: "pending_payment" | "paid" | "cancelled" | "completed" | "rescheduled";
   specialization: string;
   paymentStatus?: string;
   showActions?: boolean;
@@ -31,7 +30,50 @@ export function BookingCard({
   paymentStatus,
   showActions = true,
 }: BookingCardProps) {
-  const formattedDate = format(new Date(date), "MMM d, yyyy");
+
+  // Badge styling berdasarkan status baru
+  const getBadgeVariant = (status: string) => {
+    switch (status) {
+      case "pending_payment":
+        return "outline"; // kuning
+      case "paid":
+        return "default"; // biru/hijau
+      case "completed":
+        return "secondary"; // abu-abu
+      case "cancelled":
+        return "destructive"; // merah
+      case "rescheduled":
+        return "default"; // biru/hijau
+      default:
+        return "default";
+    }
+  };
+
+  // Text status yang ditampilkan
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "pending_payment":
+        return "Menunggu Pembayaran";
+      case "paid":
+        return "Sudah Dibayar";
+      case "completed":
+        return "Selesai";
+      case "cancelled":
+        return "Dibatalkan";
+      case "rescheduled":
+        return "Dijadwalkan Ulang";
+      default:
+        return status;
+    }
+  };
+
+  const getInitials = (name: string) =>
+    name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .substring(0, 2);
 
   return (
     <Card>
@@ -40,7 +82,7 @@ export function BookingCard({
           <Avatar className="h-12 w-12 rounded-lg">
             <AvatarImage src={counselorPhoto} alt={counselorName} />
             <AvatarFallback className="rounded-lg">
-              {counselorName.split(" ").map((n) => n[0]).join("")}
+              {getInitials(counselorName)}
             </AvatarFallback>
           </Avatar>
 
@@ -50,35 +92,38 @@ export function BookingCard({
                 <h4 className="font-medium text-foreground">{counselorName}</h4>
                 <p className="text-sm text-muted-foreground">{specialization}</p>
               </div>
-              <Badge variant={status}>{status}</Badge>
+
+              <Badge variant={getBadgeVariant(status) as any}>
+                {getStatusText(status)}
+              </Badge>
             </div>
 
             <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-muted-foreground">
               <div className="flex items-center gap-1.5">
                 <Calendar className="h-4 w-4" />
-                <span>{formattedDate}</span>
+                <span>{date}</span>
               </div>
+
               <div className="flex items-center gap-1.5">
                 <Clock className="h-4 w-4" />
-                <span>{time} ({duration} min)</span>
+                <span>{time} ({duration})</span>
               </div>
             </div>
 
+            {/* ACTION BUTTONS */}
             {showActions && (
               <div className="flex items-center gap-2 mt-3 pt-3 border-t">
-                {status === "upcoming" && paymentStatus === "pending" && (
-                  <Button size="sm" variant="accent" asChild>
-                    <Link to={`/bookings/${id}`}>Pay Now</Link>
-                  </Button>
+
+                {/* Jika dijadwalkan ulang */}
+                {status === "rescheduled" && (
+                  <Badge variant="default" className="px-3 py-1">
+                    Jadwal Baru Tersedia
+                  </Badge>
                 )}
-                {status === "upcoming" && paymentStatus === "paid" && (
-                  <Button size="sm" asChild>
-                    <Link to={`/session/${id}`}>Join Session</Link>
-                  </Button>
-                )}
+
                 <Button size="sm" variant="ghost" asChild>
-                  <Link to={`/bookings/${id}`}>
-                    Details
+                  <Link href={route('client.booking.detail',  id)}>
+                    Detail
                     <ChevronRight className="h-4 w-4 ml-1" />
                   </Link>
                 </Button>

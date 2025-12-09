@@ -51,7 +51,7 @@ Route::prefix('client')->as('client.')->group(function () {
     Route::post('/book-schedule/{counselorId}', [ClientBookingController::class, 'bookingSchedule'])->name('book.schedule');
     Route::get('/booking-detail/{bookingId}', [ClientBookingController::class, 'bookingDetail'])->name('booking.detail');
     Route::get('/check-payment/{booking}', [ClientPaymentController::class, 'checkPayment'])->name('payment.check');
-
+    Route::get('/booking-history', [ClientBookingController::class, 'bookingHistory'])->name('booking.history');
 });
 
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, router } from "@inertiajs/react";
+import { Link } from "@inertiajs/react";
 import { PageLayout } from "@/Components/layout/PageLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
@@ -11,64 +11,37 @@ import {
   Calendar,
   Clock,
   CreditCard,
-  ExternalLink,
-  Copy,
-  CheckCircle2,
 } from "lucide-react";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
-import { useToast } from "@/hooks/use-toast";
 
-import { User, Counselor, Schedule, Booking } from "@/Interfaces";
+import { Booking } from "@/Interfaces";
+import {
+  PendingPaymentStatus,
+  PaidStatus,
+  CancelledStatus,
+  CompletedStatus,
+  RescheduledStatus,
+} from "@/Components/bookings/BookingStatusComponents";
 
 interface Props {
   booking: Booking;
 }
 
 export default function BookingDetail({ booking }: Props) {
-
   const baseUrl = import.meta.env.VITE_APP_URL;
   const photoUrl = booking.counselor.user.profile_pic
     ? `${baseUrl}/storage/${booking.counselor.user.profile_pic}`
     : "/default-avatar.png";
 
-  const { toast } = useToast();
-  const [copied, setCopied] = useState(false);
-
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(booking.payment.payment_url ?? "");
-
-    setCopied(true);
-
-    toast({
-      title: "Link disalin",
-      description: "Link pembayaran berhasil disalin ke clipboard",
-    });
-
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  // Badge status pembayaran
-  const getPaymentStatusBadge = (status: string) => {
-    const statusMap: Record<string, string> = {
-      pending: "warning",
-      paid: "success",
-      settlement: "success",
-      capture: "success",
-      expire: "destructive",
-      cancel: "destructive",
-      deny: "destructive",
-    };
-    return statusMap[status] || "secondary";
-  };
-
   // Badge status booking
   const getBookingStatusBadge = (status: string) => {
     const statusMap: Record<string, string> = {
       pending_payment: "warning",
-      confirmed: "success",
+      paid: "success",
       completed: "default",
       cancelled: "destructive",
+      rescheduled: "secondary",
     };
     return statusMap[status] || "secondary";
   };
@@ -86,7 +59,9 @@ export default function BookingDetail({ booking }: Props) {
 
   const sessionDate = new Date(booking.schedule.date);
   const startTime = booking.schedule.start_time.substring(0, 5);
-  const endTime = booking.second_schedule?.end_time.substring(0, 5) || booking.schedule.end_time.substring(0, 5);
+  const endTime =
+    booking.second_schedule?.end_time.substring(0, 5) ||
+    booking.schedule.end_time.substring(0, 5);
   const timeRange = `${startTime} - ${endTime}`;
 
   const formatCurrency = (amount: number) => {
@@ -97,13 +72,30 @@ export default function BookingDetail({ booking }: Props) {
     }).format(amount);
   };
 
+  // Render komponen status berdasarkan status booking
+  const renderStatusComponent = () => {
+    switch (booking.status) {
+      case "pending_payment":
+        return <PendingPaymentStatus booking={booking} />;
+      case "paid":
+        return <PaidStatus booking={booking} />;
+      case "cancelled":
+        return <CancelledStatus booking={booking} />;
+      case "completed":
+        return <CompletedStatus booking={booking} />;
+      case "rescheduled":
+        return <RescheduledStatus booking={booking} />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <PageLayout>
       <div className="max-w-lg mx-auto">
-
         {/* Tombol Kembali */}
         <Button variant="ghost" asChild className="mb-4">
-          <Link href="/bookings">
+          <Link href={route("client.booking.history")}>
             <ChevronLeft className="h-4 w-4 mr-1" />
             Kembali ke Daftar Booking
           </Link>
@@ -114,7 +106,10 @@ export default function BookingDetail({ booking }: Props) {
           <h1 className="font-display text-2xl font-semibold text-foreground">
             Detail Booking
           </h1>
-          <Badge variant={getBookingStatusBadge(booking.status) as any} className="text-sm">
+          <Badge
+            variant={getBookingStatusBadge(booking.status) as any}
+            className="text-sm"
+          >
             {formatStatus(booking.status)}
           </Badge>
         </div>
@@ -122,24 +117,24 @@ export default function BookingDetail({ booking }: Props) {
         {/* Kartu Invoice */}
         <Card className="mb-6">
           <CardHeader className="pb-4">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">
-                Invoice #{booking.payment.order_id}
-              </CardTitle>
-              <Badge variant={getPaymentStatusBadge(booking.payment.status) as any}>
-                {formatStatus(booking.payment.status)}
-              </Badge>
-            </div>
+            <CardTitle className="text-lg">
+              Invoice #{booking.payment.order_id}
+            </CardTitle>
           </CardHeader>
 
           <CardContent className="space-y-4">
-
             {/* Info Konselor */}
             <div className="flex items-center gap-4">
               <Avatar className="h-14 w-14 rounded-lg">
-                <AvatarImage src={photoUrl} alt={booking.counselor.user.name} />
+                <AvatarImage
+                  src={photoUrl}
+                  alt={booking.counselor.user.name}
+                />
                 <AvatarFallback className="rounded-lg">
-                  {booking.counselor.user.name.split(" ").map((n) => n[0]).join("")}
+                  {booking.counselor.user.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
                 </AvatarFallback>
               </Avatar>
 
@@ -157,14 +152,15 @@ export default function BookingDetail({ booking }: Props) {
 
             {/* Detail Sesi */}
             <div className="space-y-3">
-
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Calendar className="h-4 w-4" />
                   <span>Tanggal</span>
                 </div>
                 <span className="font-medium text-foreground">
-                  {format(sessionDate, "EEEE, d MMMM yyyy", { locale: idLocale })}
+                  {format(sessionDate, "EEEE, d MMMM yyyy", {
+                    locale: idLocale,
+                  })}
                 </span>
               </div>
 
@@ -182,7 +178,8 @@ export default function BookingDetail({ booking }: Props) {
                   <span>Durasi</span>
                 </div>
                 <span className="font-medium text-foreground">
-                  {booking.duration_hours} {booking.duration_hours > 1 ? "jam" : "jam"}
+                  {booking.duration_hours}{" "}
+                  {booking.duration_hours > 1 ? "jam" : "jam"}
                 </span>
               </div>
 
@@ -213,7 +210,9 @@ export default function BookingDetail({ booking }: Props) {
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Biaya Sesi</span>
-                <span className="text-foreground">{formatCurrency(booking.price)}</span>
+                <span className="text-foreground">
+                  {formatCurrency(booking.price)}
+                </span>
               </div>
 
               <Separator />
@@ -228,35 +227,6 @@ export default function BookingDetail({ booking }: Props) {
           </CardContent>
         </Card>
 
-        {/* Link Pembayaran */}
-        {booking.payment.status === "pending" && (
-          <Card className="mb-6 border-warning/30 bg-warning/5">
-            <CardContent className="p-4">
-              <h4 className="font-medium text-foreground mb-3">Link Pembayaran</h4>
-
-              <div className="flex items-center gap-2">
-                <div className="flex-1 bg-background rounded-lg p-3 text-sm font-mono text-muted-foreground truncate">
-                  {booking.payment.payment_url}
-                </div>
-
-                <Button variant="outline" size="icon" onClick={handleCopyLink}>
-                  {copied ? (
-                    <CheckCircle2 className="h-4 w-4 text-success" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
-                </Button>
-
-                <Button variant="outline" size="icon" asChild>
-                  <a href={booking.payment.payment_url ?? " "} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="h-4 w-4" />
-                  </a>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         {/* Catatan */}
         {booking.notes && (
           <Card className="mb-6">
@@ -269,53 +239,13 @@ export default function BookingDetail({ booking }: Props) {
           </Card>
         )}
 
-        {/* Tombol Aksi */}
-        <div className="space-y-3">
+        {/* Komponen Status Dinamis */}
+        <div className="mb-6">{renderStatusComponent()}</div>
 
-          {booking.payment.status === "pending" && (
-              <div className="space-y-2">
-
-                {/* Tombol bayar langsung ke Snap Midtrans */}
-                <Button className="w-full" size="lg" variant="accent" asChild>
-                  <a
-                    href={booking.payment.payment_url ?? ""}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Bayar Sekarang
-                  </a>
-                </Button>
-
-                {/* Tombol cek status pembayaran */}
-                <Button
-                  className="w-full"
-                  size="lg"
-                  variant="outline"
-                  asChild
-                >
-                  <Link href={route("client.payment.check", booking.id)}>
-                    Cek Status Pembayaran
-                  </Link>
-                </Button>
-
-              </div>
-            )}
-
-
-          {booking.status === "confirmed" &&
-            booking.payment.status === "settlement" &&
-            booking.meeting_link && (
-              <Button className="w-full" size="lg" asChild>
-                <a href={booking.meeting_link} target="_blank" rel="noopener noreferrer">
-                  Masuk ke Sesi Konsultasi
-                </a>
-              </Button>
-            )}
-
-          <Button variant="outline" className="w-full" asChild>
-            <Link href="/bookings">Lihat Semua Booking</Link>
-          </Button>
-        </div>
+        {/* Tombol Lihat Semua Booking */}
+        <Button variant="outline" className="w-full" asChild>
+          <Link href="/bookings">Lihat Semua Booking</Link>
+        </Button>
       </div>
     </PageLayout>
   );
