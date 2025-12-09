@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CounselorController as AdmCounselorController;
 use App\Http\Controllers\Admin\CounselorWorkDayController as AdmCounselorWorkDayController;
 use App\Http\Controllers\Admin\DashboardController as AdmDashboardController;
+use App\Http\Controllers\Client\CounselorController as ClientCounselorController;
 use App\Http\Controllers\Counselor\DashboardController as CounselorDashboardController;
 use App\Http\Controllers\Counselor\ProfileController as CounselorProfileController;
 use App\Http\Controllers\Counselor\WorkDayController as CounselorWorkDayController;
@@ -38,10 +39,14 @@ Route::prefix('counselor')->as('counselor.')->group(function () {
     Route::get('/workday-schedule', [CounselorWorkDayController::class, 'index'])->name('workday.index');
 });
 
-Route::get('/client', function () {
-    return Inertia::render('DashboardClient');
-});
 
+
+Route::prefix('client')->as('client.')->group(function () {
+    Route::get('/list-counselors', [ClientCounselorController::class, 'counselorList'])->name('counselors.list');
+    Route::get('/profile', [CounselorProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile/update', [CounselorProfileController::class, 'update'])->name('profile.update');
+    Route::get('/workday-schedule', [CounselorWorkDayController::class, 'index'])->name('workday.index');
+});
 
 
 Route::get('/dashboard', function () {

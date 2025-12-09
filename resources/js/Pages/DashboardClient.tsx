@@ -84,7 +84,7 @@ export default function Dashboard() {
             <CardHeader className="flex-row items-center justify-between pb-4">
               <CardTitle className="text-lg font-nunito" >Upcoming Sessions</CardTitle>
               <Button variant="ghost" size="sm" asChild>
-                <Link to="/bookings">
+                <Link href="/bookings">
                   View All <ChevronRight className="h-4 w-4 ml-1" />
                 </Link>
               </Button>
@@ -123,7 +123,7 @@ export default function Dashboard() {
             <CardHeader className="flex-row items-center justify-between pb-4">
               <CardTitle className="text-lg">Recent Consultations</CardTitle>
               <Button variant="ghost" size="sm" asChild>
-                <Link to="/bookings">
+                <Link href="/bookings">
                   View History <ChevronRight className="h-4 w-4 ml-1" />
                 </Link>
               </Button>
@@ -171,7 +171,7 @@ export default function Dashboard() {
                       Complete payment for your session with {pendingPayment.counselorName}
                     </p>
                     <Button variant="accent" size="sm" className="mt-3" asChild>
-                      <Link to={`/bookings/${pendingPayment.id}`}>Pay Now</Link>
+                      <Link href={`/bookings/${pendingPayment.id}`}>Pay Now</Link>
                     </Button>
                   </div>
                 </div>
@@ -221,13 +221,13 @@ export default function Dashboard() {
               <h4 className="font-medium text-foreground mb-3">Quick Actions</h4>
               <div className="space-y-2">
                 <Button variant="outline" className="w-full justify-start" asChild>
-                  <Link to="/counselors">
+                  <Link href="/counselors">
                     <Users className="h-4 w-4 mr-2" />
                     Find a Counselor
                   </Link>
                 </Button>
                 <Button variant="outline" className="w-full justify-start" asChild>
-                  <Link to="/bookings">
+                  <Link href="/bookings">
                     <Calendar className="h-4 w-4 mr-2" />
                     View All Bookings
                   </Link>

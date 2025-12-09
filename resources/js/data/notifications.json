@@ -1,0 +1,42 @@
+[
+  {
+    "id": "N001",
+    "type": "reminder",
+    "title": "Upcoming Session",
+    "message": "Your session with Dr. Sarah Chen is tomorrow at 10:00 AM",
+    "timestamp": "2024-12-14T09:00:00Z",
+    "isRead": false
+  },
+  {
+    "id": "N002",
+    "type": "payment",
+    "title": "Payment Pending",
+    "message": "Please complete payment for your upcoming session with Dr. Emily Rodriguez",
+    "timestamp": "2024-12-13T14:30:00Z",
+    "isRead": false
+  },
+  {
+    "id": "N003",
+    "type": "system",
+    "title": "Profile Updated",
+    "message": "Your profile information has been successfully updated",
+    "timestamp": "2024-12-12T11:00:00Z",
+    "isRead": true
+  },
+  {
+    "id": "N004",
+    "type": "reminder",
+    "title": "Session Feedback",
+    "message": "How was your session with Dr. Marcus Williams? Share your feedback",
+    "timestamp": "2024-12-10T12:00:00Z",
+    "isRead": true
+  },
+  {
+    "id": "N005",
+    "type": "promo",
+    "title": "Special Offer",
+    "message": "Get 20% off your next session. Use code WELLNESS20",
+    "timestamp": "2024-12-09T10:00:00Z",
+    "isRead": true
+  }
+]

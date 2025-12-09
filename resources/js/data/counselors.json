@@ -1,0 +1,170 @@
+[
+  {
+    "id": "1",
+    "name": "Dr. Sarah Chen",
+    "photo": "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&h=400&fit=crop&crop=face",
+    "specializations": ["Anxiety", "Depression", "Stress Management"],
+    "rating": 4.9,
+    "reviewCount": 127,
+    "pricePerSession": 150,
+    "bio": "Dr. Sarah Chen is a licensed clinical psychologist with over 12 years of experience helping individuals navigate anxiety, depression, and life transitions. Her warm, evidence-based approach combines cognitive-behavioral therapy with mindfulness techniques.",
+    "education": [
+      "Ph.D. Clinical Psychology, Stanford University",
+      "M.A. Psychology, UCLA",
+      "B.A. Psychology, UC Berkeley"
+    ],
+    "experience": [
+      "Private Practice (2015 - Present)",
+      "Stanford Medical Center - Clinical Psychologist (2012 - 2015)",
+      "UCLA Anxiety Disorders Clinic - Research Fellow (2010 - 2012)"
+    ],
+    "availability": {
+      "monday": ["09:00", "10:00", "11:00", "14:00", "15:00"],
+      "tuesday": ["09:00", "10:00", "14:00", "15:00", "16:00"],
+      "wednesday": ["09:00", "10:00", "11:00"],
+      "thursday": ["14:00", "15:00", "16:00", "17:00"],
+      "friday": ["09:00", "10:00", "11:00", "14:00"]
+    },
+    "isAvailable": true
+  },
+  {
+    "id": "2",
+    "name": "Dr. Marcus Williams",
+    "photo": "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=400&fit=crop&crop=face",
+    "specializations": ["Trauma", "PTSD", "Grief Counseling"],
+    "rating": 4.8,
+    "reviewCount": 98,
+    "pricePerSession": 175,
+    "bio": "Dr. Marcus Williams specializes in trauma-informed care and has dedicated his career to helping individuals heal from traumatic experiences. He utilizes EMDR and somatic experiencing to facilitate deep, lasting healing.",
+    "education": [
+      "Psy.D. Clinical Psychology, Alliant International University",
+      "M.S. Counseling Psychology, Boston University",
+      "B.S. Psychology, Howard University"
+    ],
+    "experience": [
+      "Private Practice (2013 - Present)",
+      "VA Medical Center - Trauma Specialist (2009 - 2013)",
+      "Community Mental Health Center - Therapist (2006 - 2009)"
+    ],
+    "availability": {
+      "monday": ["10:00", "11:00", "14:00", "15:00"],
+      "tuesday": ["09:00", "10:00", "11:00"],
+      "wednesday": ["14:00", "15:00", "16:00", "17:00"],
+      "thursday": ["09:00", "10:00", "11:00", "14:00"],
+      "friday": ["10:00", "11:00", "14:00", "15:00"]
+    },
+    "isAvailable": true
+  },
+  {
+    "id": "3",
+    "name": "Dr. Emily Rodriguez",
+    "photo": "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&h=400&fit=crop&crop=face",
+    "specializations": ["Relationship Issues", "Family Therapy", "Self-Esteem"],
+    "rating": 4.9,
+    "reviewCount": 156,
+    "pricePerSession": 140,
+    "bio": "Dr. Emily Rodriguez is a family and relationship therapist who helps individuals and couples build healthier connections. Her integrative approach draws from attachment theory and emotionally focused therapy.",
+    "education": [
+      "Ph.D. Marriage and Family Therapy, Northwestern University",
+      "M.A. Counseling, University of Texas",
+      "B.A. Sociology, University of Michigan"
+    ],
+    "experience": [
+      "Private Practice (2014 - Present)",
+      "Northwestern Family Institute - Senior Therapist (2011 - 2014)",
+      "Community Counseling Center - Family Therapist (2008 - 2011)"
+    ],
+    "availability": {
+      "monday": ["09:00", "10:00", "11:00", "15:00", "16:00"],
+      "tuesday": ["10:00", "11:00", "14:00", "15:00"],
+      "wednesday": ["09:00", "10:00", "14:00", "15:00", "16:00"],
+      "thursday": ["09:00", "10:00", "11:00"],
+      "friday": ["14:00", "15:00", "16:00", "17:00"]
+    },
+    "isAvailable": true
+  },
+  {
+    "id": "4",
+    "name": "Dr. James Park",
+    "photo": "https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=400&h=400&fit=crop&crop=face",
+    "specializations": ["Work Stress", "Burnout", "Career Counseling"],
+    "rating": 4.7,
+    "reviewCount": 84,
+    "pricePerSession": 160,
+    "bio": "Dr. James Park specializes in workplace mental health and helps professionals overcome burnout, manage stress, and find fulfillment in their careers. He combines executive coaching with clinical psychology.",
+    "education": [
+      "Ph.D. Organizational Psychology, Columbia University",
+      "M.B.A., NYU Stern",
+      "B.A. Psychology, Cornell University"
+    ],
+    "experience": [
+      "Private Practice (2016 - Present)",
+      "McKinsey & Company - Executive Coach (2012 - 2016)",
+      "Columbia University - Research Associate (2009 - 2012)"
+    ],
+    "availability": {
+      "monday": ["08:00", "09:00", "17:00", "18:00"],
+      "tuesday": ["08:00", "09:00", "17:00", "18:00"],
+      "wednesday": ["08:00", "09:00", "17:00", "18:00"],
+      "thursday": ["08:00", "09:00", "17:00", "18:00"],
+      "friday": ["08:00", "09:00", "14:00", "15:00"]
+    },
+    "isAvailable": true
+  },
+  {
+    "id": "5",
+    "name": "Dr. Lisa Thompson",
+    "photo": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=400&h=400&fit=crop&crop=face",
+    "specializations": ["OCD", "Phobias", "Panic Disorder"],
+    "rating": 4.8,
+    "reviewCount": 112,
+    "pricePerSession": 165,
+    "bio": "Dr. Lisa Thompson is an expert in treating anxiety disorders, particularly OCD and panic disorder. She is trained in exposure and response prevention (ERP) and has helped hundreds of clients reclaim their lives.",
+    "education": [
+      "Ph.D. Clinical Psychology, University of Pennsylvania",
+      "M.A. Psychology, Temple University",
+      "B.S. Neuroscience, Duke University"
+    ],
+    "experience": [
+      "Private Practice (2012 - Present)",
+      "Penn Center for the Treatment of Anxiety (2008 - 2012)",
+      "National Institute of Mental Health - Research Fellow (2005 - 2008)"
+    ],
+    "availability": {
+      "monday": ["09:00", "10:00", "11:00", "14:00"],
+      "tuesday": ["09:00", "10:00", "14:00", "15:00", "16:00"],
+      "wednesday": [],
+      "thursday": ["09:00", "10:00", "11:00", "14:00", "15:00"],
+      "friday": ["09:00", "10:00", "11:00"]
+    },
+    "isAvailable": true
+  },
+  {
+    "id": "6",
+    "name": "Dr. David Kim",
+    "photo": "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=400&fit=crop&crop=face",
+    "specializations": ["Addiction", "Substance Abuse", "Recovery"],
+    "rating": 4.6,
+    "reviewCount": 73,
+    "pricePerSession": 145,
+    "bio": "Dr. David Kim specializes in addiction recovery and substance abuse treatment. His compassionate, non-judgmental approach helps clients build sustainable recovery and address underlying issues.",
+    "education": [
+      "Psy.D. Clinical Psychology, Pepperdine University",
+      "M.A. Addiction Studies, Hazelden Betty Ford Graduate School",
+      "B.A. Psychology, USC"
+    ],
+    "experience": [
+      "Private Practice (2015 - Present)",
+      "Hazelden Betty Ford Foundation - Clinical Director (2010 - 2015)",
+      "Cedars-Sinai - Addiction Specialist (2007 - 2010)"
+    ],
+    "availability": {
+      "monday": ["10:00", "11:00", "14:00", "15:00", "16:00"],
+      "tuesday": ["10:00", "11:00", "14:00", "15:00"],
+      "wednesday": ["09:00", "10:00", "11:00", "14:00", "15:00"],
+      "thursday": [],
+      "friday": ["10:00", "11:00", "14:00", "15:00", "16:00"]
+    },
+    "isAvailable": false
+  }
+]

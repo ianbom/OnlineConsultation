@@ -1,0 +1,50 @@
+[
+  {
+    "id": "M001",
+    "senderId": "client",
+    "message": "Hello Dr. Chen, I've been feeling really anxious lately, especially before important meetings.",
+    "timestamp": "2024-12-15T10:02:00Z"
+  },
+  {
+    "id": "M002",
+    "senderId": "counselor",
+    "message": "Hello! Thank you for sharing that with me. Anxiety before important events is very common. Can you tell me more about what you experience physically and mentally during these moments?",
+    "timestamp": "2024-12-15T10:03:00Z"
+  },
+  {
+    "id": "M003",
+    "senderId": "client",
+    "message": "My heart races, my palms get sweaty, and I sometimes feel like I can't catch my breath. Mentally, I keep thinking about all the things that could go wrong.",
+    "timestamp": "2024-12-15T10:05:00Z"
+  },
+  {
+    "id": "M004",
+    "senderId": "counselor",
+    "message": "Those physical symptoms you're describing are your body's natural stress response - the fight-or-flight reaction. The catastrophic thinking you mentioned is something we can work on together. Have you tried any coping strategies before?",
+    "timestamp": "2024-12-15T10:06:00Z"
+  },
+  {
+    "id": "M005",
+    "senderId": "client",
+    "message": "I've tried deep breathing, but it doesn't seem to help much when I'm really anxious.",
+    "timestamp": "2024-12-15T10:08:00Z"
+  },
+  {
+    "id": "M006",
+    "senderId": "counselor",
+    "message": "Deep breathing is a great start! Sometimes it takes practice and the right technique to make it effective. Let me teach you the 4-7-8 breathing technique, which many of my clients find more helpful. Are you in a comfortable position right now?",
+    "timestamp": "2024-12-15T10:09:00Z"
+  },
+  {
+    "id": "M007",
+    "senderId": "client",
+    "message": "Yes, I'm ready to try it.",
+    "timestamp": "2024-12-15T10:10:00Z"
+  },
+  {
+    "id": "M008",
+    "senderId": "counselor",
+    "message": "Great! Here's how it works:\n\n1. Breathe in quietly through your nose for 4 seconds\n2. Hold your breath for 7 seconds\n3. Exhale completely through your mouth for 8 seconds\n\nLet's try it together three times. Start whenever you're ready.",
+    "timestamp": "2024-12-15T10:11:00Z"
+  }
+]
