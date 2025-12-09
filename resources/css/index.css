@@ -1,9 +1,9 @@
 /* perfect scrollbar */
 @import 'perfect-scrollbar.min.css';
 
-/* Google Fonts - Nunito (for Blade) and Poppins (for React) */
+/* Google Fonts - Nunito (for Blade), Poppins (for React), and Poppins extended weights */
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 /* animate.css */
 @import 'animate.css';
@@ -47,27 +47,139 @@
 /* dragndrop */
 @import 'dragndrop.css';
 
-
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@layer components {
+@layer base {
+    :root {
+        /* Blue base palette */
+        --background: 210 60% 98%;
+        --foreground: 210 15% 15%;
+
+        --card: 0 0% 100%;
+        --card-foreground: 210 15% 15%;
+
+        --popover: 0 0% 100%;
+        --popover-foreground: 210 15% 15%;
+
+        /* Primary blue */
+        --primary: 213 70% 45%;
+        --primary-foreground: 0 0% 100%;
+
+        /* Secondary (light neutral) */
+        --secondary: 210 30% 96%;
+        --secondary-foreground: 210 15% 25%;
+
+        --muted: 210 15% 92%;
+        --muted-foreground: 210 10% 45%;
+
+        /* Accent (slightly warmer blue) */
+        --accent: 195 80% 50%;
+        --accent-foreground: 0 0% 100%;
+
+        --destructive: 0 72% 51%;
+        --destructive-foreground: 0 0% 100%;
+
+        --border: 210 20% 88%;
+        --input: 210 20% 88%;
+        --ring: 213 70% 45%;
+
+        --radius: 0.75rem;
+
+        /* Custom tokens */
+        --success: 158 60% 40%;
+        --success-foreground: 0 0% 100%;
+        --warning: 38 92% 50%;
+        --warning-foreground: 0 0% 100%;
+        --info: 199 89% 48%;
+        --info-foreground: 0 0% 100%;
+
+        /* Gradients */
+        --gradient-primary: linear-gradient(135deg, hsl(213 70% 45%), hsl(200 60% 55%));
+        --gradient-hero: linear-gradient(180deg, hsl(213 70% 45% / 0.08), transparent);
+        --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 30% 96%));
+
+        /* Shadows */
+        --shadow-sm: 0 1px 2px hsl(210 15% 15% / 0.04);
+        --shadow-md: 0 4px 12px hsl(210 15% 15% / 0.06);
+        --shadow-lg: 0 8px 24px hsl(210 15% 15% / 0.08);
+        --shadow-glow: 0 0 20px hsl(213 70% 45% / 0.15);
+
+        --sidebar-background: 210 30% 97%;
+        --sidebar-foreground: 210 15% 25%;
+        --sidebar-primary: 213 70% 45%;
+        --sidebar-primary-foreground: 0 0% 100%;
+        --sidebar-accent: 210 30% 92%;
+        --sidebar-accent-foreground: 210 15% 25%;
+        --sidebar-border: 210 20% 88%;
+        --sidebar-ring: 213 70% 45%;
+    }
+
+    .dark {
+        --background: 210 15% 10%;
+        --foreground: 210 20% 95%;
+
+        --card: 210 15% 13%;
+        --card-foreground: 210 20% 95%;
+
+        --popover: 210 15% 13%;
+        --popover-foreground: 210 20% 95%;
+
+        --primary: 213 60% 55%;
+        --primary-foreground: 210 15% 10%;
+
+        --secondary: 210 15% 18%;
+        --secondary-foreground: 210 20% 90%;
+
+        --muted: 210 15% 20%;
+        --muted-foreground: 210 15% 60%;
+
+        --accent: 195 80% 50%;
+        --accent-foreground: 0 0% 100%;
+
+        --destructive: 0 62% 45%;
+        --destructive-foreground: 0 0% 100%;
+
+        --border: 210 15% 20%;
+        --input: 210 15% 20%;
+        --ring: 213 60% 55%;
+
+        --success: 158 55% 45%;
+        --warning: 38 92% 55%;
+        --info: 199 89% 55%;
+
+        --sidebar-background: 210 15% 12%;
+        --sidebar-foreground: 210 20% 90%;
+        --sidebar-primary: 213 60% 55%;
+        --sidebar-primary-foreground: 210 15% 10%;
+        --sidebar-accent: 210 15% 18%;
+        --sidebar-accent-foreground: 210 20% 90%;
+        --sidebar-border: 210 15% 20%;
+        --sidebar-ring: 213 60% 55%;
+    }
+
+    * {
+        @apply border-border;
+    }
+
     html {
         @apply scroll-smooth;
     }
 
+    body {
+        @apply bg-background text-foreground font-sans antialiased;
+        font-feature-settings: "rlig" 1, "calt" 1;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        @apply font-display font-semibold tracking-tight;
+    }
+}
+
+@layer components {
     [x-cloak] {
         display: none !important;
-    }
-
-    body {
-        @apply bg-[#fafafa] font-nunito;
-    }
-
-    body.dark {
-        @apply bg-[#060818];
     }
 
     /* Panel */
@@ -503,7 +615,6 @@ hover:text-primary hover:before:!bg-primary ltr:before:mr-2 rtl:before:ml-2 dark
     }
     .dropdown ul {
         @apply absolute z-10 mt-1 min-w-[120px] rounded bg-white p-0 py-2 text-black shadow dark:bg-[#1b2e4b] dark:text-white-dark;
-        /* @apply my-1 min-w-[120px] rounded bg-white p-0 py-2 shadow dark:bg-[#1b2e4b]; */
     }
     .dropdown ul li > a,
     .dropdown ul li > button {
@@ -555,6 +666,77 @@ hover:text-primary hover:before:!bg-primary ltr:before:mr-2 rtl:before:ml-2 dark
     /* code hightlight */
     pre {
         direction: ltr;
+    }
+}
+
+@layer utilities {
+    .gradient-primary {
+        background: var(--gradient-primary);
+    }
+
+    .gradient-hero {
+        background: var(--gradient-hero);
+    }
+
+    .gradient-card {
+        background: var(--gradient-card);
+    }
+
+    .shadow-card {
+        box-shadow: var(--shadow-md);
+    }
+
+    .shadow-card-hover {
+        box-shadow: var(--shadow-lg);
+    }
+
+    .shadow-glow {
+        box-shadow: var(--shadow-glow);
+    }
+
+    .text-balance {
+        text-wrap: balance;
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    .animate-slide-up {
+        animation: slideUp 0.5s ease-out forwards;
+    }
+
+    .animate-pulse-gentle {
+        animation: pulseGentle 2s ease-in-out infinite;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes pulseGentle {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.7;
+        }
     }
 }
 

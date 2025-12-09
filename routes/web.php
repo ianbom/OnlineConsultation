@@ -38,7 +38,9 @@ Route::prefix('counselor')->as('counselor.')->group(function () {
     Route::get('/workday-schedule', [CounselorWorkDayController::class, 'index'])->name('workday.index');
 });
 
-
+Route::get('/client', function () {
+    return Inertia::render('DashboardClient');
+});
 
 
 

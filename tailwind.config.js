@@ -74,10 +74,16 @@ export default {
             light: "#e0e6ed",
             dark: "#888ea8",
           },
+
         },
         fontFamily: {
-          nunito: ["Nunito", "sans-serif"],
+          nunito: ["Nunito", 'sans-serif'],
+          poppins: ["Poppins", 'sans-serif'],
+          // Keep the default sans stack unchanged (Figtree + system sans)
+          sans: ['Figtree', ...defaultTheme.fontFamily.sans],
         },
+
+
         spacing: {
           4.5: "18px",
         },
@@ -97,9 +103,7 @@ export default {
             },
           },
         },
-            fontFamily: {
-                nunito: ['Nunito', 'sans-serif'],
-            },
+            // (old nunito entry removed)
         },
     },
 
