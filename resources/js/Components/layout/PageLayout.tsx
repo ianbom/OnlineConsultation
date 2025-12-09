@@ -1,5 +1,8 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
+import { usePage } from "@inertiajs/react";
 import { Header } from "./Header";
+import { Toaster } from "../ui/toaster";
+import { useToast } from "@/hooks/use-toast";
 
 interface PageLayoutProps {
   children: ReactNode;
@@ -7,11 +10,63 @@ interface PageLayoutProps {
   description?: string;
 }
 
+interface FlashMessages {
+  success?: string;
+  error?: string;
+  warning?: string;
+  info?: string;
+}
+
+interface PageProps {
+  flash: FlashMessages;
+}
+
 export function PageLayout({ children, title, description }: PageLayoutProps) {
+  const { flash } = usePage<PageProps>().props;
+  const { toast } = useToast();
+
+useEffect(() => {
+  // Handle success message
+  if (flash?.success) {
+    toast({
+      title: "Berhasil",
+      description: flash.success,
+      variant: "default", // hijau
+    });
+  }
+
+  // Handle error message
+  if (flash?.error) {
+    toast({
+      title: "Error",
+      description: flash.error,
+      variant: "destructive", // merah
+    });
+  }
+
+  // Handle warning message
+  if (flash?.warning) {
+    toast({
+      title: "Peringatan",
+      description: flash.warning,
+      variant: "warning", // kuning
+    });
+  }
+
+  // Handle info message
+  if (flash?.info) {
+    toast({
+      title: "Informasi",
+      description: flash.info,
+      variant: "info", // biru
+    });
+  }
+}, [flash, toast]);
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
-     <main
+      <main
         className="
           max-w-screen-xl
           mx-auto
@@ -33,6 +88,7 @@ export function PageLayout({ children, title, description }: PageLayoutProps) {
         )}
         {children}
       </main>
+      <Toaster />
     </div>
   );
 }

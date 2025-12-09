@@ -20,7 +20,7 @@ return new class extends Migration
 
         // system fields
         $table->integer('amount');
-        $table->enum('method', ['bank_transfer','qris','ewallet']);
+        $table->string('method')->nullable();
 
         // midtrans
         $table->string('order_id');

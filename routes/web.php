@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\CounselorWorkDayController as AdmCounselorWorkDay
 use App\Http\Controllers\Admin\DashboardController as AdmDashboardController;
 use App\Http\Controllers\Client\BookingController as ClientBookingController;
 use App\Http\Controllers\Client\CounselorController as ClientCounselorController;
+use App\Http\Controllers\Client\PaymentController as ClientPaymentController;
 use App\Http\Controllers\Counselor\DashboardController as CounselorDashboardController;
 use App\Http\Controllers\Counselor\ProfileController as CounselorProfileController;
 use App\Http\Controllers\Counselor\WorkDayController as CounselorWorkDayController;
@@ -48,6 +49,9 @@ Route::prefix('client')->as('client.')->group(function () {
     Route::get('/pick-counselor/schedule/{counselorId}', [ClientCounselorController::class, 'pickCounselorSchedule'])->name('pick.schedule');
     Route::get('/process-payment/{counselorId}/{scheduleIds}', [ClientCounselorController::class, 'processPayment'])->name('process.payment');
     Route::post('/book-schedule/{counselorId}', [ClientBookingController::class, 'bookingSchedule'])->name('book.schedule');
+    Route::get('/booking-detail/{bookingId}', [ClientBookingController::class, 'bookingDetail'])->name('booking.detail');
+    Route::get('/check-payment/{booking}', [ClientPaymentController::class, 'checkPayment'])->name('payment.check');
+
 });
 
 

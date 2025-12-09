@@ -23,14 +23,24 @@ class Booking extends Model
         return $this->belongsTo(Counselor::class, 'counselor_id', 'id');
     }
 
-    public function schedule()
+     public function schedule()
     {
         return $this->belongsTo(Schedule::class, 'schedule_id', 'id');
+    }
+
+    public function secondSchedule()
+    {
+        return $this->belongsTo(Schedule::class, 'second_schedule_id', 'id');
     }
 
     public function previousSchedule()
     {
         return $this->belongsTo(Schedule::class, 'previous_schedule_id', 'id');
+    }
+
+    public function previousSecondSchedule()
+    {
+        return $this->belongsTo(Schedule::class, 'previous_second_schedule_id', 'id');
     }
 
     public function payment()

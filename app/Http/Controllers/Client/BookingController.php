@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BookingRequest;
+use App\Models\Booking;
 use App\Services\BookingService;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
@@ -36,16 +37,17 @@ class BookingController extends Controller
         // create payment + snap token
         $payment = $this->paymentService->createPayment($booking);
 
-        return response()->json([
+        return redirect()->route('client.booking.detail', ['bookingId' => $booking->id])
+            ->with('success', 'Booking berhasil dibuat. Silakan lanjutkan ke pembayaran.');
+    }
+
+    public function bookingDetail($bookingId){
+
+        $booking = Booking::with('counselor.user', 'client', 'schedule', 'secondSchedule', 'payment')->findOrFail($bookingId);
+
+        return Inertia::render('Booking/BookingDetail', [
             'booking' => $booking,
-            'payment' => $payment,
-            'snapToken' => $payment->snap_token,
         ]);
 
-        // return Inertia::render('Payment/ProcessPayment', [
-        //     'booking' => $booking->load('counselor.user'),
-        //     'payment' => $payment,
-        //     'snapToken' => $payment->snap_token,
-        // ]);
     }
 }

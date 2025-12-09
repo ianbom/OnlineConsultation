@@ -42,7 +42,7 @@ class PaymentService
     $payment = Payment::create([
         'booking_id' => $booking->id,
         'amount'     => $booking->price,
-        'method'     => 'bank_transfer',
+        'method'     => '',
         'order_id'   => $orderId,
         'snap_token' => $snapToken,
         'payment_url'=> $paymentUrl,

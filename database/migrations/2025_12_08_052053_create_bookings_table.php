@@ -27,10 +27,10 @@ return new class extends Migration
             $table->foreignId('previous_second_schedule_id')->nullable()->constrained('schedules')->nullOnDelete();
 
             $table->integer('price');
-            $table->integer('duration_hours'); 
+            $table->integer('duration_hours');
             $table->enum('consultation_type', ['online','offline']);
             $table->string('meeting_link')->nullable();
-            $table->enum('link_status', ['pending','sent'])->default('pending');
+            $table->enum('link_status', ['pending','sent'])->nullable();
 
             $table->enum('status', ['pending_payment', 'paid', 'cancelled', 'completed', 'rescheduled']);
 

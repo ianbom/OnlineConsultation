@@ -2,7 +2,7 @@ export default interface Payment {
   id: number;
   booking_id: number;
   amount: number;
-  method: 'bank_transfer' | 'qris' | 'ewallet';
+  method: string;
   order_id: string;
   midtrans_transaction_id: string | null;
   payment_type: string | null;
@@ -11,8 +11,10 @@ export default interface Payment {
   settlement_time: string | null; // ISO datetime or null
   snap_token: string | null;
   payment_url: string | null;
-  status: 'pending' | 'success' | 'failed' | 'refund';
+  status: string
   paid_at: string | null;
   created_at: string;
   updated_at: string;
 }
+
+

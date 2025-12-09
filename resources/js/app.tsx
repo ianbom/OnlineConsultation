@@ -19,6 +19,7 @@ createInertiaApp({
 
         root.render(
             <div className="font-poppins">
+
                 <App {...props} />
             </div>
         );
