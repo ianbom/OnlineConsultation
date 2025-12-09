@@ -16,7 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 
 const navItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
-  { path: "/counselors", label: "Counselors", icon: Users },
+  { path: "/client/list-counselors", label: "Counselors", icon: Users },
   { path: "/bookings", label: "My Bookings", icon: Calendar },
   { path: "/profile", label: "Profile", icon: User },
 ];
@@ -43,9 +43,9 @@ export function Header() {
        <Link href="/" className="flex items-center gap-2">
           <div className="flex h-12 w-12 items-center justify-center rounded-lg overflow-hidden">
             <img
-              src={'LogoPqNew.png'}
+              src={'/LogoPqNew.png'}
               alt="PersonaQuality Logo"
-              className="h-40 w-40 object-contain"
+              className="h-12 w-12 object-contain"
             />
           </div>
 
@@ -80,10 +80,10 @@ export function Header() {
 
         {/* Right Actions */}
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" className="relative">
+          {/* <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />
             <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-accent" />
-          </Button>
+          </Button> */}
 
           <Link href="/profile" className="hidden md:block">
             <Avatar className="h-9 w-9 border-2 border-primary/20">

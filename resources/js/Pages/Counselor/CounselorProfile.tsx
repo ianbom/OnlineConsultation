@@ -1,11 +1,9 @@
-import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
-import { PageLayout } from "@/components/layout/PageLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { SkeletonCard } from "@/components/ui/skeleton-card";
+import { Link } from "@inertiajs/react";
+import { PageLayout } from "@/Components/layout/PageLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
+import { Button } from "@/Components/ui/button";
+import { Badge } from "@/Components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 import {
   Star,
   GraduationCap,
@@ -14,113 +12,133 @@ import {
   Clock,
   ChevronLeft,
 } from "lucide-react";
-import counselorsData from "@/data/counselors.json";
+import { User, WorkDay, Schedule, Counselor } from "@/Interfaces";
 
-const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+const dayNames = ["monday", "tuesday", "wednesday", "thursday", "friday"];
+const dayLabels: Record<string, string> = {
+  monday: "Senin",
+  tuesday: "Selasa",
+  wednesday: "Rabu",
+  thursday: "Kamis",
+  friday: "Jumat",
+  saturday: "Sabtu",
+  sunday: "Minggu",
+};
 
-export default function CounselorProfile() {
-  const { id } = useParams();
-  const [loading, setLoading] = useState(true);
-  const [counselor, setCounselor] = useState<(typeof counselorsData)[0] | null>(null);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const found = counselorsData.find((c) => c.id === id);
-      setCounselor(found || null);
-      setLoading(false);
-    }, 600);
-    return () => clearTimeout(timer);
-  }, [id]);
 
-  if (loading) {
-    return (
-      <PageLayout>
-        <div className="max-w-4xl mx-auto">
-          <SkeletonCard className="mb-6" />
-          <div className="grid gap-6 md:grid-cols-3">
-            <div className="md:col-span-2 space-y-6">
-              <SkeletonCard />
-              <SkeletonCard />
-            </div>
-            <SkeletonCard />
-          </div>
-        </div>
-      </PageLayout>
+interface Props {
+  counselor: Counselor;
+}
+
+export default function CounselorProfile({ counselor }: Props) {
+
+  const specializations = counselor.specialization
+    .split(",")
+    .map((s) => s.trim());
+
+  const educationList = [counselor.education];
+
+  // Hitung slot ketersediaan
+  const availabilityByDay = dayNames.reduce((acc, day) => {
+    const workDay = counselor.work_days.find(
+      (wd) => wd.day_of_week.toLowerCase() === day && wd.is_active === 1
     );
-  }
 
-  if (!counselor) {
-    return (
-      <PageLayout>
-        <div className="text-center py-12">
-          <h2 className="text-xl font-semibold text-foreground">Counselor not found</h2>
-          <Button asChild className="mt-4">
-            <Link to="/counselors">Back to Counselors</Link>
-          </Button>
-        </div>
-      </PageLayout>
-    );
-  }
+    if (workDay) {
+      const slots = counselor.schedules.filter(
+        (schedule) =>
+          schedule.workday_id === workDay.id && schedule.is_available === 1
+      );
+      acc[day] = slots.length;
+    } else {
+      acc[day] = 0;
+    }
+
+    return acc;
+  }, {} as Record<string, number>);
+
+  const profilePicUrl = counselor.user.profile_pic
+    ? `/storage/${counselor.user.profile_pic}`
+    : null;
+
+  const isAvailable = counselor.status === "active";
 
   return (
     <PageLayout>
       <div className="max-w-4xl mx-auto">
-        {/* Back Button */}
+
+        {/* Tombol Kembali */}
         <Button variant="ghost" asChild className="mb-4">
-          <Link to="/counselors">
+          <Link href={route('client.counselor.list')}>
             <ChevronLeft className="h-4 w-4 mr-1" />
-            Back to Counselors
+            Kembali ke Daftar Konselor
           </Link>
         </Button>
 
-        {/* Profile Header */}
+        {/* Header Profil */}
         <Card className="mb-6 overflow-hidden">
           <div className="h-24 gradient-primary" />
           <CardContent className="relative pt-0 pb-6">
             <div className="flex flex-col sm:flex-row gap-4 sm:items-end -mt-12">
+
+              {/* Foto Profil */}
               <Avatar className="h-24 w-24 border-4 border-card rounded-xl">
-                <AvatarImage src={counselor.photo} alt={counselor.name} className="object-cover" />
+                {profilePicUrl && (
+                  <AvatarImage
+                    src={profilePicUrl}
+                    alt={counselor.user.name}
+                    className="object-cover"
+                  />
+                )}
                 <AvatarFallback className="text-2xl rounded-xl">
-                  {counselor.name.split(" ").map((n) => n[0]).join("")}
+                  {counselor.user.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
                 </AvatarFallback>
               </Avatar>
+
+              {/* Nama & Status */}
               <div className="flex-1">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                   <h1 className="font-display text-2xl font-semibold text-foreground">
-                    {counselor.name}
+                    {counselor.user.name}
                   </h1>
-                  <Badge variant={counselor.isAvailable ? "success" : "secondary"}>
-                    {counselor.isAvailable ? "Available" : "Unavailable"}
+
+                  <Badge variant={isAvailable ? "success" : "secondary"}>
+                    {isAvailable ? "Tersedia" : "Tidak Tersedia"}
                   </Badge>
                 </div>
-                <div className="flex items-center gap-1 mt-1">
-                  <Star className="h-5 w-5 fill-warning text-warning" />
-                  <span className="font-medium text-foreground">{counselor.rating}</span>
-                  <span className="text-muted-foreground">({counselor.reviewCount} reviews)</span>
-                </div>
               </div>
+
+              {/* Harga */}
               <div className="text-right">
                 <span className="text-2xl font-semibold text-foreground">
-                  ${counselor.pricePerSession}
+                  Rp {counselor.price_per_session.toLocaleString("id-ID")}
                 </span>
-                <span className="text-muted-foreground">/session</span>
+                <span className="text-muted-foreground">/sesi</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <div className="grid gap-6 md:grid-cols-3">
-          {/* Main Content */}
+          {/* Konten Utama */}
           <div className="md:col-span-2 space-y-6">
-            {/* About */}
+
+            {/* Tentang Konselor */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">About</CardTitle>
+                <CardTitle className="text-lg">Tentang Konselor</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground leading-relaxed">{counselor.bio}</p>
+                <p className="text-muted-foreground leading-relaxed">
+                  {counselor.description}
+                </p>
+
                 <div className="flex flex-wrap gap-2 mt-4">
-                  {counselor.specializations.map((spec) => (
+                  {specializations.map((spec) => (
                     <Badge key={spec} variant="secondary">
                       {spec}
                     </Badge>
@@ -129,18 +147,21 @@ export default function CounselorProfile() {
               </CardContent>
             </Card>
 
-            {/* Education */}
+            {/* Pendidikan */}
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <GraduationCap className="h-5 w-5 text-primary" />
-                  Education
+                  Pendidikan
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2">
-                  {counselor.education.map((edu, index) => (
-                    <li key={index} className="text-muted-foreground flex items-start gap-2">
+                  {educationList.map((edu, index) => (
+                    <li
+                      key={index}
+                      className="text-muted-foreground flex items-start gap-2"
+                    >
                       <span className="h-1.5 w-1.5 rounded-full bg-primary mt-2 shrink-0" />
                       {edu}
                     </li>
@@ -149,47 +170,49 @@ export default function CounselorProfile() {
               </CardContent>
             </Card>
 
-            {/* Experience */}
+            {/* Pengalaman */}
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Briefcase className="h-5 w-5 text-primary" />
-                  Experience
+                  Pengalaman
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <ul className="space-y-2">
-                  {counselor.experience.map((exp, index) => (
-                    <li key={index} className="text-muted-foreground flex items-start gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-primary mt-2 shrink-0" />
-                      {exp}
-                    </li>
-                  ))}
-                </ul>
+                <p className="text-muted-foreground flex items-start gap-2">
+                  <span className="h-1.5 w-1.5 rounded-full bg-primary mt-2 shrink-0" />
+                  Konselor profesional dengan spesialisasi dalam{" "}
+                  {specializations.join(", ")}
+                </p>
               </CardContent>
             </Card>
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Schedule Overview */}
+
+            {/* Ketersediaan */}
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Calendar className="h-5 w-5 text-primary" />
-                  Availability
+                  Ketersediaan Jadwal
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {dayNames.map((day) => {
-                    const dayKey = day.toLowerCase() as keyof typeof counselor.availability;
-                    const slots = counselor.availability[dayKey];
+                    const slots = availabilityByDay[day] || 0;
                     return (
-                      <div key={day} className="flex items-center justify-between text-sm">
-                        <span className="text-foreground font-medium">{day}</span>
+                      <div
+                        key={day}
+                        className="flex items-center justify-between text-sm"
+                      >
+                        <span className="text-foreground font-medium">
+                          {dayLabels[day]}
+                        </span>
                         <span className="text-muted-foreground">
-                          {slots.length > 0 ? `${slots.length} slots` : "Unavailable"}
+                          {slots > 0 ? `${slots} slot` : "Tidak tersedia"}
                         </span>
                       </div>
                     );
@@ -201,21 +224,24 @@ export default function CounselorProfile() {
             {/* Booking CTA */}
             <Card className="border-primary/20 bg-primary/5">
               <CardContent className="p-5 space-y-4">
+
                 <div className="flex items-center gap-2 text-foreground">
                   <Clock className="h-5 w-5 text-primary" />
-                  <span className="font-medium">60 min session</span>
+                  <span className="font-medium">Durasi sesi 60 menit</span>
                 </div>
+
                 <div className="text-2xl font-semibold text-foreground">
-                  ${counselor.pricePerSession}
+                  Rp {counselor.price_per_session.toLocaleString("id-ID")}
                 </div>
+
                 <div className="space-y-2">
                   <Button className="w-full" size="lg" asChild>
-                    <Link to={`/schedule/${counselor.id}`}>Pick Schedule</Link>
-                  </Button>
-                  <Button variant="outline" className="w-full" asChild>
-                    <Link to={`/book/${counselor.id}`}>Book Now</Link>
+                    <Link href={route('client.pick.schedule', counselor.id)}>
+                      Pilih Jadwal
+                    </Link>
                   </Button>
                 </div>
+
               </CardContent>
             </Card>
           </div>

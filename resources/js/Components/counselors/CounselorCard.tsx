@@ -21,8 +21,6 @@ export function CounselorCard({
   name,
   photo,
   specializations,
-  rating,
-  reviewCount,
   pricePerSession,
   isAvailable = true,
 }: CounselorCardProps) {
@@ -47,13 +45,7 @@ export function CounselorCard({
             <h3 className="font-semibold text-sm text-foreground truncate">
               {name}
             </h3>
-            <div className="flex items-center gap-1 mt-0.5">
-              <Star className="h-3.5 w-3.5 fill-warning text-warning" />
-              <span classname="text-xs font-medium">{rating.toFixed(1)}</span>
-              <span className="text-xs text-muted-foreground">
-                ({reviewCount})
-              </span>
-            </div>
+
           </div>
 
           <Badge
@@ -92,12 +84,13 @@ export function CounselorCard({
           </div>
 
           <Button
-            asChild
-            size="sm"
-            className="text-xs px-3 py-1 bg-primary hover:bg-primary/80"
-          >
-            <Link href={`/counselors/${id}`}>Profile</Link>
-          </Button>
+              asChild
+              size="sm"
+              className="text-xs px-3 py-1 h-7 bg-primary hover:bg-primary/80"
+            >
+              <Link href={route("client.counselor.show", id)}>Pesan Konsultasi</Link>
+            </Button>
+
         </div>
       </CardContent>
     </Card>

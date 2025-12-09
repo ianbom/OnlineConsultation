@@ -67,8 +67,8 @@ export default function CounselorsList() {
 
   return (
     <PageLayout
-      title="Find Your Counselor"
-      description="Connect with experienced mental health professionals"
+      title="Temukan Konselor Pilihan Anda"
+      description="Berkonsultasilah dengan konselor profesional kami untuk mendukung kesehatan mental Anda."
     >
       {/* Search & Filters */}
       <div className="mb-6 space-y-4">
@@ -76,7 +76,7 @@ export default function CounselorsList() {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search counselor name..."
+              placeholder="Cari nama konselor..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -88,7 +88,7 @@ export default function CounselorsList() {
             onClick={() => setShowFilters(!showFilters)}
           >
             <SlidersHorizontal className="h-4 w-4 mr-2" />
-            Filters
+            Filter
             {activeFiltersCount > 0 && (
               <Badge className="ml-2">{activeFiltersCount}</Badge>
             )}
@@ -110,7 +110,7 @@ export default function CounselorsList() {
             {/* Specialization */}
             <div>
               <label className="text-sm text-muted-foreground mb-2 block">
-                Specialization
+                Spesialisasi
               </label>
               <div className="flex flex-wrap gap-2">
                 {specializations.map((spec) => (
@@ -129,7 +129,7 @@ export default function CounselorsList() {
             {/* Price Range */}
             <div>
               <label className="text-sm text-muted-foreground mb-2 block">
-                Price Range
+                Rentang Harga
               </label>
               <div className="flex flex-wrap gap-2">
                 {priceRanges.map((range, index) => (

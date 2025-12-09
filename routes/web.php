@@ -42,10 +42,10 @@ Route::prefix('counselor')->as('counselor.')->group(function () {
 
 
 Route::prefix('client')->as('client.')->group(function () {
-    Route::get('/list-counselors', [ClientCounselorController::class, 'counselorList'])->name('counselors.list');
-    Route::get('/profile', [CounselorProfileController::class, 'index'])->name('profile.index');
-    Route::put('/profile/update', [CounselorProfileController::class, 'update'])->name('profile.update');
-    Route::get('/workday-schedule', [CounselorWorkDayController::class, 'index'])->name('workday.index');
+    Route::get('/list-counselors', [ClientCounselorController::class, 'counselorList'])->name('counselor.list');
+    Route::get('/counselor/{counselorId}', [ClientCounselorController::class, 'detailCounselor'])->name('counselor.show');
+    Route::get('/pick-counselor/schedule/{counselorId}', [ClientCounselorController::class, 'pickCounselorSchedule'])->name('pick.schedule');
+    Route::get('/process-payment/{counselorId}/{scheduleIds}', [ClientCounselorController::class, 'processPayment'])->name('process.payment');
 });
 
 
