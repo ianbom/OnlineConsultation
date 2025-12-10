@@ -3,18 +3,12 @@ import { PageLayout } from "@/Components/layout/PageLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
 import { Badge } from "@/Components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
-import { Separator } from "@/Components/ui/separator";
 import {
   ChevronLeft,
   Calendar,
-  Clock,
-  CreditCard,
-  ChevronRight,
-  AlertCircle,
+
 } from "lucide-react";
-import { format, addDays, isSameDay } from "date-fns";
-import { id as idLocale } from "date-fns/locale";
+
 
 import { Booking } from "@/Interfaces";
 import {
@@ -89,8 +83,6 @@ export default function BookingDetail({ booking }: Props) {
     }
   };
 
-  const showRescheduleButton = booking.status === "paid" && !booking.is_expired;
-
       const handleCancelBooking = () => {
       if (!confirm("Anda yakin ingin membatalkan booking ini?")) return;
 
@@ -138,7 +130,7 @@ export default function BookingDetail({ booking }: Props) {
 
   return (
     <PageLayout>
-      <div className="max-w-xl mx-auto px-4">
+      <div className="max-w-4xl mx-auto px-4">
         <Button variant="ghost" asChild className="mb-4">
           <Link href={route("client.booking.history")}>
             <ChevronLeft className="h-4 w-4 mr-1" />
@@ -183,56 +175,43 @@ export default function BookingDetail({ booking }: Props) {
 
         </div>
 
+       <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        <div className="space-y-6">
-          <BookingDetailCard booking={booking} />
+              {/* LEFT: Booking Detail */}
+              <div>
+                <BookingDetailCard booking={booking} />
+              </div>
 
-          {booking.notes && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Catatan Klien</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">{booking.notes}</p>
-              </CardContent>
-            </Card>
-          )}
+              {/* RIGHT: Status Component */}
+              <div className="h-fit">
+                {renderStatusComponent()}
 
-          <div>{renderStatusComponent()}</div>
+                {booking.notes && (
+                  <Card className="my-3">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Catatan Klien</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-muted-foreground">{booking.notes}</p>
+                    </CardContent>
+                  </Card>
+                )}
 
-           {showRescheduleButton && (
-            <Card className="border-primary/20 bg-primary/5">
-              <CardContent className="pt-6">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 rounded-full bg-primary/10">
-                    <Calendar className="h-6 w-6 text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-lg mb-1">
-                      Perlu Mengubah Jadwal?
-                    </h3>
-                    <p className="text-muted-foreground text-sm mb-4">
-                      Anda dapat melakukan reschedule sesi konseling ini jika ada perubahan jadwal.
-                    </p>
-                    <Button asChild>
-                      <Link href={route('client.pick.reschedule', booking.id)}>
-                        <Calendar className="h-4 w-4 mr-2" />
-                        Reschedule Booking
-                      </Link>
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                <Button variant="outline" className="w-full my-2 transition hover:bg-primary hover:border-white hover:text-white" asChild>
+                  <Link href={route("client.booking.history")}>
+                    Lihat Semua Booking
+                  </Link>
+                </Button>
+              </div>
+
+            </div>
 
 
-          <Button variant="outline" className="w-full" asChild>
-            <Link href={route("client.booking.history")}>
-              Lihat Semua Booking
-            </Link>
-          </Button>
+
+
         </div>
+
       </div>
     </PageLayout>
   );

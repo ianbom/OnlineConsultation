@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\CounselorWorkDayController as AdmCounselorWorkDay
 use App\Http\Controllers\Admin\DashboardController as AdmDashboardController;
 use App\Http\Controllers\Client\BookingController as ClientBookingController;
 use App\Http\Controllers\Client\CounselorController as ClientCounselorController;
+use App\Http\Controllers\Client\DashboardController as ClientDashboardController;
 use App\Http\Controllers\Client\PaymentController as ClientPaymentController;
 use App\Http\Controllers\Client\ProfileController as ClientProfileController;
 use App\Http\Controllers\Counselor\DashboardController as CounselorDashboardController;
@@ -60,6 +61,7 @@ Route::prefix('client')->as('client.')->group(function () {
     Route::get('/booking-history', [ClientBookingController::class, 'bookingHistory'])->name('booking.history');
     Route::get('/my-profile', [ClientProfileController::class, 'myProfile'])->name('myProfile');
     Route::post('/update-profile', [ClientProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard.index');
 });
 
 

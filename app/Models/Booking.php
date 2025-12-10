@@ -52,4 +52,32 @@ class Booking extends Model
     {
         return $this->hasOne(SessionLog::class, 'booking_id', 'id');
     }
+
+    public function scopeForClient($query, $clientId)
+{
+    return $query->where('client_id', $clientId);
+}
+
+public function scopeUpcoming($query)
+{
+    return $query->where('status', 'paid');
+}
+
+public function scopeCompleted($query)
+{
+    return $query->where('status', 'completed');
+}
+
+public function scopePendingPayment($query)
+{
+    return $query->where('status', 'pending_payment');
+}
+
+public function scopeRecentConsultations($query)
+{
+    return $query->whereIn('status', ['completed', 'rescheduled'])
+                 ->orderBy('created_at', 'desc')
+                 ->limit(5);
+}
+
 }

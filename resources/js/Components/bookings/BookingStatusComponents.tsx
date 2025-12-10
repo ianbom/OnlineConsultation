@@ -1,6 +1,6 @@
 import { Link } from "@inertiajs/react";
 import { Button } from "@/Components/ui/button";
-import { Card, CardContent } from "@/Components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import {
   AlertCircle,
   CheckCircle2,
@@ -95,11 +95,11 @@ export function PendingPaymentStatus({ booking }: StatusComponentProps) {
             Bayar Sekarang
           </a>
         </Button>
-        <Button className="w-full" size="lg" variant="outline" asChild>
+        {/* <Button className="w-full" size="lg" variant="outline" asChild>
           <Link href={route("client.payment.check", booking.id)}>
             Cek Status Pembayaran
           </Link>
-        </Button>
+        </Button> */}
       </div>
     </div>
   );
@@ -107,6 +107,7 @@ export function PendingPaymentStatus({ booking }: StatusComponentProps) {
 
 // Status: paid (confirmed)
 export function PaidStatus({ booking }: StatusComponentProps) {
+     const showRescheduleButton = booking.status === "paid" && !booking.is_expired;
   const sessionDate = new Date(booking.schedule.date);
   const now = new Date();
   const isPast = sessionDate < now;
@@ -129,6 +130,32 @@ export function PaidStatus({ booking }: StatusComponentProps) {
           </div>
         </CardContent>
       </Card>
+
+       {showRescheduleButton && (
+            <Card className="border-primary/20 bg-primary/5">
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 rounded-full bg-primary/10">
+                    <Calendar className="h-6 w-6 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-lg mb-1">
+                      Perlu Mengubah Jadwal?
+                    </h3>
+                    <p className="text-muted-foreground text-sm mb-4">
+                      Anda dapat melakukan reschedule sesi konseling ini jika ada perubahan jadwal.
+                    </p>
+                    <Button asChild>
+                      <Link href={route('client.pick.reschedule', booking.id)}>
+                        <Calendar className="h-4 w-4 mr-2" />
+                        Reschedule Booking
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
       {/* Info Link Meeting */}
         {booking.consultation_type === "online" && (
@@ -271,6 +298,7 @@ export function ExpiredStatus({ booking }: StatusComponentProps) {
 export function CompletedStatus({ booking }: StatusComponentProps) {
   return (
     <div className="space-y-4">
+
       {/* Alert Sesi Selesai */}
       <Card className="border-primary/30 bg-primary/5">
         <CardContent className="p-4">
@@ -289,20 +317,24 @@ export function CompletedStatus({ booking }: StatusComponentProps) {
         </CardContent>
       </Card>
 
-      {/* Tombol Aksi */}
-      <div className="space-y-2">
-        <Button className="w-full" size="lg" asChild>
-          <Link href={`/counselors/${booking.counselor_id}`}>
-            Booking Lagi dengan {booking.counselor.user.name}
-          </Link>
-        </Button>
-        <Button className="w-full" size="lg" variant="outline" asChild>
-          <Link href="/counselors">Cari Konselor Lain</Link>
-        </Button>
-      </div>
+      {/* Catatan Konselor */}
+      {booking.counselor_notes && (
+        <Card className="border-border bg-background">
+          <CardHeader>
+            <CardTitle className="text-lg">Catatan Konselor</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+              {booking.counselor_notes}
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
     </div>
   );
 }
+
 
 // Status: rescheduled
 export function RescheduledStatus({ booking }: StatusComponentProps) {

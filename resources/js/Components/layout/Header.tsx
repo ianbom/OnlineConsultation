@@ -1,4 +1,4 @@
-import { Link, usePage } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -13,18 +13,46 @@ import {
 import { useState } from "react";
 import { Button } from "@/Components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/Components/ui/dropdown-menu";
 
 const navItems = [
-  { path: "/", label: "Dashboard", icon: LayoutDashboard },
+  { path: "/client/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { path: "/client/list-counselors", label: "Counselors", icon: Users },
   { path: "/client/booking-history", label: "My Bookings", icon: Calendar },
-  { path: "/client/my-profile", label: "Profile", icon: User },
+//   { path: "/client/my-profile", label: "Profile", icon: User },
 ];
 
+interface User {
+  id: number;
+  name: string;
+  email: string;
+
+  // tambahkan ini:
+  profile_pic?: string | null;
+  role?: string;
+  phone?: string | null;
+
+  // field lain sesuai share()
+}
+
 export function Header() {
-  const { url } = usePage();
+  const { url, props } = usePage();
+  const user = props.auth.user as User;
+
   const pathname = url.split("?")[0];
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleLogout = () => {
+  router.post(route("logout"));
+};
+
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-card/80 backdrop-blur-md">
@@ -85,12 +113,50 @@ export function Header() {
             <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-accent" />
           </Button> */}
 
-          <Link href="/client/my-profile" className="hidden md:block">
-            <Avatar className="h-9 w-9 border-2 border-primary/20">
-              <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" />
-              <AvatarFallback>AJ</AvatarFallback>
-            </Avatar>
-          </Link>
+          <DropdownMenu>
+              <DropdownMenuTrigger className="hidden md:block focus:outline-none">
+                <Avatar className="h-9 w-9 border-2 border-primary/20 cursor-pointer">
+                  <AvatarImage
+                    src={
+                      user?.profile_pic
+                        ? `${import.meta.env.VITE_APP_URL}/storage/${user.profile_pic}`
+                        : "/default-avatar.png"
+                    }
+                  />
+                  <AvatarFallback>
+                    {user?.name
+                      ?.split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuLabel className="text-sm">
+                  {user?.name}
+                </DropdownMenuLabel>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem asChild>
+                  <Link href="/client/my-profile">Profile</Link>
+                </DropdownMenuItem>
+
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="text-red-600 cursor-pointer"
+                >
+                  Logout
+                </DropdownMenuItem>
+
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+
 
           {/* Mobile Menu Button */}
           <Button

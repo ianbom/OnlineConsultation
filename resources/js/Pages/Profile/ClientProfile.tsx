@@ -211,7 +211,7 @@ export default function ClientProfile({ user }: Props) {
                 <p className="text-sm text-muted-foreground">{user.email}</p>
                 <div className="flex items-center justify-center gap-1 mt-2 text-sm text-muted-foreground">
                   <Calendar className="h-4 w-4" />
-                  <span>Bergabung sejak {format(new Date(user.created_at), "MMMM yyyy")}</span>
+                  <span>Sejak {format(new Date(user.created_at), "MMMM yyyy")}</span>
                 </div>
               </CardContent>
             </Card>

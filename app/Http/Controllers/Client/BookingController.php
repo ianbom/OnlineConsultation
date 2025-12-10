@@ -44,7 +44,7 @@ class BookingController extends Controller
 
     public function bookingDetail($bookingId){
     $booking = Booking::with('counselor.user', 'client', 'previousSchedule',
-    'previousSecondSchedule', 'schedule', 'secondSchedule', 'payment')
+    'previousSecondSchedule', 'schedule', 'secondSchedule', 'payment', 'sessionLog')
         ->findOrFail($bookingId);
 
     return Inertia::render('Booking/BookingDetail', [

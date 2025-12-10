@@ -1,62 +1,108 @@
-import { useState, useEffect } from "react";
-import { Link, usePage } from "@inertiajs/react";
+import { useState } from "react";
+import { Link } from "@inertiajs/react";
 import { PageLayout } from "@/Components/layout/PageLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
-import { Badge } from "@/Components/ui/badge";
 import { BookingCard } from "@/Components/bookings/BookingCard";
-import { NotificationItem } from "@/Components/notifications/NotificationItem";
-import { SkeletonCard } from "@/Components/ui/skeleton-card";
 import { Calendar, Clock, CreditCard, ChevronRight, Users } from "lucide-react";
-import bookingsData from '../../../public/data/bookings.json';
-import notificationsData from '../../../public/data/notifications.json';
 
-export default function Dashboard() {
-  const [loading, setLoading] = useState(true);
-  const [bookings, setBookings] = useState<any[]>([]);
-  const [notifications, setNotifications] = useState<any[]>([]);
+interface Schedule {
+  id: number;
+  date: string;
+  start_time: string;
+  end_time: string;
+}
 
-  useEffect(() => {
-    // Simulate loading
-    const timer = setTimeout(() => {
-      setBookings(bookingsData);
-      setNotifications(notificationsData);
-      setLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, []);
+interface User {
+  id: number;
+  name: string;
+  profile_pic: string;
+}
 
-  const upcomingBookings = bookings.filter((b) => b.status === "upcoming");
-  const recentBookings = bookings.filter((b) => b.status === "completed").slice(0, 2);
-  const pendingPayment = bookings.find((b) => b.paymentStatus === "pending");
-  const unreadNotifications = notifications.filter((n) => !n.isRead);
+interface Counselor {
+  id: number;
+  specialization: string;
+  user: User;
+}
 
+interface Payment {
+  id: number;
+  status: string;
+  amount: number;
+}
+
+interface Booking {
+  id: number;
+  status: string;
+  duration_hours: number;
+  consultation_type: string;
+  schedule: Schedule;
+  second_schedule: Schedule | null;
+  counselor: Counselor;
+  payment: Payment;
+}
+
+interface DashboardProps {
+  upcomingBooking: Booking[];
+  completedBooking: Booking[];
+  pendingPaymentBooking: Booking[];
+  recentConsultations: Booking[];
+}
+
+export default function Dashboard({
+  upcomingBooking = [],
+  completedBooking = [],
+  pendingPaymentBooking = [],
+  recentConsultations = [],
+}: DashboardProps) {
   const stats = [
     {
       label: "Upcoming Sessions",
-      value: upcomingBookings.length,
+      value: upcomingBooking.length,
       icon: Calendar,
       color: "text-info",
       bgColor: "bg-info/10",
     },
     {
       label: "Completed Sessions",
-      value: bookings.filter((b) => b.status === "completed").length,
+      value: completedBooking.length,
       icon: Clock,
       color: "text-success",
       bgColor: "bg-success/10",
     },
     {
       label: "Pending Payments",
-      value: bookings.filter((b) => b.paymentStatus === "pending").length,
+      value: pendingPaymentBooking.length,
       icon: CreditCard,
       color: "text-warning",
       bgColor: "bg-warning/10",
     },
   ];
 
+  const formatTime = (time: string) => {
+    return time.substring(0, 5); // "13:00:00" -> "13:00"
+  };
+
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString('id-ID', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const getImageUrl = (profilePic: string) => {
+    if (!profilePic) return '/images/default-avatar.png';
+    if (profilePic.startsWith('http')) return profilePic;
+    return `/storage/${profilePic}`;
+  };
+
   return (
-    <PageLayout title="Welcome back, Alex" description="Here's an overview of your mental health journey">
+    <PageLayout
+      title="Selamat Datang Kembali"
+      description="Berikut adalah ringkasan penggunaan Persona Quality"
+    >
       {/* Stats Grid */}
       <div className="grid gap-4 sm:grid-cols-3 mb-6">
         {stats.map((stat) => (
@@ -82,32 +128,31 @@ export default function Dashboard() {
           {/* Upcoming Schedule */}
           <Card>
             <CardHeader className="flex-row items-center justify-between pb-4">
-              <CardTitle className="text-lg" >Upcoming Sessions</CardTitle>
+              <CardTitle className="text-lg">Upcoming Sessions</CardTitle>
               <Button variant="ghost" size="sm" asChild>
-                <Link href="/bookings">
+                <Link href="/client/booking-history">
                   View All <ChevronRight className="h-4 w-4 ml-1" />
                 </Link>
               </Button>
             </CardHeader>
             <CardContent className="space-y-3">
-              {loading ? (
-                <>
-                  <SkeletonCard />
-                  <SkeletonCard />
-                </>
-              ) : upcomingBookings.length > 0 ? (
-                upcomingBookings.map((booking) => (
+              {upcomingBooking.length > 0 ? (
+                upcomingBooking.map((booking) => (
                   <BookingCard
                     key={booking.id}
                     id={booking.id}
-                    counselorName={booking.counselorName}
-                    counselorPhoto={booking.counselorPhoto}
-                    date={booking.date}
-                    time={booking.time}
-                    duration={booking.duration}
-                    status={booking.status as any}
-                    specialization={booking.specialization}
-                    paymentStatus={booking.paymentStatus}
+                    counselorName={booking.counselor.user.name}
+                    counselorPhoto={getImageUrl(booking.counselor.user.profile_pic)}
+                    date={formatDate(booking.schedule.date)}
+                    time={`${formatTime(booking.schedule.start_time)} - ${
+                      booking.second_schedule
+                        ? formatTime(booking.second_schedule.end_time)
+                        : formatTime(booking.schedule.end_time)
+                    }`}
+                    duration={`${booking.duration_hours} hour${booking.duration_hours > 1 ? 's' : ''}`}
+                    status="paid"
+                    specialization={booking.counselor.specialization}
+                    paymentStatus={booking.payment.status}
                   />
                 ))
               ) : (
@@ -123,26 +168,28 @@ export default function Dashboard() {
             <CardHeader className="flex-row items-center justify-between pb-4">
               <CardTitle className="text-lg">Recent Consultations</CardTitle>
               <Button variant="ghost" size="sm" asChild>
-                <Link href="/bookings">
+                <Link href="/client/booking-history">
                   View History <ChevronRight className="h-4 w-4 ml-1" />
                 </Link>
               </Button>
             </CardHeader>
             <CardContent className="space-y-3">
-              {loading ? (
-                <SkeletonCard />
-              ) : recentBookings.length > 0 ? (
-                recentBookings.map((booking) => (
+              {recentConsultations.length > 0 ? (
+                recentConsultations.slice(0, 2).map((booking) => (
                   <BookingCard
                     key={booking.id}
                     id={booking.id}
-                    counselorName={booking.counselorName}
-                    counselorPhoto={booking.counselorPhoto}
-                    date={booking.date}
-                    time={booking.time}
-                    duration={booking.duration}
+                    counselorName={booking.counselor.user.name}
+                    counselorPhoto={getImageUrl(booking.counselor.user.profile_pic)}
+                    date={formatDate(booking.schedule.date)}
+                    time={`${formatTime(booking.schedule.start_time)} - ${
+                      booking.second_schedule
+                        ? formatTime(booking.second_schedule.end_time)
+                        : formatTime(booking.schedule.end_time)
+                    }`}
+                    duration={`${booking.duration_hours} hour${booking.duration_hours > 1 ? 's' : ''}`}
                     status={booking.status as any}
-                    specialization={booking.specialization}
+                    specialization={booking.counselor.specialization}
                     showActions={false}
                   />
                 ))
@@ -158,7 +205,7 @@ export default function Dashboard() {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Pending Payment */}
-          {pendingPayment && (
+          {pendingPaymentBooking.length > 0 && (
             <Card className="border-warning/30 bg-warning/5">
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
@@ -168,10 +215,10 @@ export default function Dashboard() {
                   <div className="flex-1">
                     <h4 className="font-medium text-foreground">Payment Pending</h4>
                     <p className="text-sm text-muted-foreground mt-0.5">
-                      Complete payment for your session with {pendingPayment.counselorName}
+                      You have {pendingPaymentBooking.length} pending payment{pendingPaymentBooking.length > 1 ? 's' : ''}
                     </p>
                     <Button variant="accent" size="sm" className="mt-3" asChild>
-                      <Link href={`/bookings/${pendingPayment.id}`}>Pay Now</Link>
+                      <Link href="/client/booking-history">View Payments</Link>
                     </Button>
                   </div>
                 </div>
@@ -179,55 +226,19 @@ export default function Dashboard() {
             </Card>
           )}
 
-          {/* Notifications */}
-          <Card>
-            <CardHeader className="flex-row items-center justify-between pb-2">
-              <CardTitle className="text-lg">Notifications</CardTitle>
-              {unreadNotifications.length > 0 && (
-                <Badge className="ml-2 h-5 min-w-[20px] px-1.5">{unreadNotifications.length} new</Badge>
-              )}
-            </CardHeader>
-            <CardContent className="space-y-1 p-3">
-              {loading ? (
-                <div className="space-y-3">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="animate-pulse flex gap-3 p-2">
-                      <div className="h-9 w-9 rounded-full bg-muted" />
-                      <div className="flex-1 space-y-2">
-                        <div className="h-3 w-3/4 rounded bg-muted" />
-                        <div className="h-3 w-1/2 rounded bg-muted" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                notifications.slice(0, 4).map((notification) => (
-                  <NotificationItem
-                    key={notification.id}
-                    type={notification.type as any}
-                    title={notification.title}
-                    message={notification.message}
-                    timestamp={notification.timestamp}
-                    isRead={notification.isRead}
-                  />
-                ))
-              )}
-            </CardContent>
-          </Card>
-
           {/* Quick Actions */}
           <Card>
             <CardContent className="p-4">
               <h4 className="font-medium text-foreground mb-3">Quick Actions</h4>
               <div className="space-y-2">
                 <Button variant="outline" className="w-full justify-start" asChild>
-                  <Link href="/counselors">
+                  <Link href="/client/list-counselors">
                     <Users className="h-4 w-4 mr-2" />
                     Find a Counselor
                   </Link>
                 </Button>
                 <Button variant="outline" className="w-full justify-start" asChild>
-                  <Link href="/bookings">
+                  <Link href="/client/booking-history">
                     <Calendar className="h-4 w-4 mr-2" />
                     View All Bookings
                   </Link>

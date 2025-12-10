@@ -35,6 +35,7 @@ return new class extends Migration
             $table->enum('status', ['pending_payment', 'paid', 'cancelled', 'completed', 'rescheduled']);
 
             $table->text('notes')->nullable();
+            $table->text('counselor_notes')->nullable();
 
             $table->enum('cancelled_by', ['client', 'counselor', 'admin', 'system'])->nullable();
             $table->text('cancel_reason')->nullable();

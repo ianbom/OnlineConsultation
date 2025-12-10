@@ -51,10 +51,10 @@ export default function BookingDetailCard({ booking }: Props) {
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
         {/* Konselor */}
-        <div className="flex items-center gap-4">
-          <Avatar className="h-14 w-14 rounded-lg">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          <Avatar className="h-16 w-16 rounded-lg mx-auto sm:mx-0">
             <AvatarImage src={photoUrl} alt={booking.counselor.user.name} />
             <AvatarFallback className="rounded-lg">
               {booking.counselor.user.name
@@ -64,14 +64,20 @@ export default function BookingDetailCard({ booking }: Props) {
             </AvatarFallback>
           </Avatar>
 
-          <div>
-            <h3 className="font-semibold text-foreground">
+          <div className="text-center sm:text-left">
+            <h3 className="font-semibold text-foreground text-lg">
               {booking.counselor.user.name}
             </h3>
 
-            <Badge variant="secondary" className="text-xs mt-1">
-              {booking.counselor.specialization}
-            </Badge>
+            <div className="flex flex-wrap justify-center sm:justify-start gap-1 mt-1">
+              {booking.counselor.specialization
+                ?.split(",")
+                .map((item: string, index: number) => (
+                  <Badge key={index} variant="secondary" className="text-xs">
+                    {item.trim()}
+                  </Badge>
+                ))}
+            </div>
           </div>
         </div>
 
@@ -114,22 +120,23 @@ export default function BookingDetailCard({ booking }: Props) {
 
         {/* Total */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-sm">
+          <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Biaya Sesi</span>
             <span>{formatCurrency(booking.price)}</span>
           </div>
 
           <Separator />
 
-          <div className="flex items-center justify-between">
+          <div className="flex justify-between items-center">
             <span className="font-semibold text-foreground">Total</span>
-            <span className="text-xl font-semibold text-foreground">
+            <span className="text-xl font-semibold">
               {formatCurrency(total)}
             </span>
           </div>
         </div>
       </CardContent>
     </Card>
+
   );
 }
 
@@ -142,13 +149,16 @@ interface RowProps {
 
 function DetailRow({ icon, label, value }: RowProps) {
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
       <div className="flex items-center gap-2 text-muted-foreground">
         {icon}
         <span>{label}</span>
       </div>
 
-      <span className="font-medium text-foreground">{value}</span>
+      <span className="font-medium text-foreground break-words">
+        {value}
+      </span>
     </div>
   );
 }
+

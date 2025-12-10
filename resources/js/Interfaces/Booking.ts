@@ -29,6 +29,7 @@ export default interface Booking {
     | "rescheduled";
 
   notes: string | null;
+  counselor_notes: string | null;
 
   // cancelation & refund tracking
   cancelled_by: "client" | "counselor" | "admin" | "system" |null;
