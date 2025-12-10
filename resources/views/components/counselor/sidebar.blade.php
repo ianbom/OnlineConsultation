@@ -1,7 +1,7 @@
-<div :class="{ 'dark text-white-dark': $store.app.semidark }">
+<div :class="{ 'dark text-white-dark': $store.app.semidark  }">
     <nav x-data="sidebar"
         class="sidebar fixed min-h-screen h-full top-0 bottom-0 w-[260px] shadow-[5px_0_25px_0_rgba(94,92,154,0.1)] z-50 transition-all duration-300">
-        <div class="bg-white dark:bg-[#0e1726] h-full">
+        <div class="bg-secondary dark:bg-[#0e1726] h-full">
             <div class="flex justify-between items-center px-4 py-3">
                 <a href="/" class="main-logo flex items-center shrink-0">
                     <img class="w-8 ml-[5px] flex-none" src="/assets/images/logo.svg"
@@ -137,7 +137,7 @@
                 <li class="nav-item">
                     <ul>
                         <li class="nav-item">
-                            <a href="/apps/chat" class="group">
+                            <a href="/counselor/booking" class="group">
                                 <div class="flex items-center">
 
                                     <svg class="group-hover:!text-primary shrink-0" width="20" height="20"

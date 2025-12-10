@@ -9,6 +9,7 @@ use App\Http\Controllers\Client\CounselorController as ClientCounselorController
 use App\Http\Controllers\Client\DashboardController as ClientDashboardController;
 use App\Http\Controllers\Client\PaymentController as ClientPaymentController;
 use App\Http\Controllers\Client\ProfileController as ClientProfileController;
+use App\Http\Controllers\Counselor\BookingController as CounselorBookingController;
 use App\Http\Controllers\Counselor\DashboardController as CounselorDashboardController;
 use App\Http\Controllers\Counselor\ProfileController as CounselorProfileController;
 use App\Http\Controllers\Counselor\WorkDayController as CounselorWorkDayController;
@@ -43,6 +44,8 @@ Route::prefix('counselor')->as('counselor.')->group(function () {
     Route::get('/profile', [CounselorProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile/update', [CounselorProfileController::class, 'update'])->name('profile.update');
     Route::get('/workday-schedule', [CounselorWorkDayController::class, 'index'])->name('workday.index');
+    Route::get('/booking', [CounselorBookingController::class, 'index'])->name('booking.index');
+    Route::get('/booking/{bookingId}', [CounselorBookingController::class, 'show'])->name('booking.show');
 });
 
 

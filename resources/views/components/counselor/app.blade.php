@@ -20,7 +20,7 @@
     @vite(['resources/css/app.css'])
 </head>
 
-<body x-data="main" class="antialiased relative font-nunito text-sm font-normal overflow-x-hidden"
+<body x-data="main" class="antialiased relative font-nunito text-sm font-normal overflow-x-hidden bg-secondary"
     :class="[$store.app.sidebar ? 'toggle-sidebar' : '', $store.app.theme === 'dark' || $store.app.isDarkMode ?  'dark' : '', $store.app.menu, $store.app.layout, $store.app
         .rtlClass
     ]">
@@ -90,7 +90,7 @@
         });
     </script>
 
-    <x-common.theme-customiser />
+    <x-counselor.theme-customiser />
 
     <div class="main-container text-black dark:text-white-dark min-h-screen" :class="[$store.app.navbar]">
 

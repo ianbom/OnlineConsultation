@@ -15,7 +15,7 @@
                 <thead>
                     <tr class="bg-white border-b border-gray-200">
                         @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'] as $day)
-                        <th class="px-3 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-200">
+                        <th class="px-3 py-3 bg-primary text-center text-xs font-semibold text-white uppercase tracking-wider border-r border-gray-200">
                             {{ $day }}
                         </th>
                         @endforeach
@@ -37,8 +37,8 @@
                                         <div class="p-3 border-b border-gray-100">
                                             <div class="flex items-start justify-between">
                                                 <div class="flex items-center space-x-2">
-                                                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 flex items-center justify-center">
-                                                        <span class="text-black text-xs font-bold">
+                                                    <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+                                                        <span class="text-white text-xs font-bold">
                                                             {{ strtoupper(substr($workDay->counselor->user->name, 0, 1)) }}
                                                         </span>
                                                     </div>
@@ -88,7 +88,7 @@
 
                                             <!-- Price -->
                                             <div class="mb-3">
-                                                <span class="inline-block w-full px-2 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded">
+                                                <span class="inline-block w-full px-2 py-1 bg-primary text-white text-xs font-semibold rounded">
                                                    Harga : Rp {{ number_format($workDay->counselor->price_per_session, 0, ',', '.') }}
                                                 </span>
                                             </div>
