@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\BookingController as AdmBookingController;
 use App\Http\Controllers\Admin\CounselorController as AdmCounselorController;
 use App\Http\Controllers\Admin\CounselorWorkDayController as AdmCounselorWorkDayController;
 use App\Http\Controllers\Admin\DashboardController as AdmDashboardController;
 use App\Http\Controllers\Client\BookingController as ClientBookingController;
 use App\Http\Controllers\Client\CounselorController as ClientCounselorController;
 use App\Http\Controllers\Client\PaymentController as ClientPaymentController;
+use App\Http\Controllers\Client\ProfileController as ClientProfileController;
 use App\Http\Controllers\Counselor\DashboardController as CounselorDashboardController;
 use App\Http\Controllers\Counselor\ProfileController as CounselorProfileController;
 use App\Http\Controllers\Counselor\WorkDayController as CounselorWorkDayController;
@@ -32,6 +34,7 @@ Route::prefix('admin')->as('admin.')->group(function () {
     Route::get('/dashboard', [AdmDashboardController::class, 'index'])->name('dashboard');
     Route::resource('counselor', AdmCounselorController::class);
     Route::resource('workday', AdmCounselorWorkDayController::class);
+    Route::resource('booking', AdmBookingController::class);
 });
 
 Route::prefix('counselor')->as('counselor.')->group(function () {
@@ -50,8 +53,12 @@ Route::prefix('client')->as('client.')->group(function () {
     Route::get('/process-payment/{counselorId}/{scheduleIds}', [ClientCounselorController::class, 'processPayment'])->name('process.payment');
     Route::post('/book-schedule/{counselorId}', [ClientBookingController::class, 'bookingSchedule'])->name('book.schedule');
     Route::get('/booking-detail/{bookingId}', [ClientBookingController::class, 'bookingDetail'])->name('booking.detail');
+    Route::get('/reschedule-booking/{bookingId}', [ClientBookingController::class, 'pickRescheduleBooking'])->name('pick.reschedule');
+    Route::post('/update/reschedule-booking/{bookingId}', [ClientBookingController::class, 'rescheduleBooking'])->name('reschedule.booking');
     Route::get('/check-payment/{booking}', [ClientPaymentController::class, 'checkPayment'])->name('payment.check');
     Route::get('/booking-history', [ClientBookingController::class, 'bookingHistory'])->name('booking.history');
+    Route::get('/my-profile', [ClientProfileController::class, 'myProfile'])->name('myProfile');
+    Route::post('/update-profile', [ClientProfileController::class, 'updateProfile'])->name('profile.update');
 });
 
 

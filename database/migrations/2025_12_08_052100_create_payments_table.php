@@ -12,34 +12,43 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('payments', function (Blueprint $table) {
-        $table->id();
+    $table->id();
 
-        $table->foreignId('booking_id')
-              ->constrained('bookings')
-              ->cascadeOnDelete();
+    $table->foreignId('booking_id')
+          ->constrained('bookings')
+          ->cascadeOnDelete();
 
-        // system fields
-        $table->integer('amount');
-        $table->string('method')->nullable();
+    // system fields
+    $table->integer('amount');
+    $table->string('method')->nullable();
 
-        // midtrans
-        $table->string('order_id');
-        $table->string('midtrans_transaction_id')->nullable();
-        $table->string('payment_type')->nullable();
-        $table->string('fraud_status')->nullable();
-        $table->string('va_number')->nullable();
-        $table->dateTime('settlement_time')->nullable();
+    // midtrans
+    $table->string('order_id');
+    $table->string('midtrans_transaction_id')->nullable();
+    $table->string('payment_type')->nullable();
+    $table->string('fraud_status')->nullable();
+    $table->string('va_number')->nullable();
+    $table->dateTime('settlement_time')->nullable();
 
-        $table->string('snap_token')->nullable();
-        $table->string('payment_url')->nullable();
+    $table->string('snap_token')->nullable();
+    $table->string('payment_url')->nullable();
 
-        $table->enum('status', ['pending','success','failed','refund'])
-              ->default('pending');
+    // recommended additions
+    $table->string('transaction_status')->nullable(); // midtrans status (pending/settlement/expire)
+    $table->string('failure_reason')->nullable();     // jika "deny" atau "failed"
 
-        $table->dateTime('paid_at')->nullable();
+    // refund fields
+    $table->integer('refund_amount')->nullable();
+    $table->string('refund_reason')->nullable();
+    $table->timestamp('refund_time')->nullable();
 
-        $table->timestamps();
-    });
+    $table->enum('status', ['pending','success','failed','refund'])
+          ->default('pending');
+
+    $table->dateTime('paid_at')->nullable();
+    $table->timestamp('expiry_time')->nullable();
+    $table->timestamps();
+});
     }
 
     /**

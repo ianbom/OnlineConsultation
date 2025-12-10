@@ -18,7 +18,7 @@ const navItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
   { path: "/client/list-counselors", label: "Counselors", icon: Users },
   { path: "/client/booking-history", label: "My Bookings", icon: Calendar },
-  { path: "/profile", label: "Profile", icon: User },
+  { path: "/client/my-profile", label: "Profile", icon: User },
 ];
 
 export function Header() {
@@ -85,7 +85,7 @@ export function Header() {
             <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-accent" />
           </Button> */}
 
-          <Link href="/profile" className="hidden md:block">
+          <Link href="/client/my-profile" className="hidden md:block">
             <Avatar className="h-9 w-9 border-2 border-primary/20">
               <AvatarImage src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face" />
               <AvatarFallback>AJ</AvatarFallback>

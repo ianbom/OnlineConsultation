@@ -19,37 +19,51 @@ class PaymentService
         Config::$is3ds = true;
     }
 
-    public function createPayment($booking)
+public function createPayment($booking)
 {
     $orderId = "ORDER-" . time() . "-" . $booking->id;
 
     $params = [
         'transaction_details' => [
-            'order_id' => $orderId,
-            'gross_amount' => $booking->price,
+            'order_id'      => $orderId,
+            'gross_amount'  => $booking->price,
         ],
         'customer_details' => [
             'first_name' => $booking->client->name,
-            'email' => $booking->client->email,
-        ]
+            'email'      => $booking->client->email,
+        ],
+
+        'expiry' => [
+            'start_time' => now()->format('Y-m-d H:i:s O'),
+            'unit' => 'minutes',
+            'duration' => 15
+    ]
     ];
 
+    // Request ke Midtrans
     $transaction = Snap::createTransaction($params);
 
-    $snapToken = $transaction->token;
+    // Data Snap
+    $snapToken  = $transaction->token;
     $paymentUrl = $transaction->redirect_url;
 
+    // Hitung waktu expiry di aplikasi
+    $expiryTime = now()->addMinutes(15);
+
+    // Simpan ke table payments
     $payment = Payment::create([
-        'booking_id' => $booking->id,
-        'amount'     => $booking->price,
-        'method'     => '',
-        'order_id'   => $orderId,
-        'snap_token' => $snapToken,
-        'payment_url'=> $paymentUrl,
-        'status'     => 'pending',
+        'booking_id'          => $booking->id,
+        'amount'              => $booking->price,
+        'method'              => null,
+        'order_id'            => $orderId,
+        'snap_token'          => $snapToken,
+        'payment_url'         => $paymentUrl,
+        'status'              => 'pending',
+        'expiry_time'         => $expiryTime,  // <── INI YANG DITAMBAHKAN
     ]);
 
     return $payment;
 }
+
 
 }

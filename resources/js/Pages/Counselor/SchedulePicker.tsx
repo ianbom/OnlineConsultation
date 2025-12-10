@@ -8,6 +8,10 @@ import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { format, addDays, startOfWeek, isSameDay } from "date-fns";
 
 import { User, Schedule, Counselor } from "@/Interfaces";
+import CalendarHeader from "@/Components/schedule/CalendarHeader";
+import CalendarGrid from "@/Components/schedule/CalendarGrid";
+import TimeSlots from "@/Components/schedule/TimeSlots";
+import CounselorInfoCard from "@/Components/schedule/CounselorIndoCard";
 
 interface Props {
   counselor: Counselor;
@@ -142,166 +146,34 @@ export default function SchedulePicker({ counselor }: Props) {
         </Button>
 
         {/* Informasi Konselor */}
-        <Card className="mb-6">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-14 w-14 rounded-lg">
-                <AvatarImage src={profilePicUrl || undefined} alt={counselor.user.name} />
-                <AvatarFallback className="rounded-lg">
-                  {counselor.user.name.split(" ").map((n) => n[0]).join("")}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h2 className="font-semibold text-foreground">
-                  {counselor.user.name}
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  Rp {counselor.price_per_session.toLocaleString("id-ID")} per sesi
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Pilih 1-2 jam konseling yang berdampingan
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+       <CounselorInfoCard counselor={counselor} />
 
-        {/* Kalender */}
-        <Card className="mb-6">
-          <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <CardTitle className="text-lg text-center sm:text-left">
-              Pilih Tanggal
-            </CardTitle>
+        <CalendarHeader
+        weekStart={weekStart}
+        onPrevWeek={() => setWeekStart(addDays(weekStart, -7))}
+        onNextWeek={() => setWeekStart(addDays(weekStart, 7))}
+      />
 
-            <div className="flex items-center justify-center sm:justify-end gap-2 w-full sm:w-auto">
-              <Button variant="ghost" size="icon" onClick={handlePrevWeek}>
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
+      {/* Grid Tanggal */}
+      <CalendarGrid
+        weekDays={weekDays}
+        selectedDate={selectedDate}
+        onSelectDate={handleDateSelect}
+        getAvailableSlots={getAvailableSlots}
+      />
 
-              <span className="text-sm font-medium text-foreground min-w-[140px] text-center">
-                {format(weekStart, "d MMM")} - {format(addDays(weekStart, 6), "d MMM yyyy")}
-              </span>
+      {/* Slot Waktu */}
+      {selectedDate && (
+        <TimeSlots
+          selectedDate={selectedDate}
+          availableSlots={getAvailableSlots(selectedDate)}
+          selectedSlots={selectedSlots}
+          canSelectSlot={canSelectSlot}
+          onSelectSlot={handleSlotSelect}
+        />
+      )}
 
-              <Button variant="ghost" size="icon" onClick={handleNextWeek}>
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </CardHeader>
-
-          <CardContent>
-            <div
-              className="
-                grid
-                grid-cols-3        /* mobile */
-                sm:grid-cols-5     /* tablet */
-                md:grid-cols-7     /* desktop */
-                gap-2
-              "
-            >
-              {weekDays.map((date) => {
-                const slots = getAvailableSlots(date);
-                const availableCount = slots.length;
-                const isSelected = selectedDate && isSameDay(date, selectedDate);
-
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const isPast = date < today;
-
-                return (
-                  <button
-                    key={date.toISOString()}
-                    disabled={isPast || availableCount === 0}
-                    onClick={() => handleDateSelect(date)}
-                    className={`
-                      p-3 rounded-lg border text-center transition-all
-                      flex flex-col items-center justify-center
-                      text-xs sm:text-sm               /* responsive text */
-                      min-h-[60px] sm:min-h-[70px]     /* responsive height */
-
-                      ${
-                        isSelected
-                          ? "border-primary bg-primary text-primary-foreground"
-                          : "border-border hover:border-primary/50"
-                      }
-                      ${(isPast || availableCount === 0) && "opacity-50 cursor-not-allowed"}
-                    `}
-                  >
-                    <div className="font-medium opacity-70">
-                      {format(date, "EEE")}
-                    </div>
-
-                    <div className="text-base sm:text-lg font-semibold mt-1">
-                      {format(date, "d")}
-                    </div>
-
-                    {availableCount > 0 && (
-                      <div
-                        className={`mt-1 ${
-                          isSelected ? "text-primary-foreground/80" : "text-primary"
-                        }`}
-                      >
-                        {availableCount} slot
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Slot Waktu */}
-        {selectedDate && (
-          <Card className="mb-24 animate-fade-in">
-            <CardHeader>
-              <CardTitle className="text-lg">
-                Waktu Tersedia untuk {format(selectedDate, "EEEE, d MMMM")}
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Pilih maksimal 2 jam yang berdampingan
-              </p>
-            </CardHeader>
-
-            <CardContent>
-              {availableSlots.length > 0 ? (
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
-                  {availableSlots.map((slot) => {
-                    const isSelected = selectedSlots.some((s) => s.id === slot.id);
-                    const canSelect = canSelectSlot(slot);
-                    const isDisabled = slot.isBooked || (!isSelected && !canSelect);
-
-                    return (
-                      <button
-                        key={slot.id}
-                        disabled={isDisabled}
-                        onClick={() => handleSlotSelect(slot)}
-                        className={`
-                          flex items-center justify-center gap-1.5 p-3 rounded-lg border text-sm font-medium transition-all
-                          ${isSelected
-                            ? "border-primary bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2"
-                            : canSelect
-                            ? "border-border hover:border-primary/50"
-                            : "border-border"
-                          }
-                          ${isDisabled && "opacity-50 cursor-not-allowed"}
-                          ${slot.isBooked && "bg-muted line-through"}
-                        `}
-                      >
-                        <Clock className="h-4 w-4" />
-                        {slot.time}
-                      </button>
-                    );
-                  })}
-                </div>
-              ) : (
-                <p className="text-center text-muted-foreground py-8">
-                  Tidak ada jadwal tersedia di tanggal ini
-                </p>
-              )}
-            </CardContent>
-          </Card>
-        )}
-
+      
         {/* Footer Sticky */}
         {selectedDate && selectedSlots.length > 0 && (
           <div className="fixed bottom-0 left-0 right-0 p-4 bg-card border-t shadow-lg animate-slide-up z-50">

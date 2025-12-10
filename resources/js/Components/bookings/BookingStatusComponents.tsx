@@ -123,7 +123,7 @@ export function PaidStatus({ booking }: StatusComponentProps) {
                 Pembayaran Berhasil
               </h4>
               <p className="text-sm text-muted-foreground">
-                Booking Anda telah dikonfirmasi. {!isPast && "Konselor akan mengirimkan link meeting sebelum sesi dimulai."}
+                Booking Anda telah dikonfirmasi. Silahkan datang sesuai jadwal yang telah dipesan
               </p>
             </div>
           </div>
@@ -131,61 +131,75 @@ export function PaidStatus({ booking }: StatusComponentProps) {
       </Card>
 
       {/* Info Link Meeting */}
-      {booking.meeting_link ? (
-        <Card className="border-primary/30 bg-primary/5">
-          <CardContent className="p-4">
-            <div className="flex items-start gap-3">
-              <Calendar className="h-5 w-5 text-primary mt-0.5" />
-              <div className="flex-1">
-                <h4 className="font-medium text-foreground mb-1">
-                  Link Konsultasi Tersedia
-                </h4>
-                <p className="text-sm text-muted-foreground mb-3">
-                  Link meeting sudah siap. Anda dapat masuk ke ruang konsultasi
-                  sekarang.
-                </p>
-                <Button className="w-full" asChild>
-                  <a
-                    href={booking.meeting_link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Masuk ke Sesi Konsultasi
-                  </a>
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
-        !isPast && (
-          <Card className="border-muted">
-            <CardContent className="p-4">
-              <div className="flex items-start gap-3">
-                <Clock className="h-5 w-5 text-muted-foreground mt-0.5" />
-                <div className="flex-1">
-                  <h4 className="font-medium text-foreground mb-1">
-                    Menunggu Link Meeting
-                  </h4>
-                  <p className="text-sm text-muted-foreground">
-                    Konselor akan mengirimkan link meeting sebelum sesi dimulai.
-                    Anda akan menerima notifikasi saat link tersedia.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )
-      )}
+        {booking.consultation_type === "online" && (
+          <>
+            {/* Jika meeting link sudah tersedia */}
+            {booking.meeting_link ? (
+              <Card className="border-primary/30 bg-primary/5">
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3">
+                    <Calendar className="h-5 w-5 text-primary mt-0.5" />
+                    <div className="flex-1">
+                      <h4 className="font-medium text-foreground mb-1">
+                        Link Konsultasi Tersedia
+                      </h4>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Link meeting sudah siap. Anda dapat masuk ke ruang konsultasi sekarang.
+                      </p>
+                      <Button className="w-full" asChild>
+                        <a
+                          href={booking.meeting_link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Masuk ke Sesi Konsultasi
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              /* Jika meeting link BELUM tersedia (hanya tampil jika jadwal belum lewat) */
+              !isPast && (
+                <Card className="border-muted">
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-3">
+                      <Clock className="h-5 w-5 text-muted-foreground mt-0.5" />
+                      <div className="flex-1">
+                        <h4 className="font-medium text-foreground mb-1">
+                          Menunggu Link Meeting
+                        </h4>
+                        <p className="text-sm text-muted-foreground">
+                          Konselor akan mengirimkan link meeting sebelum sesi dimulai.
+                          Anda akan menerima notifikasi saat link tersedia.
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            )}
+          </>
+        )}
+
     </div>
   );
 }
 
 // Status: cancelled
 export function CancelledStatus({ booking }: StatusComponentProps) {
+  const cancelledBy =
+    booking.cancelled_by === "client"
+      ? "Dibatalkan oleh Anda"
+      : booking.cancelled_by === "counselor"
+      ? "Dibatalkan oleh Konselor"
+      : booking.cancelled_by === "admin"
+      ? "Dibatalkan oleh Admin"
+      : "Dibatalkan oleh Sistem";
+
   return (
     <div className="space-y-4">
-      {/* Alert Booking Dibatalkan */}
       <Card className="border-destructive/30 bg-destructive/5">
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
@@ -194,22 +208,64 @@ export function CancelledStatus({ booking }: StatusComponentProps) {
               <h4 className="font-medium text-foreground mb-1">
                 Booking Dibatalkan
               </h4>
-              <p className="text-sm text-muted-foreground">
-                Booking ini telah dibatalkan. Jika Anda sudah melakukan pembayaran,
-                dana akan dikembalikan dalam 3-5 hari kerja.
+
+              <p className="text-sm text-muted-foreground mb-2">
+                {cancelledBy}
               </p>
+
+              {booking.cancel_reason && (
+                <p className="text-sm text-muted-foreground italic bg-background p-2 rounded-lg">
+                  Alasan: {booking.cancel_reason}
+                </p>
+              )}
+
+              {booking.payment?.status === "refund" && (
+                <p className="text-sm text-blue-600 mt-3">
+                  Dana telah dikembalikan (refund).
+                </p>
+              )}
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Tombol Booking Baru */}
       <Button className="w-full" size="lg" variant="outline" asChild>
         <Link href="/counselors">Cari Konselor Lain</Link>
       </Button>
     </div>
   );
 }
+
+export function ExpiredStatus({ booking }: StatusComponentProps) {
+  return (
+    <div className="space-y-4">
+      <Card className="border-orange-300 bg-orange-50">
+        <CardContent className="p-4">
+          <div className="flex items-start gap-3">
+            <Clock className="h-5 w-5 text-orange-600 mt-0.5" />
+
+            <div className="flex-1">
+              <h4 className="font-medium text-foreground mb-1">
+                Pembayaran Kadaluarsa
+              </h4>
+
+              <p className="text-sm text-muted-foreground mb-2">
+                Waktu pembayaran telah berakhir. Booking dibatalkan otomatis oleh sistem.
+              </p>
+
+              {booking.cancel_reason && (
+                <p className="text-sm italic text-muted-foreground bg-background p-2 rounded-lg">
+                  Alasan: {booking.cancel_reason}
+                </p>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 
 // Status: completed
 export function CompletedStatus({ booking }: StatusComponentProps) {
@@ -250,6 +306,9 @@ export function CompletedStatus({ booking }: StatusComponentProps) {
 
 // Status: rescheduled
 export function RescheduledStatus({ booking }: StatusComponentProps) {
+  const previous = booking.previous_schedule;
+  const previousSecond = booking.previous_second_schedule;
+
   return (
     <div className="space-y-4">
       {/* Alert Jadwal Diubah */}
@@ -262,17 +321,34 @@ export function RescheduledStatus({ booking }: StatusComponentProps) {
                 Jadwal Diubah
               </h4>
               <p className="text-sm text-muted-foreground mb-3">
-                Booking ini telah dijadwalkan ulang. Informasi jadwal di atas
-                adalah jadwal yang baru.
+                Booking ini telah dijadwalkan ulang. (Perubahan jadwal masih menunggu persetujuan Konselor)
               </p>
 
-              {/* Info Jadwal Lama */}
-              {booking.previous_schedule_id && (
-                <div className="bg-background rounded-lg p-3 text-sm">
-                  <p className="text-muted-foreground mb-1">Jadwal sebelumnya:</p>
-                  <p className="text-foreground">
-                    Lihat riwayat perubahan untuk detail jadwal lama
+              {/* === JADWAL SEBELUMNYA === */}
+              {previous && (
+                <div className="bg-background rounded-lg p-3 text-sm space-y-1 border">
+                  <p className="text-muted-foreground mb-1">
+                    Jadwal Sebelumnya:
                   </p>
+
+                  {/* Tanggal */}
+                  <p className="font-medium text-foreground">
+                    {previous.date}
+                  </p>
+
+                  {/* Slot Utama */}
+                  <p className="text-muted-foreground">
+                    {previous.start_time.substring(0, 5)} -{" "}
+                    {previous.end_time.substring(0, 5)}
+                  </p>
+
+                  {/* Slot kedua jika 2 sesi */}
+                  {previousSecond && (
+                    <p className="text-muted-foreground">
+                      & {previousSecond.start_time.substring(0, 5)} -{" "}
+                      {previousSecond.end_time.substring(0, 5)}
+                    </p>
+                  )}
                 </div>
               )}
             </div>
@@ -295,3 +371,4 @@ export function RescheduledStatus({ booking }: StatusComponentProps) {
     </div>
   );
 }
+

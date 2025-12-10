@@ -35,6 +35,14 @@ return new class extends Migration
             $table->enum('status', ['pending_payment', 'paid', 'cancelled', 'completed', 'rescheduled']);
 
             $table->text('notes')->nullable();
+
+            $table->enum('cancelled_by', ['client', 'counselor', 'admin', 'system'])->nullable();
+            $table->text('cancel_reason')->nullable();
+            $table->timestamp('cancelled_at')->nullable();
+            $table->enum('refund_status', ['none', 'requested', 'processed'])->default('none');
+            $table->timestamp('refund_processed_at')->nullable();
+            $table->boolean('is_expired')->default(false);
+
             $table->timestamps();
         });
     }

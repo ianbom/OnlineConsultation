@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Link } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import { PageLayout } from "@/Components/layout/PageLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
@@ -11,8 +10,10 @@ import {
   Calendar,
   Clock,
   CreditCard,
+  ChevronRight,
+  AlertCircle,
 } from "lucide-react";
-import { format } from "date-fns";
+import { format, addDays, isSameDay } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 
 import { Booking } from "@/Interfaces";
@@ -22,7 +23,9 @@ import {
   CancelledStatus,
   CompletedStatus,
   RescheduledStatus,
+  ExpiredStatus,
 } from "@/Components/bookings/BookingStatusComponents";
+import BookingDetailCard from "@/Components/bookings/DetailBookingCard";
 
 interface Props {
   booking: Booking;
@@ -46,7 +49,6 @@ export default function BookingDetail({ booking }: Props) {
     return statusMap[status] || "secondary";
   };
 
-  // Format status ke huruf besar per kata
   const formatStatus = (status: string) => {
     return status
       .replace(/_/g, " ")
@@ -54,15 +56,6 @@ export default function BookingDetail({ booking }: Props) {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
   };
-
-  const total = booking.payment.amount;
-
-  const sessionDate = new Date(booking.schedule.date);
-  const startTime = booking.schedule.start_time.substring(0, 5);
-  const endTime =
-    booking.second_schedule?.end_time.substring(0, 5) ||
-    booking.schedule.end_time.substring(0, 5);
-  const timeRange = `${startTime} - ${endTime}`;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -72,15 +65,20 @@ export default function BookingDetail({ booking }: Props) {
     }).format(amount);
   };
 
-  // Render komponen status berdasarkan status booking
   const renderStatusComponent = () => {
+    if (booking.is_expired) {
+      return <ExpiredStatus booking={booking} />;
+    }
+
+    if (booking.status === "cancelled") {
+      return <CancelledStatus booking={booking} />;
+    }
+
     switch (booking.status) {
       case "pending_payment":
         return <PendingPaymentStatus booking={booking} />;
       case "paid":
         return <PaidStatus booking={booking} />;
-      case "cancelled":
-        return <CancelledStatus booking={booking} />;
       case "completed":
         return <CompletedStatus booking={booking} />;
       case "rescheduled":
@@ -90,10 +88,11 @@ export default function BookingDetail({ booking }: Props) {
     }
   };
 
+  const showRescheduleButton = booking.status === "paid" && !booking.is_expired;
+
   return (
     <PageLayout>
-      <div className="max-w-lg mx-auto">
-        {/* Tombol Kembali */}
+      <div className="max-w-xl mx-auto px-4">
         <Button variant="ghost" asChild className="mb-4">
           <Link href={route("client.booking.history")}>
             <ChevronLeft className="h-4 w-4 mr-1" />
@@ -101,7 +100,6 @@ export default function BookingDetail({ booking }: Props) {
           </Link>
         </Button>
 
-        {/* Header Status */}
         <div className="flex items-center justify-between mb-6">
           <h1 className="font-display text-2xl font-semibold text-foreground">
             Detail Booking
@@ -114,138 +112,55 @@ export default function BookingDetail({ booking }: Props) {
           </Badge>
         </div>
 
-        {/* Kartu Invoice */}
-        <Card className="mb-6">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-lg">
-              Invoice #{booking.payment.order_id}
-            </CardTitle>
-          </CardHeader>
+        <div className="space-y-6">
+          <BookingDetailCard booking={booking} />
 
-          <CardContent className="space-y-4">
-            {/* Info Konselor */}
-            <div className="flex items-center gap-4">
-              <Avatar className="h-14 w-14 rounded-lg">
-                <AvatarImage
-                  src={photoUrl}
-                  alt={booking.counselor.user.name}
-                />
-                <AvatarFallback className="rounded-lg">
-                  {booking.counselor.user.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
-                </AvatarFallback>
-              </Avatar>
+          {booking.notes && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Catatan Klien</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">{booking.notes}</p>
+              </CardContent>
+            </Card>
+          )}
 
-              <div>
-                <h3 className="font-semibold text-foreground">
-                  {booking.counselor.user.name}
-                </h3>
-                <Badge variant="secondary" className="text-xs mt-1">
-                  {booking.counselor.specialization}
-                </Badge>
-              </div>
-            </div>
+          <div>{renderStatusComponent()}</div>
 
-            <Separator />
-
-            {/* Detail Sesi */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Calendar className="h-4 w-4" />
-                  <span>Tanggal</span>
+           {showRescheduleButton && (
+            <Card className="border-primary/20 bg-primary/5">
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 rounded-full bg-primary/10">
+                    <Calendar className="h-6 w-6 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-lg mb-1">
+                      Perlu Mengubah Jadwal?
+                    </h3>
+                    <p className="text-muted-foreground text-sm mb-4">
+                      Anda dapat melakukan reschedule sesi konseling ini jika ada perubahan jadwal.
+                    </p>
+                    <Button asChild>
+                      <Link href={route('client.pick.reschedule', booking.id)}>
+                        <Calendar className="h-4 w-4 mr-2" />
+                        Reschedule Booking
+                      </Link>
+                    </Button>
+                  </div>
                 </div>
-                <span className="font-medium text-foreground">
-                  {format(sessionDate, "EEEE, d MMMM yyyy", {
-                    locale: idLocale,
-                  })}
-                </span>
-              </div>
+              </CardContent>
+            </Card>
+          )}
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Clock className="h-4 w-4" />
-                  <span>Waktu</span>
-                </div>
-                <span className="font-medium text-foreground">{timeRange}</span>
-              </div>
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Clock className="h-4 w-4" />
-                  <span>Durasi</span>
-                </div>
-                <span className="font-medium text-foreground">
-                  {booking.duration_hours}{" "}
-                  {booking.duration_hours > 1 ? "jam" : "jam"}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <CreditCard className="h-4 w-4" />
-                  <span>Metode Pembayaran</span>
-                </div>
-                <span className="font-medium text-foreground">
-                  {formatStatus(booking.payment.method)}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Calendar className="h-4 w-4" />
-                  <span>Jenis Konsultasi</span>
-                </div>
-                <span className="font-medium text-foreground capitalize">
-                  {booking.consultation_type}
-                </span>
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Total Pembayaran */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Biaya Sesi</span>
-                <span className="text-foreground">
-                  {formatCurrency(booking.price)}
-                </span>
-              </div>
-
-              <Separator />
-
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-foreground">Total</span>
-                <span className="text-xl font-semibold text-foreground">
-                  {formatCurrency(total)}
-                </span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Catatan */}
-        {booking.notes && (
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="text-lg">Catatan Klien</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">{booking.notes}</p>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Komponen Status Dinamis */}
-        <div className="mb-6">{renderStatusComponent()}</div>
-
-        {/* Tombol Lihat Semua Booking */}
-        <Button variant="outline" className="w-full" asChild>
-          <Link href="/bookings">Lihat Semua Booking</Link>
-        </Button>
+          <Button variant="outline" className="w-full" asChild>
+            <Link href={route("client.booking.history")}>
+              Lihat Semua Booking
+            </Link>
+          </Button>
+        </div>
       </div>
     </PageLayout>
   );

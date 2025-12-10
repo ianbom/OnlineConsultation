@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 
-class CounselorProfileService
+class ClientProfileService
 {
     /**
      * Create a new class instance.
@@ -16,7 +16,6 @@ class CounselorProfileService
 
     public function update(User $user, array $data)
     {
-        // Handle Profile Picture Upload
         if (isset($data['profile_pic'])) {
             $data['profile_pic'] = $data['profile_pic']->store('profile_pics', 'public');
         }
@@ -27,7 +26,6 @@ class CounselorProfileService
         ]);
     }
 
-        // Update User
         $user->update([
             'name'        => $data['name'],
             'email'       => $data['email'],
@@ -35,13 +33,6 @@ class CounselorProfileService
             'profile_pic' => $data['profile_pic'] ?? $user->profile_pic,
         ]);
 
-        // Update Counselor Details
-        $user->counselor()->update([
-            'education'        => $data['education'],
-            'specialization'   => $data['specialization'],
-            'description'      => $data['description'],
-        ]);
-
-        return $user->fresh(); // return updated data
+        return $user->fresh();
     }
 }
