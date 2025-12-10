@@ -24,7 +24,7 @@ export function PendingPaymentStatus({ booking }: StatusComponentProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(booking.payment.payment_url ?? "");
+    navigator.clipboard.writeText(booking.payment?.payment_url ?? "");
     setCopied(true);
     toast({
       title: "Link disalin",
@@ -56,7 +56,7 @@ export function PendingPaymentStatus({ booking }: StatusComponentProps) {
                 <div className="flex items-center gap-2 mb-3 w-full">
                   <div className="flex-1 bg-background rounded-lg p-3 text-sm font-mono
                     text-muted-foreground truncate max-w-full overflow-hidden">
-                    {booking.payment.payment_url}
+                    {booking.payment?.payment_url}
                   </div>
 
                   <Button variant="outline" size="icon" onClick={handleCopyLink}>
@@ -69,7 +69,7 @@ export function PendingPaymentStatus({ booking }: StatusComponentProps) {
 
                   <Button variant="outline" size="icon" asChild>
                     <a
-                      href={booking.payment.payment_url ?? ""}
+                      href={booking.payment?.payment_url ?? ""}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -88,7 +88,7 @@ export function PendingPaymentStatus({ booking }: StatusComponentProps) {
       <div className="space-y-2">
         <Button className="w-full" size="lg" variant="default" asChild>
           <a
-            href={booking.payment.payment_url ?? ""}
+            href={booking.payment?.payment_url ?? ""}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -221,7 +221,7 @@ export function CancelledStatus({ booking }: StatusComponentProps) {
 
               {booking.payment?.status === "refund" && (
                 <p className="text-sm text-blue-600 mt-3">
-                  Dana telah dikembalikan (refund).
+                  Dana akan dikembalikan (refund).
                 </p>
               )}
             </div>

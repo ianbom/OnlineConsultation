@@ -55,6 +55,7 @@ Route::prefix('client')->as('client.')->group(function () {
     Route::get('/booking-detail/{bookingId}', [ClientBookingController::class, 'bookingDetail'])->name('booking.detail');
     Route::get('/reschedule-booking/{bookingId}', [ClientBookingController::class, 'pickRescheduleBooking'])->name('pick.reschedule');
     Route::post('/update/reschedule-booking/{bookingId}', [ClientBookingController::class, 'rescheduleBooking'])->name('reschedule.booking');
+    Route::post('/cancel-booking/{bookingId}', [ClientBookingController::class, 'cancelBooking'])->name('cancel.booking');
     Route::get('/check-payment/{booking}', [ClientPaymentController::class, 'checkPayment'])->name('payment.check');
     Route::get('/booking-history', [ClientBookingController::class, 'bookingHistory'])->name('booking.history');
     Route::get('/my-profile', [ClientProfileController::class, 'myProfile'])->name('myProfile');

@@ -26,6 +26,7 @@ import {
   ExpiredStatus,
 } from "@/Components/bookings/BookingStatusComponents";
 import BookingDetailCard from "@/Components/bookings/DetailBookingCard";
+import { useEffect, useState } from "react";
 
 interface Props {
   booking: Booking;
@@ -90,6 +91,51 @@ export default function BookingDetail({ booking }: Props) {
 
   const showRescheduleButton = booking.status === "paid" && !booking.is_expired;
 
+      const handleCancelBooking = () => {
+      if (!confirm("Anda yakin ingin membatalkan booking ini?")) return;
+
+      router.post(
+        route("client.cancel.booking", booking.id),
+        {
+          reason: "Dibatalkan oleh client",
+        },
+        {
+          preserveScroll: true,
+        }
+      );
+    };
+
+    const expiryTime = booking.payment?.expiry_time
+  ? new Date(booking.payment.expiry_time)
+  : null;
+
+    const [timeLeft, setTimeLeft] = useState<string | null>(null);
+
+    useEffect(() => {
+      if (!expiryTime) return;
+
+      const interval = setInterval(() => {
+        const now = new Date().getTime();
+        const diff = expiryTime.getTime() - now;
+
+        if (diff <= 0) {
+          setTimeLeft("Kadaluarsa");
+          clearInterval(interval);
+          return;
+        }
+
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        setTimeLeft(`${hours}j ${minutes}m ${seconds}d`);
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }, [expiryTime]);
+
+
+
   return (
     <PageLayout>
       <div className="max-w-xl mx-auto px-4">
@@ -101,16 +147,42 @@ export default function BookingDetail({ booking }: Props) {
         </Button>
 
         <div className="flex items-center justify-between mb-6">
-          <h1 className="font-display text-2xl font-semibold text-foreground">
-            Detail Booking
-          </h1>
-          <Badge
-            variant={getBookingStatusBadge(booking.status) as any}
-            className="text-sm"
-          >
-            {formatStatus(booking.status)}
-          </Badge>
+          <div>
+            <h1 className="font-display text-2xl font-semibold text-foreground">
+              Detail Booking
+            </h1>
+          </div>
+
+          <div className="flex items-center gap-4">
+              {/* Status Badge */}
+              <Badge
+                variant={getBookingStatusBadge(booking.status) as any}
+                className="text-sm"
+              >
+                {formatStatus(booking.status)}
+              </Badge>
+
+              {/* Countdown Payment Expiry */}
+              {timeLeft && !booking.is_expired && booking.status == 'pending_payment' && (
+                <div className="px-3 py-1 rounded-md bg-red-50 border border-red-200 text-red-600 text-xs font-medium">
+                  {timeLeft === "Kadaluarsa" ? "Kadaluarsa" : `Sisa waktu: ${timeLeft}`}
+                </div>
+              )}
+
+              {/* Cancel Button */}
+              {["paid", "rescheduled"].includes(booking.status) && !booking.is_expired && (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => handleCancelBooking()}
+                >
+                  Cancel Booking
+                </Button>
+              )}
+            </div>
+
         </div>
+
 
         <div className="space-y-6">
           <BookingDetailCard booking={booking} />

@@ -133,9 +133,6 @@ export default function BookingDetailCard({ booking }: Props) {
   );
 }
 
-/* -----------------------------------------------------
-   Sub-component kecil untuk baris detail
------------------------------------------------------ */
 
 interface RowProps {
   icon: React.ReactNode;

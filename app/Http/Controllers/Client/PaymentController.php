@@ -5,12 +5,22 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Payment;
+use App\Services\BookingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Midtrans\Transaction;
 
 class PaymentController extends Controller
 {
+
+    protected $bookingService;
+
+    public function __construct(BookingService $bookingService)
+    {
+        $this->bookingService = $bookingService;
+    }
+
+
     public static function applyStatus($booking, $payment, $status, $fraudStatus = null, $request = null){
         switch ($status) {
 
@@ -56,7 +66,7 @@ class PaymentController extends Controller
                 break;
 
             case 'expire':
-                Log::info('Kadaluarsa');
+
 
                 $payment->status = 'failed';
                 $payment->failure_reason = 'expire';
@@ -145,6 +155,13 @@ class PaymentController extends Controller
         $booking = $payment->booking;
         $status = $request->transaction_status;
         $fraudStatus = $request->fraud_status ?? null;
+
+        $bookings = Booking::findOrFail($payment->booking_id);
+
+        if ($status === 'expire') {
+            $this->bookingService->releaseSchedules($bookings);
+            Log::info('Expired, kembalikan jadwal');
+        }
 
         $payment->transaction_status = $status;
         $payment->payment_type = $request->payment_type ?? $payment->payment_type;

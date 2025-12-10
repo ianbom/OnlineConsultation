@@ -8,6 +8,7 @@ use App\Models\Schedule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class BookingService
 {
@@ -83,47 +84,73 @@ class BookingService
     }
 
     public function cancelBooking(Booking $booking, array $data)
+{
+    return DB::transaction(function () use ($booking, $data) {
+
+        $user = Auth::user();
+        $role = $user->role;
+
+        $cancelledBy = $data['cancelled_by'] ?? $role;
+
+        // Restriksi: client tidak boleh cancel booking completed
+        if ($role === 'client' && $booking->status === 'completed') {
+            throw new \Exception("Anda tidak dapat membatalkan booking yang sudah selesai.");
+        }
+
+        // Sudah cancelled
+        if ($booking->status === 'cancelled' || $booking->is_expired) {
+            throw new \Exception("Booking ini sudah dibatalkan sebelumnya.");
+        }
+
+        // Release jadwal
+        $this->releaseSchedules($booking);
+
+        // Backup payment sebelum update
+        $payment = $booking->payment;
+
+        // Tentukan logika pembayaran
+        if ($payment) {
+            if ($booking->status === 'paid' || $booking->status === 'rescheduled') {
+                // CASE: Sudah dibayar → harus refund
+                $payment->refund_amount = $payment->amount;
+                $payment->refund_reason = $data['reason'] ?? 'Booking cancelled';
+                $payment->refund_time = Carbon::now();
+                $payment->status = 'refund';
+                $payment->transaction_status = 'refund';
+                $payment->save();
+            } else {
+                // CASE: Belum bayar / pending → anggap failed/cancelled
+                $payment->status = 'failed';
+                $payment->transaction_status = 'cancelled';
+                $payment->failure_reason = $data['reason'] ?? 'Booking cancelled';
+                $payment->save();
+            }
+        }
+
+        // Tandai refund untuk booking
+        if ($booking->status === 'paid' || $booking->status === 'rescheduled') {
+            $booking->refund_status = 'requested';
+            $booking->refund_processed_at = Carbon::now();
+        }
+
+        // Update booking
+        $booking->status = 'cancelled';
+        $booking->cancelled_by = $cancelledBy;
+        $booking->cancel_reason = $data['reason'] ?? null;
+        $booking->cancelled_at = Carbon::now();
+
+        $booking->save();
+
+        return $booking;
+    });
+}
+
+
+    public function releaseSchedules(Booking $booking)
     {
-        return DB::transaction(function () use ($booking, $data) {
 
-            $user = Auth::user();
-            $role = $user->role; // admin, counselor, client
+        Log::info("Jadwal di service balik");
 
-            // Tentukan siapa yang membatalkan
-            $cancelledBy = $data['cancelled_by'] ?? $role;
-
-            // Basic rule: client tidak boleh cancel booking yang sudah completed
-            if ($role === 'client' && $booking->status === 'completed') {
-                throw new \Exception("Anda tidak dapat membatalkan booking yang sudah selesai.");
-            }
-
-            // Jika booking sudah dibatalkan atau expired → skip
-            if (in_array($booking->status, ['cancelled']) || $booking->is_expired) {
-                throw new \Exception("Booking ini sudah dibatalkan sebelumnya.");
-            }
-
-            // Release schedule
-            $this->releaseSchedules($booking);
-
-            // Update status
-            $booking->status = 'cancelled';
-            $booking->cancelled_by = $cancelledBy;
-            $booking->cancel_reason = $data['reason'] ?? null;
-            $booking->cancelled_at = Carbon::now();
-
-            // Refund rule (hanya contoh — sesuaikan)
-            if ($booking->status === 'paid') {
-                $booking->refund_status = 'requested';
-            }
-
-            $booking->save();
-
-            return $booking;
-        });
-    }
-
-    private function releaseSchedules(Booking $booking)
-    {
         if ($booking->schedule) {
             $booking->schedule->update(['is_available' => true]);
         }

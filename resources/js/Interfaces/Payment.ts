@@ -13,6 +13,7 @@ export default interface Payment {
   payment_url: string | null;
   status: string
   paid_at: string | null;
+  expiry_time: string | null;
   created_at: string;
   updated_at: string;
 }
