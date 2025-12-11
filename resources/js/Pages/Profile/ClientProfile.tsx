@@ -4,7 +4,7 @@ import { PageLayout } from "@/Components/layout/PageLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Label } from "@/Components/ui/label";
 import { Switch } from "@/Components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 import { Separator } from "@/Components/ui/separator";

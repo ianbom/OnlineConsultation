@@ -18,50 +18,59 @@ interface FlashMessages {
 }
 
 interface PageProps {
+  auth: {
+    user: {
+      id: number;
+      name: string;
+      email: string;
+      [key: string]: unknown;
+    };
+  };
   flash: FlashMessages;
+  [key: string]: unknown;
 }
 
 export function PageLayout({ children, title, description }: PageLayoutProps) {
   const { flash } = usePage<PageProps>().props;
   const { toast } = useToast();
 
-useEffect(() => {
-  // Handle success message
-  if (flash?.success) {
-    toast({
-      title: "Berhasil",
-      description: flash.success,
-      variant: "default", // hijau
-    });
-  }
+  useEffect(() => {
+    // Handle success message
+    if (flash?.success) {
+      toast({
+        title: "Berhasil",
+        description: flash.success,
+        variant: "default", // hijau
+      });
+    }
 
-  // Handle error message
-  if (flash?.error) {
-    toast({
-      title: "Error",
-      description: flash.error,
-      variant: "destructive", // merah
-    });
-  }
+    // Handle error message
+    if (flash?.error) {
+      toast({
+        title: "Error",
+        description: flash.error,
+        variant: "destructive", // merah
+      });
+    }
 
-  // Handle warning message
-  if (flash?.warning) {
-    toast({
-      title: "Peringatan",
-      description: flash.warning,
-      variant: "warning", // kuning
-    });
-  }
+    // Handle warning message
+    if (flash?.warning) {
+      toast({
+        title: "Peringatan",
+        description: flash.warning,
+        variant: "warning", // kuning
+      });
+    }
 
-  // Handle info message
-  if (flash?.info) {
-    toast({
-      title: "Informasi",
-      description: flash.info,
-      variant: "info", // biru
-    });
-  }
-}, [flash, toast]);
+    // Handle info message
+    if (flash?.info) {
+      toast({
+        title: "Informasi",
+        description: flash.info,
+        variant: "info", // biru
+      });
+    }
+  }, [flash, toast]);
 
   return (
     <div className="min-h-screen bg-background">
