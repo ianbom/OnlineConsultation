@@ -1,9 +1,9 @@
 import { WorkDay } from '@/Interfaces';
-export { default as User } from './User';
-export { default as Counselor } from './Counselor';
-export { default as WorkDay } from './WorkDay';
-export { default as Schedule } from './Schedule';
-export { default as Booking } from './Booking';
-export { default as Payment } from './Payment';
-export { default as SessionLog } from './SessionLog';
-export { default as AdminSetting } from './AdminSetting';
+export type { default as User } from './User';
+export type { default as Counselor } from './Counselor';
+export type { default as WorkDay } from './WorkDay';
+export type { default as Schedule } from './Schedule';
+export type { default as Booking } from './Booking';
+export type { default as Payment } from './Payment';
+export type { default as SessionLog } from './SessionLog';
+export type { default as AdminSetting } from './AdminSetting';
