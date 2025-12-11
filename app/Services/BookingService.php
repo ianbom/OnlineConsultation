@@ -162,59 +162,71 @@ class BookingService
         }
     }
 
-    public function approveReschedule(Booking $booking)
-    {
-        return DB::transaction(function () use ($booking) {
+   public function approveReschedule(Booking $booking)
+{
+    return DB::transaction(function () use ($booking) {
 
-            // Jika tidak ada previous schedule, maka tidak ada reschedule valid
-            if (!$booking->previous_schedule_id && !$booking->previous_second_schedule_id) {
-                throw new \Exception("Tidak ada jadwal baru untuk disetujui.");
-            }
+        if (!$booking->previous_schedule_id && !$booking->previous_second_schedule_id) {
+            throw new \Exception("Tidak ada jadwal lama yang tersimpan untuk proses reschedule.");
+        }
 
-            // Jadwal aktif lama dipindahkan ke previous schedule
-            $oldMain = $booking->schedule_id;
-            $oldSecond = $booking->second_schedule_id;
+        $oldMain    = $booking->previous_schedule_id;
+        $oldSecond  = $booking->previous_second_schedule_id;
 
-            // Update booking
-            $booking->update([
-                'schedule_id' => $booking->previous_schedule_id ?? $booking->schedule_id,
-                'second_schedule_id' => $booking->previous_second_schedule_id,
-                'previous_schedule_id' => null,
-                'previous_second_schedule_id' => null,
-                'reschedule_status' => 'approved',
-                'status' => 'paid',
-            ]);
+        $newMain    = $booking->schedule_id;
+        $newSecond  = $booking->second_schedule_id;
 
-            // Tandai jadwal baru menjadi unavailable
-            $booking->schedule()->update(['is_available' => false]);
+        if ($booking->schedule && !$booking->schedule->is_available) {
+            throw new \Exception("Jadwal baru sudah tidak tersedia.");
+        }
 
-            if ($booking->secondSchedule) {
-                $booking->secondSchedule->update(['is_available' => false]);
-            }
+        if ($booking->secondSchedule && !$booking->secondSchedule->is_available) {
+            throw new \Exception("Jadwal kedua baru sudah tidak tersedia.");
+        }
 
-            // Jadwal lama dikembalikan menjadi available
+        $booking->update([
+            'reschedule_status'            => 'approved',
+            'status'                       => 'paid',
+
+        ]);
+
+        DB::table('schedules')
+            ->where('id', $newMain)
+            ->update(['is_available' => false]);
+
+        if ($newSecond) {
             DB::table('schedules')
-                ->whereIn('id', array_filter([$oldMain, $oldSecond]))
-                ->update(['is_available' => true]);
+                ->where('id', $newSecond)
+                ->update(['is_available' => false]);
+        }
 
-            return $booking;
-        });
-    }
+        DB::table('schedules')
+            ->whereIn('id', array_filter([$oldMain, $oldSecond]))
+            ->update(['is_available' => true]);
 
+        return $booking->fresh();
+    });
+}
 
-    public function rejectReschedule(Booking $booking, ?string $reason = null)
-    {
-        return DB::transaction(function () use ($booking, $reason) {
+    public function rejectReschedule(Booking $booking, ?string $reason = null){
+    return DB::transaction(function () use ($booking, $reason) {
 
-            $booking->update([
-                'reschedule_status' => 'rejected',
-                'reschedule_reason' => $reason,
-                'status' => 'paid',
-                'previous_schedule_id' => null,
-                'previous_second_schedule_id' => null,
-            ]);
+        // Ambil jadwal lama (previous schedule)
+        $oldMain   = $booking->previous_schedule_id;
+        $oldSecond = $booking->previous_second_schedule_id;
 
-            return $booking;
-        });
-    }
+        $booking->update([
+            'schedule_id'               => $oldMain,
+            'second_schedule_id'        => $oldSecond,
+            'previous_schedule_id'      => null,
+            'previous_second_schedule_id'=> null,
+            'reschedule_status'         => 'rejected',
+            'reschedule_reason'         => $reason,
+            'status'                    => 'paid',
+        ]);
+
+        return $booking->fresh();
+    });
+}
+
 }

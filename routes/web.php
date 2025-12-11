@@ -47,6 +47,8 @@ Route::prefix('counselor')->as('counselor.')->group(function () {
     Route::get('/booking', [CounselorBookingController::class, 'index'])->name('booking.index');
     Route::get('/booking/{bookingId}', [CounselorBookingController::class, 'show'])->name('booking.show');
     Route::put('/booking/change-reschedule-status/{bookingId}', [CounselorBookingController::class, 'changeStatusReschedule'])->name('change.reshceduleStatus');
+    Route::put('/booking/input-link-notes/{bookingId}', [CounselorBookingController::class, 'inputLinkandNotes'])->name('booking.inputLinkandNotes');
+    Route::put('/complete-booking/{bookingId}', [CounselorBookingController::class, 'completeBooking'])->name('booking.completeBooking');
 });
 
 

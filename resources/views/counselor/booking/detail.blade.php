@@ -4,16 +4,43 @@
 <div class="min-h-screen py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
-        <div class="mb-6">
-            <a href="{{ route('counselor.booking.index') }}" class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
-                Kembali ke Daftar Booking
-            </a>
-            <h1 class="text-3xl font-bold text-gray-900">Detail Booking</h1>
-            <p class="text-gray-600 mt-1">Booking ID: #{{ $booking->id }}</p>
+        <div class="mb-6 flex items-center justify-between">
+                {{-- Left Section --}}
+                <div>
+                    <a href="{{ route('counselor.booking.index') }}"
+                       class="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-2">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M15 19l-7-7 7-7"/>
+                        </svg>
+                        Kembali ke Daftar Booking
+                    </a>
+
+                    <h1 class="text-3xl font-bold text-gray-900">Detail Booking</h1>
+                    <p class="text-gray-600 mt-1">Booking ID: #{{ $booking->id }}</p>
+                </div>
+
+                @if ($booking->status == 'paid')
+                <form id="completeBookingForm"
+                      method="POST"
+                      action="{{ route('counselor.booking.completeBooking', $booking->id) }}">
+                    @csrf
+                    @method('PUT')
+                    <button type="button"
+                        onclick="confirmCompleteBooking()"
+                        class="inline-flex items-center px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 transition">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Tandai Sesi Selesai
+                    </button>
+                </form>
+                @endif
+
+
         </div>
+
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Main Content -->
@@ -129,7 +156,7 @@
                     @if($booking->previous_schedule_id && $booking->previousSchedule)
                     <div class="border-l-4 border-gray-400 pl-4 py-2 bg-gray-50 mb-3">
                         <p class="text-sm text-gray-500 mb-1">Jadwal Sebelumnya (Dirubah)</p>
-                    
+
                         <div class="flex items-center space-x-2">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -139,7 +166,7 @@
                                 {{ \Carbon\Carbon::parse($booking->previousSchedule->date)->isoFormat('dddd, D MMMM YYYY') }}
                             </span>
                         </div>
-                    
+
                         <div class="flex items-center space-x-2 mt-2">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -152,12 +179,12 @@
                         </div>
                     </div>
                     @endif
-                    
+
                     {{-- Previous SECOND Schedule (Jika Ada) --}}
                     @if($booking->previous_second_schedule_id && $booking->previousSecondSchedule)
                     <div class="border-l-4 border-gray-400 pl-4 py-2 bg-gray-50">
                         <p class="text-sm text-gray-500 mb-1">Jadwal Kedua Sebelumnya (Dirubah)</p>
-                    
+
                         <div class="flex items-center space-x-2">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -167,7 +194,7 @@
                                 {{ \Carbon\Carbon::parse($booking->previousSecondSchedule->date)->isoFormat('dddd, D MMMM YYYY') }}
                             </span>
                         </div>
-                    
+
                         <div class="flex items-center space-x-2 mt-2">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -184,11 +211,44 @@
                 </div>
 
                 <!-- Reschedule Information -->
-                @if($booking->reschedule_status !== 'none')
+               @if($booking->reschedule_status !== 'none')
                 <div class="bg-white rounded-lg shadow-sm p-6">
                     <h2 class="text-lg font-semibold text-gray-900 mb-4">Informasi Reschedule</h2>
 
-                    <div class="space-y-3">
+                    {{-- STATUS KETERSEDIAAN JADWAL --}}
+                    @php
+                        $mainAvailable = $booking->schedule?->is_available;
+                        $secondAvailable = $booking->secondSchedule?->is_available;
+
+                        $anyUnavailable =
+                            ($booking->schedule && !$booking->schedule->is_available) ||
+                            ($booking->secondSchedule && !$booking->secondSchedule->is_available);
+
+                        $allAvailable =
+                            ($booking->schedule && $booking->schedule->is_available) &&
+                            (!$booking->secondSchedule || $booking->secondSchedule->is_available);
+                    @endphp
+
+                    {{-- Jika PENDING dan ada jadwal tidak tersedia --}}
+                    @if($booking->reschedule_status === 'pending' && $anyUnavailable)
+                        <div class="mt-3 p-3 bg-red-100 border border-red-300 rounded-lg">
+                            <p class="text-sm font-semibold text-red-700">
+                                Jadwal ini sudah dipesan orang lain. Anda tidak bisa mengubah jadwal ini.
+                            </p>
+                        </div>
+                    @endif
+
+                    {{-- Jika PENDING dan semua jadwal tersedia --}}
+                    @if($booking->reschedule_status === 'pending' && $allAvailable)
+                        <div class="mt-3 p-3 bg-green-100 border border-green-300 rounded-lg">
+                            <p class="text-sm font-semibold text-green-700">
+                                Jadwal masih tersedia. Anda bisa menyetujui permintaan reschedule ini.
+                            </p>
+                        </div>
+                    @endif
+
+
+                    <div class="space-y-3 mt-4">
 
                         {{-- Status --}}
                         <div class="flex justify-between items-center pb-3 border-b">
@@ -232,7 +292,9 @@
                             <input type="hidden" name="statusReschedule" value="approved">
 
                             <button
-                                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition w-full md:w-auto">
+                                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition w-full md:w-auto"
+                                @if($anyUnavailable) disabled @endif
+                            >
                                 Setujui Reschedule
                             </button>
                         </form>
@@ -243,7 +305,6 @@
                             @method('PUT')
                             <input type="hidden" name="statusReschedule" value="rejected">
 
-                            {{-- Optional reason --}}
                             <input
                                 type="text"
                                 name="reason"
@@ -261,6 +322,7 @@
                     @endif
                 </div>
                 @endif
+
 
 
 
@@ -468,6 +530,63 @@
                 </div>
                 @endif
 
+
+
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Input Link Meeting & Catatan Konselor</h2>
+
+                    <form action="{{ route('counselor.booking.inputLinkandNotes', $booking->id) }}" method="POST" class="space-y-4">
+                        @csrf
+                        @method('PUT')
+                        {{-- Meeting Link --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Link Meeting
+                            </label>
+                            <input type="text"
+                                   name="meeting_link"
+                                   value="{{ old('meeting_link', $booking->meeting_link) }}"
+                                   placeholder="Masukkan link meeting jika online"
+                                   class="w-full border rounded-lg px-3 py-2 focus:ring-primary focus:border-primary text-sm">
+                        </div>
+
+                        {{-- Link Status --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Status Link
+                            </label>
+                            <select name="link_status"
+                                    class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-primary focus:border-primary">
+                                <option value="pending" {{ $booking->link_status === 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="sent" {{ $booking->link_status === 'sent' ? 'selected' : '' }}>Terkirim</option>
+                            </select>
+                        </div>
+
+                        {{-- Counselor Notes --}}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Catatan Konselor
+                            </label>
+                            <textarea name="counselor_notes"
+                                      rows="4"
+                                      placeholder="Tulis catatan untuk klien..."
+                                      class="w-full border rounded-lg px-3 py-2 focus:ring-primary focus:border-primary text-sm">{{ old('counselor_notes', $booking->counselor_notes) }}</textarea>
+                        </div>
+
+                        {{-- Submit Button --}}
+                        <div class="flex justify-end">
+                            <button type="submit"
+                                    class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/80 transition">
+                                Simpan
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
+
+
+
             </div>
         </div>
     </div>
@@ -482,5 +601,14 @@ function copyToClipboard(text) {
     });
 }
 </script>
+
+<script>
+function confirmCompleteBooking() {
+    if (confirm("Apakah Anda yakin ingin menandai sesi ini sebagai selesai? Tindakan ini tidak dapat dibatalkan.")) {
+        document.getElementById('completeBookingForm').submit();
+    }
+}
+</script>
+
 
 </x-counselor.app>
