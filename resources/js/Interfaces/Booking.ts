@@ -50,6 +50,10 @@ export default interface Booking {
   previous_schedule: Schedule | null;
   previous_second_schedule: Schedule | null;
 
+  reschedule_status : string | null;
+  reschedule_by : string | null;
+  reschedule_reason : string | null;
+
   payment: Payment | null; // pendukung jika booking belum punya payment
 
   created_at: string;

@@ -26,9 +26,14 @@ return new class extends Migration
             $table->foreignId('previous_schedule_id')->nullable()->constrained('schedules')->nullOnDelete();
             $table->foreignId('previous_second_schedule_id')->nullable()->constrained('schedules')->nullOnDelete();
 
+            $table->enum('reschedule_status', ['none', 'pending', 'approved', 'rejected'])->default('none');
+            $table->text('reschedule_reason')->nullable();
+            $table->enum('reschedule_by', ['client', 'counselor', 'admin'])->nullable();
+
             $table->integer('price');
             $table->integer('duration_hours');
             $table->enum('consultation_type', ['online','offline']);
+
             $table->string('meeting_link')->nullable();
             $table->enum('link_status', ['pending','sent'])->nullable();
 
@@ -40,6 +45,7 @@ return new class extends Migration
             $table->enum('cancelled_by', ['client', 'counselor', 'admin', 'system'])->nullable();
             $table->text('cancel_reason')->nullable();
             $table->timestamp('cancelled_at')->nullable();
+
             $table->enum('refund_status', ['none', 'requested', 'processed'])->default('none');
             $table->timestamp('refund_processed_at')->nullable();
             $table->boolean('is_expired')->default(false);

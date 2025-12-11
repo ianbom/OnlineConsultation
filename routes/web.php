@@ -46,6 +46,7 @@ Route::prefix('counselor')->as('counselor.')->group(function () {
     Route::get('/workday-schedule', [CounselorWorkDayController::class, 'index'])->name('workday.index');
     Route::get('/booking', [CounselorBookingController::class, 'index'])->name('booking.index');
     Route::get('/booking/{bookingId}', [CounselorBookingController::class, 'show'])->name('booking.show');
+    Route::put('/booking/change-reschedule-status/{bookingId}', [CounselorBookingController::class, 'changeStatusReschedule'])->name('change.reshceduleStatus');
 });
 
 

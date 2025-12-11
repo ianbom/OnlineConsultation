@@ -125,21 +125,25 @@
                     </div>
                     @endif
 
-                    @if($booking->previous_schedule_id)
-                    <!-- Previous Schedule -->
-                    <div class="border-l-4 border-gray-400 pl-4 py-2 bg-gray-50">
+                                        {{-- Previous MAIN Schedule --}}
+                    @if($booking->previous_schedule_id && $booking->previousSchedule)
+                    <div class="border-l-4 border-gray-400 pl-4 py-2 bg-gray-50 mb-3">
                         <p class="text-sm text-gray-500 mb-1">Jadwal Sebelumnya (Dirubah)</p>
+                    
                         <div class="flex items-center space-x-2">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                             <span class="font-medium text-gray-700 line-through">
                                 {{ \Carbon\Carbon::parse($booking->previousSchedule->date)->isoFormat('dddd, D MMMM YYYY') }}
                             </span>
                         </div>
+                    
                         <div class="flex items-center space-x-2 mt-2">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                             <span class="text-gray-600 line-through">
                                 {{ \Carbon\Carbon::parse($booking->previousSchedule->start_time)->format('H:i') }} -
@@ -148,7 +152,117 @@
                         </div>
                     </div>
                     @endif
+                    
+                    {{-- Previous SECOND Schedule (Jika Ada) --}}
+                    @if($booking->previous_second_schedule_id && $booking->previousSecondSchedule)
+                    <div class="border-l-4 border-gray-400 pl-4 py-2 bg-gray-50">
+                        <p class="text-sm text-gray-500 mb-1">Jadwal Kedua Sebelumnya (Dirubah)</p>
+                    
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span class="font-medium text-gray-700 line-through">
+                                {{ \Carbon\Carbon::parse($booking->previousSecondSchedule->date)->isoFormat('dddd, D MMMM YYYY') }}
+                            </span>
+                        </div>
+                    
+                        <div class="flex items-center space-x-2 mt-2">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-gray-600 line-through">
+                                {{ \Carbon\Carbon::parse($booking->previousSecondSchedule->start_time)->format('H:i') }} -
+                                {{ \Carbon\Carbon::parse($booking->previousSecondSchedule->end_time)->format('H:i') }}
+                            </span>
+                        </div>
+                    </div>
+                    @endif
+
                 </div>
+
+                <!-- Reschedule Information -->
+                @if($booking->reschedule_status !== 'none')
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Informasi Reschedule</h2>
+
+                    <div class="space-y-3">
+
+                        {{-- Status --}}
+                        <div class="flex justify-between items-center pb-3 border-b">
+                            <span class="text-gray-600">Status Reschedule</span>
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold
+                                @if($booking->reschedule_status === 'pending') bg-yellow-100 text-yellow-800
+                                @elseif($booking->reschedule_status === 'approved') bg-green-100 text-green-800
+                                @elseif($booking->reschedule_status === 'rejected') bg-red-100 text-red-800
+                                @else bg-gray-100 text-gray-700
+                                @endif">
+                                {{ ucfirst($booking->reschedule_status) }}
+                            </span>
+                        </div>
+
+                        {{-- Requested by --}}
+                        <div class="flex justify-between items-center pb-3 border-b">
+                            <span class="text-gray-600">Diminta Oleh</span>
+                            <span class="font-semibold text-gray-900">
+                                {{ $booking->reschedule_by ? ucfirst($booking->reschedule_by) : '-' }}
+                            </span>
+                        </div>
+
+                        {{-- Reason --}}
+                        @if($booking->reschedule_reason)
+                        <div class="pb-3 border-b">
+                            <span class="text-gray-600 text-sm">Alasan Reschedule</span>
+                            <p class="mt-1 text-gray-800">{{ $booking->reschedule_reason }}</p>
+                        </div>
+                        @endif
+
+                    </div>
+
+                    {{-- APPROVE / REJECT BUTTONS --}}
+                    @if($booking->reschedule_status === 'pending')
+                    <div class="mt-4 flex flex-col md:flex-row gap-3">
+
+                        {{-- Approve --}}
+                        <form method="POST" action="{{ route('counselor.change.reshceduleStatus', $booking->id) }}">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" name="statusReschedule" value="approved">
+
+                            <button
+                                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition w-full md:w-auto">
+                                Setujui Reschedule
+                            </button>
+                        </form>
+
+                        {{-- Reject --}}
+                        <form method="POST" action="{{ route('counselor.change.reshceduleStatus', $booking->id) }}">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" name="statusReschedule" value="rejected">
+
+                            {{-- Optional reason --}}
+                            <input
+                                type="text"
+                                name="reason"
+                                placeholder="Alasan penolakan..."
+                                class="border rounded-lg px-3 py-2 w-full md:w-60 text-sm"
+                            >
+
+                            <button
+                                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition w-full md:w-auto">
+                                Tolak Reschedule
+                            </button>
+                        </form>
+
+                    </div>
+                    @endif
+                </div>
+                @endif
+
+
 
                 <!-- Notes -->
                 @if($booking->notes)

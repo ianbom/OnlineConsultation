@@ -107,10 +107,18 @@ export function PendingPaymentStatus({ booking }: StatusComponentProps) {
 
 // Status: paid (confirmed)
 export function PaidStatus({ booking }: StatusComponentProps) {
-     const showRescheduleButton = booking.status === "paid" && !booking.is_expired;
+  const showRescheduleButton =
+    booking.status === "paid" &&
+    !booking.is_expired &&
+    booking.reschedule_status === "none";
+
   const sessionDate = new Date(booking.schedule.date);
   const now = new Date();
   const isPast = sessionDate < now;
+
+  const statusLabel = (value: string) => {
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  };
 
   return (
     <div className="space-y-4">
@@ -124,95 +132,174 @@ export function PaidStatus({ booking }: StatusComponentProps) {
                 Pembayaran Berhasil
               </h4>
               <p className="text-sm text-muted-foreground">
-                Booking Anda telah dikonfirmasi. Silahkan datang sesuai jadwal yang telah dipesan
+                Booking Anda telah dikonfirmasi. Silahkan datang sesuai jadwal
+                yang telah dipesan.
               </p>
             </div>
           </div>
         </CardContent>
       </Card>
 
-       {showRescheduleButton && (
-            <Card className="border-primary/20 bg-primary/5">
-              <CardContent className="pt-6">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 rounded-full bg-primary/10">
-                    <Calendar className="h-6 w-6 text-primary" />
-                  </div>
+      {/* =============================== */}
+      {/* BLOK RESCHEDULE INFORMATION     */}
+      {/* =============================== */}
+
+      {booking.reschedule_status !== "none" && (
+        <Card className="border-primary/20 bg-primary/5">
+          <CardContent className="p-4 space-y-3">
+            <h4 className="font-semibold text-foreground">
+              Status Reschedule
+            </h4>
+
+            {/* STATUS BADGE */}
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Status</span>
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-semibold
+                ${
+                  booking.reschedule_status === "pending"
+                    ? "bg-yellow-100 text-yellow-800"
+                    : booking.reschedule_status === "approved"
+                    ? "bg-green-100 text-green-800"
+                    : booking.reschedule_status === "rejected"
+                    ? "bg-red-100 text-red-800"
+                    : "bg-gray-100 text-gray-700"
+                }`}
+              >
+                {statusLabel(booking.reschedule_status ?? '')}
+              </span>
+            </div>
+
+            {/* REQUESTED BY */}
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Diminta oleh</span>
+              <span className="font-medium">
+                {booking.reschedule_by
+                  ? statusLabel(booking.reschedule_by)
+                  : "-"}
+              </span>
+            </div>
+
+            {/* REASON */}
+            {booking.reschedule_reason && (
+              <div>
+                <span className="text-muted-foreground text-sm">
+                  Alasan Reschedule
+                </span>
+                <p className="text-sm font-medium mt-1">
+                  {booking.reschedule_reason}
+                </p>
+              </div>
+            )}
+
+            {/* UI TAMBAHAN BERDASARKAN STATUS */}
+            {booking.reschedule_status === "pending" && (
+              <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 p-3 rounded-md text-xs">
+                Permintaan reschedule sedang menunggu persetujuan konselor.
+              </div>
+            )}
+
+            {booking.reschedule_status === "approved" && (
+              <div className="bg-green-50 border border-green-200 text-green-700 p-3 rounded-md text-xs">
+                Reschedule disetujui. Silakan cek jadwal terbaru Anda.
+              </div>
+            )}
+
+            {booking.reschedule_status === "rejected" && (
+              <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-md text-xs">
+                Reschedule ditolak. Jadwal tetap menggunakan sesi sebelumnya.
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* =============================== */}
+      {/* RESCHEDULE BUTTON               */}
+      {/* =============================== */}
+      {showRescheduleButton && (
+        <Card className="border-primary/20 bg-primary/5">
+          <CardContent className="pt-6">
+            <div className="flex items-start gap-4">
+              <div className="p-3 rounded-full bg-primary/10">
+                <Calendar className="h-6 w-6 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-lg mb-1">
+                  Perlu Mengubah Jadwal?
+                </h3>
+                <p className="text-muted-foreground text-sm mb-4">
+                  Anda dapat melakukan reschedule sesi konseling ini jika ada
+                  perubahan jadwal.
+                </p>
+                <Button asChild>
+                  <Link href={route("client.pick.reschedule", booking.id)}>
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Reschedule Booking
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* =============================== */}
+      {/* LINK MEETING (ONLINE)           */}
+      {/* =============================== */}
+      {booking.consultation_type === "online" && (
+        <>
+          {booking.meeting_link ? (
+            <Card className="border-primary/30 bg-primary/5">
+              <CardContent className="p-4">
+                <div className="flex items-start gap-3">
+                  <Calendar className="h-5 w-5 text-primary mt-0.5" />
                   <div className="flex-1">
-                    <h3 className="font-semibold text-lg mb-1">
-                      Perlu Mengubah Jadwal?
-                    </h3>
-                    <p className="text-muted-foreground text-sm mb-4">
-                      Anda dapat melakukan reschedule sesi konseling ini jika ada perubahan jadwal.
+                    <h4 className="font-medium text-foreground mb-1">
+                      Link Konsultasi Tersedia
+                    </h4>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Link meeting sudah siap. Anda dapat masuk ke ruang
+                      konsultasi sekarang.
                     </p>
-                    <Button asChild>
-                      <Link href={route('client.pick.reschedule', booking.id)}>
-                        <Calendar className="h-4 w-4 mr-2" />
-                        Reschedule Booking
-                      </Link>
+                    <Button className="w-full" asChild>
+                      <a
+                        href={booking.meeting_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Masuk ke Sesi Konsultasi
+                      </a>
                     </Button>
                   </div>
                 </div>
               </CardContent>
             </Card>
-          )}
-
-      {/* Info Link Meeting */}
-        {booking.consultation_type === "online" && (
-          <>
-            {/* Jika meeting link sudah tersedia */}
-            {booking.meeting_link ? (
-              <Card className="border-primary/30 bg-primary/5">
+          ) : (
+            !isPast && (
+              <Card className="border-muted">
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">
-                    <Calendar className="h-5 w-5 text-primary mt-0.5" />
+                    <Clock className="h-5 w-5 text-muted-foreground mt-0.5" />
                     <div className="flex-1">
                       <h4 className="font-medium text-foreground mb-1">
-                        Link Konsultasi Tersedia
+                        Menunggu Link Meeting
                       </h4>
-                      <p className="text-sm text-muted-foreground mb-3">
-                        Link meeting sudah siap. Anda dapat masuk ke ruang konsultasi sekarang.
+                      <p className="text-sm text-muted-foreground">
+                        Konselor akan mengirimkan link sebelum sesi dimulai.
                       </p>
-                      <Button className="w-full" asChild>
-                        <a
-                          href={booking.meeting_link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Masuk ke Sesi Konsultasi
-                        </a>
-                      </Button>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-            ) : (
-              /* Jika meeting link BELUM tersedia (hanya tampil jika jadwal belum lewat) */
-              !isPast && (
-                <Card className="border-muted">
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <Clock className="h-5 w-5 text-muted-foreground mt-0.5" />
-                      <div className="flex-1">
-                        <h4 className="font-medium text-foreground mb-1">
-                          Menunggu Link Meeting
-                        </h4>
-                        <p className="text-sm text-muted-foreground">
-                          Konselor akan mengirimkan link meeting sebelum sesi dimulai.
-                          Anda akan menerima notifikasi saat link tersedia.
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )
-            )}
-          </>
-        )}
-
+            )
+          )}
+        </>
+      )}
     </div>
   );
 }
+
 
 // Status: cancelled
 export function CancelledStatus({ booking }: StatusComponentProps) {

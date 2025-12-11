@@ -24,10 +24,11 @@
                             <th>No</th>
                             <th>Klien</th>
                             <th>Jadwal</th>
-                            <th>Durasi</th>
+
                             <th>Tipe</th>
-                            <th>Harga</th>
+
                             <th>Status</th>
+                            <th>Status Reschedule</th>
                             <th>Status Pembayaran</th>
                             <th class="text-center">Aksi</th>
                         </tr>
@@ -45,35 +46,57 @@
                                 </td>
 
                                 {{-- JADWAL --}}
-                                <td>
-                                    @php
-                                        $schedule = $booking->secondSchedule ?? $booking->schedule;
-                                    @endphp
+                               <td>
+                                {{-- Jika ada second schedule, tampilkan keduanya --}}
+                                @if($booking->secondSchedule)
 
-                                    @if($schedule)
+                                    {{-- Jadwal Pertama --}}
+                                    <div class="mb-2">
                                         <div class="font-medium">
-                                            {{ \Carbon\Carbon::parse($schedule->date)->format('d M Y') }}
+                                            {{ \Carbon\Carbon::parse($booking->schedule->date)->format('d M Y') }}
+                                        </div>
+                                        <div class="text-xs text-gray-500">
+                                            {{ \Carbon\Carbon::parse($booking->schedule->start_time)->format('H:i') }} -
+                                            {{ \Carbon\Carbon::parse($booking->schedule->end_time)->format('H:i') }}
+                                        </div>
+                                    </div>
+
+                                    {{-- Jadwal Kedua --}}
+                                    <div>
+
+                                        <div class="text-xs text-gray-500">
+                                            {{ \Carbon\Carbon::parse($booking->secondSchedule->start_time)->format('H:i') }} -
+                                            {{ \Carbon\Carbon::parse($booking->secondSchedule->end_time)->format('H:i') }}
+                                        </div>
+                                    </div>
+
+                                @else
+                                    {{-- Jika hanya satu schedule --}}
+                                    @if($booking->schedule)
+                                        <div class="font-medium">
+                                            {{ \Carbon\Carbon::parse($booking->schedule->date)->format('d M Y') }}
                                         </div>
 
                                         <div class="text-xs text-gray-500">
-                                            {{ \Carbon\Carbon::parse($schedule->start_time)->format('H:i') }} -
-                                            {{ \Carbon\Carbon::parse($schedule->end_time)->format('H:i') }}
+                                            {{ \Carbon\Carbon::parse($booking->schedule->start_time)->format('H:i') }} -
+                                            {{ \Carbon\Carbon::parse($booking->schedule->end_time)->format('H:i') }}
                                         </div>
                                     @else
                                         <span class="text-gray-400">-</span>
                                     @endif
+                                @endif
+
+                                {{-- Indikator jika pernah di-reschedule --}}
+                                @if($booking->status === 'rescheduled' && $booking->previousSchedule)
+                                    <div class="text-xs text-yellow-600 mt-1 flex items-center">
+                                        <i class="fas fa-info-circle mr-1"></i>
+                                        Dijadwalkan ulang
+                                    </div>
+                                @endif
+                            </td>
 
 
-                                    {{-- Tampilkan info jika di-reschedule --}}
-                                    @if($booking->status === 'rescheduled' && $booking->previousSchedule)
-                                        <div class="text-xs text-warning mt-1">
-                                            <i class="fas fa-info-circle"></i> Dijadwalkan ulang
-                                        </div>
-                                    @endif
-                                </td>
 
-                                {{-- DURASI --}}
-                                <td>{{ $booking->duration_hours }} jam</td>
 
                                 {{-- TIPE KONSULTASI --}}
                                 <td>
@@ -83,9 +106,6 @@
                                         <span class="badge bg-primary">Offline</span>
                                     @endif
                                 </td>
-
-                                {{-- HARGA --}}
-                                <td>Rp {{ number_format($booking->price, 0, ',', '.') }}</td>
 
                                 {{-- STATUS BOOKING --}}
                                 <td>
@@ -103,6 +123,67 @@
                                         <span class="badge bg-secondary">{{ ucfirst($booking->status) }}</span>
                                     @endif
                                 </td>
+
+                                {{-- Status Reschdeule --}}
+                                <td>
+                                    @php
+                                        $status = $booking->reschedule_status;          // none, pending, approved, rejected
+                                        $by     = $booking->reschedule_by;              // client, counselor, admin/null
+                                        $byLabel = $by ? ucfirst($by) : '-';
+
+                                        // Tentukan siapa yang harus menyetujui:
+                                        // Jika yang mengajukan client → counselor yang approve
+                                        // Jika yang mengajukan counselor → client yang approve
+                                        $target = $by === 'client' ? 'Counselor' : ($by === 'counselor' ? 'Client' : null);
+                                    @endphp
+
+
+                                    {{-- STATUS BADGE --}}
+                                    @if ($status === 'none')
+                                        <span class="badge bg-secondary">Tidak Ada Reschedule</span>
+
+                                    @elseif ($status === 'pending')
+                                        <span class="badge bg-warning">Pending</span>
+
+                                    @elseif ($status === 'approved')
+                                        <span class="badge bg-success">Disetujui</span>
+
+                                    @elseif ($status === 'rejected')
+                                        <span class="badge bg-danger">Ditolak</span>
+
+                                    @else
+                                        <span class="badge bg-secondary">{{ ucfirst($status) }}</span>
+                                    @endif
+
+
+                                    {{-- INFORMASI PENGAJU --}}
+                                    @if($status !== 'none')
+                                        <div class="text-xs text-gray-500 mt-1">
+                                            Diajukan oleh: <span class="font-medium">{{ $byLabel }}</span>
+                                        </div>
+                                    @endif
+
+
+                                    {{-- KETERANGAN DETAIL --}}
+                                    @if($status === 'pending')
+                                        <div class="text-xs text-blue-600 mt-1">
+                                            Menunggu  {{ $target ?? '-' }}
+                                        </div>
+
+                                    @elseif($status === 'approved')
+                                        <div class="text-xs text-green-600 mt-1">
+                                            Disetujui oleh {{ $target ?? '-' }}
+                                        </div>
+
+                                    @elseif($status === 'rejected')
+                                        <div class="text-xs text-red-600 mt-1">
+                                            Ditolak oleh {{ $target ?? '-' }}
+                                        </div>
+                                    @endif
+                                </td>
+
+
+
 
                                 {{-- STATUS PEMBAYARAN --}}
                                 <td>
