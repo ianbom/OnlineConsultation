@@ -26,7 +26,7 @@ const navItems = [
   { path: "/client/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { path: "/client/list-counselors", label: "Counselors", icon: Users },
   { path: "/client/booking-history", label: "My Bookings", icon: Calendar },
-//   { path: "/client/my-profile", label: "Profile", icon: User },
+  { path: "/client/my-profile", label: "Profile", icon: User },
 ];
 
 interface User {

@@ -32,14 +32,14 @@ Route::get('/tes', function () {
     return view('admin.dashboard.dashboard');
 });
 
-Route::prefix('admin')->as('admin.')->group(function () {
+Route::middleware(['role:admin'])->prefix('admin')->as('admin.')->group(function () {
     Route::get('/dashboard', [AdmDashboardController::class, 'index'])->name('dashboard');
     Route::resource('counselor', AdmCounselorController::class);
     Route::resource('workday', AdmCounselorWorkDayController::class);
     Route::resource('booking', AdmBookingController::class);
 });
 
-Route::prefix('counselor')->as('counselor.')->group(function () {
+Route::middleware(['role:counselor'])->prefix('counselor')->as('counselor.')->group(function () {
     Route::get('/dashboard', [CounselorDashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [CounselorProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile/update', [CounselorProfileController::class, 'update'])->name('profile.update');
@@ -53,7 +53,7 @@ Route::prefix('counselor')->as('counselor.')->group(function () {
 
 
 
-Route::prefix('client')->as('client.')->group(function () {
+Route::middleware(['role:client'])->prefix('client')->as('client.')->group(function () {
     Route::get('/list-counselors', [ClientCounselorController::class, 'counselorList'])->name('counselor.list');
     Route::get('/counselor/{counselorId}', [ClientCounselorController::class, 'detailCounselor'])->name('counselor.show');
     Route::get('/pick-counselor/schedule/{counselorId}', [ClientCounselorController::class, 'pickCounselorSchedule'])->name('pick.schedule');
@@ -67,7 +67,7 @@ Route::prefix('client')->as('client.')->group(function () {
     Route::get('/booking-history', [ClientBookingController::class, 'bookingHistory'])->name('booking.history');
     Route::get('/my-profile', [ClientProfileController::class, 'myProfile'])->name('myProfile');
     Route::post('/update-profile', [ClientProfileController::class, 'updateProfile'])->name('profile.update');
-    Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard.index');
+    Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard');
 });
 
 
