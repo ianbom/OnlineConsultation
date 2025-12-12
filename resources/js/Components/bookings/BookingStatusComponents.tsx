@@ -333,9 +333,17 @@ export function CancelledStatus({ booking }: StatusComponentProps) {
                 </p>
               )}
 
+              {/* REFUND SEDANG DIPROSES */}
               {booking.payment?.status === "refund" && (
                 <p className="text-sm text-blue-600 mt-3">
-                  Dana akan dikembalikan (refund).
+                  Dana sedang dalam proses pengembalian (refund).
+                </p>
+              )}
+
+              {/* REFUND SELESAI */}
+              {booking.payment?.status === "refunded" && (
+                <p className="text-sm text-green-600 mt-3 font-medium">
+                  Dana telah berhasil dikembalikan.
                 </p>
               )}
             </div>
@@ -343,12 +351,10 @@ export function CancelledStatus({ booking }: StatusComponentProps) {
         </CardContent>
       </Card>
 
-      <Button className="w-full" size="lg" variant="outline" asChild>
-        <Link href="/counselors">Cari Konselor Lain</Link>
-      </Button>
     </div>
   );
 }
+
 
 export function ExpiredStatus({ booking }: StatusComponentProps) {
   return (

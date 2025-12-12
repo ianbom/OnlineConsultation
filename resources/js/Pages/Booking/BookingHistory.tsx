@@ -363,10 +363,15 @@ export default function BookingHistory({ bookings }: Props) {
                   counselorPhoto={getProfilePicUrl(booking.counselor.user.profile_pic)}
                   date={date}
                   time={time}
-                  duration={`${booking.duration_hours} hour${booking.duration_hours > 1 ? "s" : ""}`}
+                  duration={`${booking.duration_hours} jam`}
                   status={activeTab}
                   specialization={booking.counselor.specialization}
                   paymentStatus={booking.payment?.status ?? "pending"}
+                  bookingType={booking.consultation_type}
+                  rescheduleStatus={booking.reschedule_status }
+                  rescheduleBy={booking?.reschedule_by}
+
+
                 />
               );
             })

@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\BookingController as AdmBookingController;
 use App\Http\Controllers\Admin\CounselorController as AdmCounselorController;
 use App\Http\Controllers\Admin\CounselorWorkDayController as AdmCounselorWorkDayController;
 use App\Http\Controllers\Admin\DashboardController as AdmDashboardController;
+use App\Http\Controllers\Admin\RefundController as AdmRefundController;
 use App\Http\Controllers\Client\BookingController as ClientBookingController;
 use App\Http\Controllers\Client\CounselorController as ClientCounselorController;
 use App\Http\Controllers\Client\DashboardController as ClientDashboardController;
@@ -32,11 +33,13 @@ Route::get('/tes', function () {
     return view('admin.dashboard.dashboard');
 });
 
-Route::middleware(['role:admin'])->prefix('admin')->as('admin.')->group(function () {
+Route::middleware(['auth'])->prefix('admin')->as('admin.')->group(function () {
     Route::get('/dashboard', [AdmDashboardController::class, 'index'])->name('dashboard');
     Route::resource('counselor', AdmCounselorController::class);
     Route::resource('workday', AdmCounselorWorkDayController::class);
     Route::resource('booking', AdmBookingController::class);
+    Route::resource('refund', AdmRefundController::class);
+    Route::put('refund-approve/{paymendId}',[ AdmRefundController::class, 'changeRefundStatus'])->name('payment.changeRefundStatus');
 });
 
 Route::middleware(['role:counselor'])->prefix('counselor')->as('counselor.')->group(function () {
@@ -53,7 +56,7 @@ Route::middleware(['role:counselor'])->prefix('counselor')->as('counselor.')->gr
 
 
 
-Route::middleware(['role:client'])->prefix('client')->as('client.')->group(function () {
+Route::middleware(['role:client', 'verified'])->prefix('client')->as('client.')->group(function () {
     Route::get('/list-counselors', [ClientCounselorController::class, 'counselorList'])->name('counselor.list');
     Route::get('/counselor/{counselorId}', [ClientCounselorController::class, 'detailCounselor'])->name('counselor.show');
     Route::get('/pick-counselor/schedule/{counselorId}', [ClientCounselorController::class, 'pickCounselorSchedule'])->name('pick.schedule');

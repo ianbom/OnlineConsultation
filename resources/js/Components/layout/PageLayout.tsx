@@ -3,6 +3,9 @@ import { usePage } from "@inertiajs/react";
 import { Header } from "./Header";
 import { Toaster } from "../ui/toaster";
 import { useToast } from "@/hooks/use-toast";
+import { Footer } from "./Footer";
+import WAIcon from "./WAIcon";
+
 
 interface PageLayoutProps {
   children: ReactNode;
@@ -81,6 +84,7 @@ export function PageLayout({ children, title, description }: PageLayoutProps) {
           mx-auto
           px-4 md:px-6
           py-6 md:py-8
+
         "
       >
         {(title || description) && (
@@ -97,6 +101,8 @@ export function PageLayout({ children, title, description }: PageLayoutProps) {
         )}
         {children}
       </main>
+      <Footer />
+      <WAIcon/>
       <Toaster />
     </div>
   );

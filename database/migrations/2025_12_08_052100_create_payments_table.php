@@ -42,7 +42,7 @@ return new class extends Migration
     $table->string('refund_reason')->nullable();
     $table->timestamp('refund_time')->nullable();
 
-    $table->enum('status', ['pending','success','failed','refund'])
+    $table->enum('status', ['pending','success','failed','refund','refunded'])
           ->default('pending');
 
     $table->dateTime('paid_at')->nullable();
