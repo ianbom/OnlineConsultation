@@ -13,6 +13,10 @@ class Schedule extends Model
     protected $primaryKey = 'id';
     protected $guarded = ['id'];
 
+    protected $cast = [
+        'is_available' => 'boolean'
+    ];
+
     public function counselor()
     {
         return $this->belongsTo(Counselor::class, 'counselor_id');
