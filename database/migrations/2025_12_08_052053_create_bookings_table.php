@@ -46,7 +46,7 @@ return new class extends Migration
             $table->text('cancel_reason')->nullable();
             $table->timestamp('cancelled_at')->nullable();
 
-            $table->enum('refund_status', ['none', 'requested', 'processed'])->default('none');
+            $table->enum('refund_status', ['none', 'requested', 'processed', 'done'])->default('none');
             $table->timestamp('refund_processed_at')->nullable();
             $table->boolean('is_expired')->default(false);
 

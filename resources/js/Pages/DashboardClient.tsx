@@ -6,41 +6,9 @@ import { Button } from "@/Components/ui/button";
 import { BookingCard } from "@/Components/bookings/BookingCard";
 import { Calendar, Clock, CreditCard, ChevronRight, Users } from "lucide-react";
 
-interface Schedule {
-  id: number;
-  date: string;
-  start_time: string;
-  end_time: string;
-}
+import { User, Schedule, Booking ,Counselor, Payment } from "@/Interfaces";
 
-interface User {
-  id: number;
-  name: string;
-  profile_pic: string;
-}
 
-interface Counselor {
-  id: number;
-  specialization: string;
-  user: User;
-}
-
-interface Payment {
-  id: number;
-  status: string;
-  amount: number;
-}
-
-interface Booking {
-  id: number;
-  status: string;
-  duration_hours: number;
-  consultation_type: string;
-  schedule: Schedule;
-  second_schedule: Schedule | null;
-  counselor: Counselor;
-  payment: Payment;
-}
 
 interface DashboardProps {
   upcomingBooking: Booking[];
@@ -142,7 +110,7 @@ export default function Dashboard({
                     key={booking.id}
                     id={booking.id}
                     counselorName={booking.counselor.user.name}
-                    counselorPhoto={getImageUrl(booking.counselor.user.profile_pic)}
+                    counselorPhoto={getImageUrl(booking.counselor.user.profile_pic ?? '')}
                     date={formatDate(booking.schedule.date)}
                     time={`${formatTime(booking.schedule.start_time)} - ${
                       booking.second_schedule
@@ -150,9 +118,13 @@ export default function Dashboard({
                         : formatTime(booking.schedule.end_time)
                     }`}
                     duration={`${booking.duration_hours} hour${booking.duration_hours > 1 ? 's' : ''}`}
-                    status="paid"
+                    status={booking.status as any}
                     specialization={booking.counselor.specialization}
-                    paymentStatus={booking.payment.status}
+                    showActions={false}
+                    bookingType={booking.consultation_type}
+                    rescheduleStatus={booking.reschedule_status }
+                    rescheduleBy={booking.reschedule_by}
+                    paymentStatus={booking.payment?.status ?? "pending"}
                   />
                 ))
               ) : (
@@ -180,7 +152,7 @@ export default function Dashboard({
                     key={booking.id}
                     id={booking.id}
                     counselorName={booking.counselor.user.name}
-                    counselorPhoto={getImageUrl(booking.counselor.user.profile_pic)}
+                    counselorPhoto={getImageUrl(booking.counselor.user.profile_pic ?? '')}
                     date={formatDate(booking.schedule.date)}
                     time={`${formatTime(booking.schedule.start_time)} - ${
                       booking.second_schedule
@@ -191,6 +163,10 @@ export default function Dashboard({
                     status={booking.status as any}
                     specialization={booking.counselor.specialization}
                     showActions={false}
+                    bookingType={booking.consultation_type}
+                    rescheduleStatus={booking.reschedule_status }
+                    rescheduleBy={booking.reschedule_by}
+                    paymentStatus={booking.payment?.status ?? "pending"}
                   />
                 ))
               ) : (

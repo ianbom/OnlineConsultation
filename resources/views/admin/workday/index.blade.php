@@ -1,15 +1,16 @@
 <x-admin.app>
 
 <div class="container mx-auto px-4 py-6">
+    {{-- HEADER --}}
     <div class="mb-6 flex items-center justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-800 mb-1">Jadwal Kerja Konselor</h1>
             <p class="text-gray-600 text-sm">Kelola dan lihat jadwal kerja konselor</p>
         </div>
 
-        <!-- Create Button -->
+        {{-- CREATE BUTTON --}}
         <a href="{{ route('admin.workday.create') }}"
-           class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg shadow-sm transition">
+           class="inline-flex items-center px-4 py-2 bg-primary hover:bg-primary/80 text-white text-sm font-semibold rounded-lg shadow-sm transition">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
             </svg>
@@ -17,28 +18,30 @@
         </a>
     </div>
 
-
-    <!-- Filter Section -->
+    {{-- FILTER --}}
     <div class="bg-white rounded-xl shadow-sm p-4 mb-4 border border-gray-200">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-                <label for="filterCounselor" class="block text-sm font-medium text-gray-700 mb-1">
+                <label class="block text-sm font-medium text-gray-700 mb-1">
                     Filter Konselor
                 </label>
                 <input
                     type="text"
                     id="filterCounselor"
                     placeholder="Cari nama konselor..."
-                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg
+                           focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
             </div>
+
             <div>
-                <label for="filterDay" class="block text-sm font-medium text-gray-700 mb-1">
+                <label class="block text-sm font-medium text-gray-700 mb-1">
                     Filter Hari
                 </label>
                 <select
                     id="filterDay"
-                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg
+                           focus:ring-2 focus:ring-primary focus:border-transparent"
                 >
                     <option value="">Semua Hari</option>
                     <option value="monday">Senin</option>
@@ -53,49 +56,48 @@
         </div>
     </div>
 
-    <!-- Weekly Schedule Table -->
+    {{-- TABLE --}}
     <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
         <div class="overflow-x-auto">
             <table class="w-full min-w-[800px]">
                 <thead>
-                    <tr class="bg-white border-b border-gray-200">
-                        @foreach(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'] as $day)
-                        <th class="px-3 py-3 text-center text-xs font-semibold text-gray-800 uppercase tracking-wider border-r border-gray-200">
-                            {{ $day }}
-                        </th>
+                    <tr class="border-b">
+                        @foreach(['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'] as $day)
+                            <th class="px-3 py-3 text-center text-xs font-semibold text-gray-800 uppercase border-r">
+                                {{ $day }}
+                            </th>
                         @endforeach
                     </tr>
                 </thead>
 
                 <tbody>
                     <tr class="align-top">
-                        @foreach(['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as $day)
-                        <td class="p-2 border-r border-gray-100 bg-gray-50/50 min-w-[140px]" data-day="{{ $day }}">
-                            <div class="space-y-2" id="{{ $day }}-column">
+                        @foreach(['monday','tuesday','wednesday','thursday','friday','saturday','sunday'] as $day)
+                        <td class="p-2 border-r bg-gray-50/50 min-w-[140px]" data-day="{{ $day }}">
+                            <div class="space-y-2">
+
                                 @foreach($counselorsWorkDays as $workDay)
                                     @if($workDay->day_of_week === $day)
-                                    <div class="workday-card bg-white rounded-lg shadow-xs border border-gray-200 hover:shadow-sm transition-shadow duration-200"
+
+                                    <div class="workday-card bg-white rounded-lg border hover:shadow-sm transition"
                                          data-counselor="{{ strtolower($workDay->counselor->user->name) }}"
                                          data-day="{{ $workDay->day_of_week }}">
 
-                                        <!-- Card Header -->
-                                        <div class="p-3 border-b border-gray-100">
-                                            <div class="flex items-start justify-between">
-                                                <div class="flex items-center space-x-2">
-                                                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 flex items-center justify-center">
-                                                        <span class="text-black text-xs font-bold">
-                                                            {{ strtoupper(substr($workDay->counselor->user->name, 0, 1)) }}
-                                                        </span>
-                                                    </div>
-                                                    <div>
-                                                        <h3 class="text-sm font-semibold text-gray-900 leading-tight">
-                                                            {{ \Illuminate\Support\Str::limit($workDay->counselor->user->name, 12) }}
-                                                        </h3>
-
-                                                    </div>
+                                        {{-- HEADER --}}
+                                        <div class="p-3 border-b flex justify-between">
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-primary/80 flex items-center justify-center">
+                                                    <span class="text-white text-xs font-bold">
+                                                        {{ strtoupper(substr($workDay->counselor->user->name,0,1)) }}
+                                                    </span>
                                                 </div>
-                                                {{-- BADGE STATUS --}}
-                                                @if ($workDay->is_active)
+                                                <span class="text-sm font-semibold text-gray-900">
+                                                    {{ \Illuminate\Support\Str::limit($workDay->counselor->user->name,12) }}
+                                                </span>
+                                            </div>
+
+                                            {{-- STATUS --}}
+                                           @if ($workDay->is_active)
                                                     <!-- ACTIVE (Centang Hijau) -->
                                                     <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px]
                                                                  font-medium bg-green-100 text-green-800">
@@ -113,59 +115,48 @@
                                                         </svg>
                                                     </span>
                                                 @endif
-
-                                            </div>
                                         </div>
 
-                                        <!-- Card Body -->
-                                        <div class="p-3">
-                                            <!-- Time Section -->
-                                            <div class="flex items-center justify-between mb-3 text-xs text-gray-600">
-                                                <div class="flex items-center space-x-1">
-                                                    <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                    </svg>
-                                                    <span class="font-medium">{{ date('H:i', strtotime($workDay->start_time)) }}</span>
-                                                    <span class="text-gray-400">-</span>
-                                                    <span class="font-medium">{{ date('H:i', strtotime($workDay->end_time)) }}</span>
-                                                </div>
+                                        {{-- BODY --}}
+                                        <div class="p-3 space-y-2">
+                                            <div class="text-xs text-gray-600 flex items-center gap-1">
+                                                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                                {{ date('H:i', strtotime($workDay->start_time)) }}
+                                                -
+                                                {{ date('H:i', strtotime($workDay->end_time)) }}
                                             </div>
 
-                                            <!-- Price -->
-                                            <div class="mb-3">
-                                                <span class="inline-block w-full px-2 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded">
-                                                   Harga : Rp {{ number_format($workDay->counselor->price_per_session, 0, ',', '.') }}
-                                                </span>
-                                            </div>
+                                            <span class="block text-xs font-semibold px-2 py-1 rounded bg-primary/10 text-primary">
+                                                Harga : Rp {{ number_format($workDay->counselor->price_per_session,0,',','.') }}
+                                            </span>
 
-                                            <!-- Actions -->
-                                            <div class="flex space-x-1">
-                                                <a href="{{ route('admin.workday.edit', $workDay->id) }}"
-                                                   class="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium py-1.5 px-2 rounded text-xs text-center transition-colors duration-150 border border-gray-200">
+                                            <div class="flex gap-1">
+                                                <a href="{{ route('admin.workday.edit',$workDay->id) }}"
+                                                   class="flex-1 text-xs py-1.5 text-center rounded border hover:bg-gray-100">
                                                     Edit
                                                 </a>
-                                                <form action="{{ route('admin.workday.destroy', $workDay->id) }}" method="POST" class="flex-1">
+                                                <form method="POST" action="{{ route('admin.workday.destroy',$workDay->id) }}" class="flex-1">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit"
-                                                            onclick="return confirm('Yakin ingin menghapus jadwal ini?')"
-                                                            class="w-full bg-gray-50 hover:bg-red-300 text-gray-700 font-medium py-1.5 px-2 rounded text-xs transition-colors duration-150 border border-gray-200">
+                                                    <button onclick="return confirm('Hapus jadwal ini?')"
+                                                            class="w-full text-xs py-1.5 rounded border hover:bg-red-100">
                                                         Hapus
                                                     </button>
                                                 </form>
                                             </div>
                                         </div>
+
                                     </div>
                                     @endif
                                 @endforeach
 
-                                @if(!$counselorsWorkDays->where('day_of_week', $day)->count())
-                                <div class="text-center py-3">
-                                    <svg class="w-8 h-8 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                                    </svg>
-                                    <p class="text-xs text-gray-400">Tidak ada jadwal</p>
-                                </div>
+                                @if(!$counselorsWorkDays->where('day_of_week',$day)->count())
+                                    <div class="text-center py-4 text-xs text-gray-400">
+                                        Tidak ada jadwal
+                                    </div>
                                 @endif
                             </div>
                         </td>
@@ -175,9 +166,7 @@
             </table>
         </div>
     </div>
-
 </div>
-
 {{-- FILTER SCRIPT --}}
 <script>
     document.addEventListener('DOMContentLoaded', function() {

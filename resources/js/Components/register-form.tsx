@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent } from 'react';
 import { useForm } from '@inertiajs/react';
 import { cn } from "@/lib/utils";
 import { Button } from "@/Components/ui/button";
@@ -6,20 +6,22 @@ import { Card, CardContent } from "@/Components/ui/card";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 
-interface LoginFormProps extends React.ComponentProps<"div"> {}
+interface RegisterFormProps extends React.ComponentProps<"div"> {}
 
-export function LoginForm({ className, ...props }: LoginFormProps) {
-  const { data, setData, post, processing, errors } = useForm({
+export function RegisterForm({ className, ...props }: RegisterFormProps) {
+  const { data, setData, post, processing, errors, reset } = useForm({
+    name: '',
     email: '',
     password: '',
-    remember: false,
+    password_confirmation: '',
   });
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    post(route('login'), {
+    post(route('register'), {
+      onFinish: () => reset('password', 'password_confirmation'),
       onError: (errors) => {
-        console.error('Login error:', errors);
+        console.error('Register error:', errors);
       },
     });
   };
@@ -31,17 +33,38 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
           <div className="p-6 md:p-8">
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
-                <h1 className="text-2xl font-bold">Selamat Datang</h1>
+                <h1 className="text-2xl font-bold">Buat Akun</h1>
                 <p className="text-balance text-muted-foreground">
-                  Masuk dengan akun Persona Quality
+                 Persona Quality
                 </p>
               </div>
+
+              {errors.name && (
+                <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md p-3">
+                  {errors.name}
+                </div>
+              )}
 
               {errors.email && (
                 <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md p-3">
                   {errors.email}
                 </div>
               )}
+
+              <div className="grid gap-2">
+                <Label htmlFor="name">Nama</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="John Doe"
+                  value={data.name}
+                  onChange={(e) => setData('name', e.target.value)}
+                  required
+                  autoComplete="name"
+                  autoFocus
+                  className={errors.name ? 'border-red-500' : ''}
+                />
+              </div>
 
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
@@ -52,28 +75,20 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
                   value={data.email}
                   onChange={(e) => setData('email', e.target.value)}
                   required
-                  autoComplete="email"
+                  autoComplete="username"
                   className={errors.email ? 'border-red-500' : ''}
                 />
               </div>
 
               <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  <a
-                    href={route('password.request')}
-                    className="ml-auto text-sm underline-offset-2 hover:underline"
-                  >
-                    Forgot your password?
-                  </a>
-                </div>
+                <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
                   type="password"
                   value={data.password}
                   onChange={(e) => setData('password', e.target.value)}
                   required
-                  autoComplete="current-password"
+                  autoComplete="new-password"
                   className={errors.password ? 'border-red-500' : ''}
                 />
                 {errors.password && (
@@ -81,17 +96,20 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
                 )}
               </div>
 
-              <div className="flex items-center gap-2">
-                <input
-                  id="remember"
-                  type="checkbox"
-                  checked={data.remember}
-                  onChange={(e) => setData('remember', e.target.checked)}
-                  className="h-4 w-4 rounded border-gray-300"
+              <div className="grid gap-2">
+                <Label htmlFor="password_confirmation">Konfirmasi Password</Label>
+                <Input
+                  id="password_confirmation"
+                  type="password"
+                  value={data.password_confirmation}
+                  onChange={(e) => setData('password_confirmation', e.target.value)}
+                  required
+                  autoComplete="new-password"
+                  className={errors.password_confirmation ? 'border-red-500' : ''}
                 />
-                <Label htmlFor="remember" className="text-sm font-normal">
-                  Remember me
-                </Label>
+                {errors.password_confirmation && (
+                  <p className="text-sm text-red-600">{errors.password_confirmation}</p>
+                )}
               </div>
 
               <Button
@@ -100,14 +118,13 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
                 className="w-full"
                 disabled={processing}
               >
-                {processing ? 'Logging in...' : 'Login'}
+                {processing ? 'Mendaftar...' : 'Daftar'}
               </Button>
 
-
               <div className="text-center text-sm">
-                Don&apos;t have an account?{" "}
-                <a href={route('register')} className="underline underline-offset-4">
-                  Sign up
+                Sudah punya akun?{" "}
+                <a href={route('login')} className="underline underline-offset-4">
+                  Masuk
                 </a>
               </div>
             </div>
