@@ -32,7 +32,7 @@ Route::get('/tes', function () {
     return view('admin.dashboard.dashboard');
 });
 
-Route::middleware(['role:admin'])->prefix('admin')->as('admin.')->group(function () {
+Route::middleware(['auth'])->prefix('admin')->as('admin.')->group(function () {
     Route::get('/dashboard', [AdmDashboardController::class, 'index'])->name('dashboard');
     Route::resource('counselor', AdmCounselorController::class);
     Route::resource('workday', AdmCounselorWorkDayController::class);

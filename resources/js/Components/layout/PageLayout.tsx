@@ -3,6 +3,7 @@ import { usePage } from "@inertiajs/react";
 import { Header } from "./Header";
 import { Toaster } from "../ui/toaster";
 import { useToast } from "@/hooks/use-toast";
+import { Footer } from "./Footer";
 
 interface PageLayoutProps {
   children: ReactNode;
@@ -73,7 +74,7 @@ export function PageLayout({ children, title, description }: PageLayoutProps) {
   }, [flash, toast]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
       <main
         className="
@@ -81,6 +82,7 @@ export function PageLayout({ children, title, description }: PageLayoutProps) {
           mx-auto
           px-4 md:px-6
           py-6 md:py-8
+          flex-1
         "
       >
         {(title || description) && (
@@ -97,6 +99,7 @@ export function PageLayout({ children, title, description }: PageLayoutProps) {
         )}
         {children}
       </main>
+      <Footer />
       <Toaster />
     </div>
   );
