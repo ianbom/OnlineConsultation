@@ -27,11 +27,16 @@ const dayLabels: Record<string, string> = {
 
 
 
+
 interface Props {
   counselor: Counselor;
 }
 
 export default function CounselorProfile({ counselor }: Props) {
+
+  console.log('conselor ', counselor)
+  console.log('conselor schedule', counselor.schedules)
+
 
   const specializations = counselor.specialization
     .split(",")
@@ -41,14 +46,17 @@ export default function CounselorProfile({ counselor }: Props) {
 
   // Hitung slot ketersediaan
   const availabilityByDay = dayNames.reduce((acc, day) => {
+
     const workDay = counselor.work_days.find(
-      (wd) => wd.day_of_week.toLowerCase() === day && wd.is_active === 1
+      (wd) => wd.day_of_week.toLowerCase() === day && Number(wd.is_active) === 1
+
     );
+
 
     if (workDay) {
       const slots = counselor.schedules.filter(
         (schedule) =>
-          schedule.workday_id === workDay.id && schedule.is_available === 1
+          schedule.workday_id === workDay.id && Number(schedule.is_available) === 1
       );
       acc[day] = slots.length;
     } else {

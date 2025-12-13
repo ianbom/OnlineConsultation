@@ -14,7 +14,7 @@ class Schedule extends Model
     protected $guarded = ['id'];
 
     protected $cast = [
-        'is_available' => 'boolean'
+        'is_available' => 'integer'
     ];
 
     public function counselor()
