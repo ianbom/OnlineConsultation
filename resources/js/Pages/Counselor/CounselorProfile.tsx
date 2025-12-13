@@ -64,6 +64,8 @@ export default function CounselorProfile({ counselor }: Props) {
 
   const isAvailable = counselor.status === "active";
 
+  console.log('avaibility',availabilityByDay)
+
   return (
     <PageLayout>
       <div className="max-w-4xl mx-auto">

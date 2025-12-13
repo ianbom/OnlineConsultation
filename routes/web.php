@@ -56,7 +56,7 @@ Route::middleware(['role:counselor'])->prefix('counselor')->as('counselor.')->gr
 
 
 
-Route::middleware(['role:client', 'verified'])->prefix('client')->as('client.')->group(function () {
+Route::middleware(['role:client'])->prefix('client')->as('client.')->group(function () {
     Route::get('/list-counselors', [ClientCounselorController::class, 'counselorList'])->name('counselor.list');
     Route::get('/counselor/{counselorId}', [ClientCounselorController::class, 'detailCounselor'])->name('counselor.show');
     Route::get('/pick-counselor/schedule/{counselorId}', [ClientCounselorController::class, 'pickCounselorSchedule'])->name('pick.schedule');
