@@ -13,7 +13,7 @@ class Schedule extends Model
     protected $primaryKey = 'id';
     protected $guarded = ['id'];
 
-    protected $cast = [
+    protected $casts = [
         'is_available' => 'integer'
     ];
 
