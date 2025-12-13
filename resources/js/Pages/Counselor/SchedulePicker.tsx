@@ -49,6 +49,8 @@ export default function SchedulePicker({ counselor }: Props) {
     return grouped;
   }, [counselor.schedules]);
 
+  console.log('slot',schedulesByDate)
+
   const getAvailableSlots = (date: Date): TimeSlot[] => {
     const dateStr = format(date, "yyyy-MM-dd");
     const slots = schedulesByDate[dateStr] || [];
@@ -64,6 +66,8 @@ export default function SchedulePicker({ counselor }: Props) {
       }))
       .sort((a, b) => a.time.localeCompare(b.time));
   };
+
+
 
   // Cek apakah dua waktu berdampingan (selisih 1 jam)
   const isAdjacent = (time1: string, time2: string) => {
@@ -127,6 +131,8 @@ export default function SchedulePicker({ counselor }: Props) {
 
   const availableSlots = selectedDate ? getAvailableSlots(selectedDate) : [];
 
+  console.log('ava slots', availableSlots);
+
   const profilePicUrl = counselor.user.profile_pic
     ? `/storage/${counselor.user.profile_pic}`
     : null;
@@ -173,7 +179,7 @@ export default function SchedulePicker({ counselor }: Props) {
         />
       )}
 
-      
+
         {/* Footer Sticky */}
         {selectedDate && selectedSlots.length > 0 && (
           <div className="fixed bottom-0 left-0 right-0 p-4 bg-card border-t shadow-lg animate-slide-up z-50">
