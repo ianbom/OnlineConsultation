@@ -1,7 +1,7 @@
 <div :class="{ 'dark text-white-dark': $store.app.semidark  }">
     <nav x-data="sidebar"
         class="sidebar fixed min-h-screen h-full top-0 bottom-0 w-[260px] shadow-[5px_0_25px_0_rgba(94,92,154,0.1)] z-50 transition-all duration-300">
-        <div class="bg-secondary dark:bg-[#0e1726] h-full">
+        <div class="bg-secondary dark:bg-[#0e1726] h-full flex flex-col">
             <div class="flex justify-between items-center px-4 py-3">
                 <a href="/" class="main-logo flex items-center shrink-0">
                     <img class="w-8 ml-[5px] flex-none" src="/LogoPqNew.png"
@@ -124,6 +124,23 @@
                     </ul>
                 </li>
             </ul>
+
+            <div class="border-t border-white-light/30 dark:border-dark-light/30 p-4">
+                <form method="POST" action="/logout" class="w-full">
+                    @csrf
+                    <button type="submit" class="w-full group">
+                        <div class="flex items-center">
+                            <svg class="group-hover:!text-red-500 shrink-0" width="20" height="20"
+                                viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M17.9426 13.9143L16.5277 12.5L17.9426 11.0857M14 12H5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M9.5 20H5C3.89543 20 3 19.1046 3 18V6C3 4.89543 3.89543 4 5 4H9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span
+                                class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-red-500 group-hover:text-red-500 transition-colors">Logout</span>
+                        </div>
+                    </button>
+                </form>
+            </div>
         </div>
     </nav>
 </div>
