@@ -13,8 +13,8 @@ class Schedule extends Model
     protected $primaryKey = 'id';
     protected $guarded = ['id'];
 
-    protected $cast = [
-        'is_available' => 'boolean'
+    protected $casts = [
+        'is_available' => 'integer'
     ];
 
     public function counselor()

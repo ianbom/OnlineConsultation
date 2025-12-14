@@ -13,6 +13,10 @@ class CounselorsWorkDay extends Model
     protected $primaryKey = 'id';
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'is_active' => 'integer'
+    ];
+
     public function counselor()
     {
         return $this->belongsTo(Counselor::class, 'counselor_id');

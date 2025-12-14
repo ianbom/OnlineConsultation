@@ -9,6 +9,7 @@ import {
   Menu,
   X,
   Heart,
+  HelpCircle,
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/Components/ui/button";
@@ -27,7 +28,9 @@ const navItems = [
   { path: "/client/list-counselors", label: "Counselors", icon: Users },
   { path: "/client/booking-history", label: "My Bookings", icon: Calendar },
   { path: "/client/my-profile", label: "Profile", icon: User },
+  { path: "/client/faq", label: "FAQ", icon: HelpCircle },
 ];
+
 
 interface User {
   id: number;

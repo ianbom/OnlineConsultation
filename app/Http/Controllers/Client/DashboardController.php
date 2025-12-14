@@ -10,8 +10,7 @@ use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
-    public function index()
-{
+    public function index(){
     $clientId = Auth::id();
 
     $bookings = Booking::with([
@@ -43,7 +42,12 @@ class DashboardController extends Controller
         'completedBooking'     => $completed,
         'pendingPaymentBooking'=> $pendingPayment,
         'recentConsultations'  => $recentConsultations,
-    ]);
-}
+    ]);}
+
+    public function faq(){
+
+        return Inertia::render('FAQPage');
+
+    }
 
 }

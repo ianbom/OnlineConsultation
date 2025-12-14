@@ -71,6 +71,7 @@ Route::middleware(['role:client'])->prefix('client')->as('client.')->group(funct
     Route::get('/my-profile', [ClientProfileController::class, 'myProfile'])->name('myProfile');
     Route::post('/update-profile', [ClientProfileController::class, 'updateProfile'])->name('profile.update');
     Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/faq', [ClientDashboardController::class, 'faq'])->name('faq');
 });
 
 
