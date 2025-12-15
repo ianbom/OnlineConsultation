@@ -18,6 +18,8 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): Response
     {
+
+
         return Inertia::render('Auth/Login', [
             'canResetPassword' => Route::has('password.request'),
             'status' => session('status'),
@@ -27,32 +29,35 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse{
+public function store(LoginRequest $request)
+{
     $request->authenticate();
     $request->session()->regenerate();
 
     $user = auth()->user();
 
-    // Pastikan user punya role
-    if (!$user) {
-        return redirect('/login')->with('error', 'Login gagal.');
-    }
+    return match ($user->role) {
+        'client' => redirect()->intended(route('client.dashboard')),
+        // client = inertia → inertia
 
-    // Redirect berdasar role
-    switch ($user->role) {
-        case 'client':
-            return redirect()->route('client.dashboard');
+        'counselor' => Inertia::location(route('counselor.dashboard')),
+        // inertia → blade (HARUS full reload)
 
-        case 'counselor':
-            return redirect()->route('counselor.dashboard');
+        'admin' => Inertia::location(route('admin.dashboard')),
+        // inertia → blade (HARUS full reload)
 
-        case 'admin':
-            return redirect()->route('admin.dashboard');
+        default => $this->logoutWithError($request),
+    };
+}
 
-        default:
-            auth()->logout();
-            return redirect('/login')->with('error', 'Role tidak dikenali.');
-    }
+protected function logoutWithError(LoginRequest $request): RedirectResponse
+{
+    Auth::logout();
+
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect('/login')->with('error', 'Role tidak dikenali.');
 }
 
 

@@ -392,7 +392,7 @@ export default function BookingHistory({ bookings }: Props) {
                   </Button>
                 ) : activeTab === "cancelled" ? (
                   <Button asChild>
-                    <Link href="/counselors">Cari Konselor</Link>
+                    <Link href="/client/list-counselors">Cari Konselor</Link>
                   </Button>
                 ) : undefined
               }

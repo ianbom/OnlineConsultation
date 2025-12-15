@@ -93,6 +93,29 @@ export default function Dashboard({
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Quick Actions */}
+          <Card>
+            <CardHeader className="flex-row items-center justify-between pb-4">
+              <CardTitle className="text-lg">Quick Actions</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Button variant="outline" className="w-full justify-start" asChild>
+                  <Link href="/client/list-counselors">
+                    <Users className="h-4 w-4 mr-2" />
+                    Find a Counselor
+                  </Link>
+                </Button>
+                <Button variant="outline" className="w-full justify-start" asChild>
+                  <Link href="/client/booking-history">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    View All Bookings
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Upcoming Schedule */}
           <Card>
             <CardHeader className="flex-row items-center justify-between pb-4">
@@ -201,27 +224,6 @@ export default function Dashboard({
               </CardContent>
             </Card>
           )}
-
-          {/* Quick Actions */}
-          <Card>
-            <CardContent className="p-4">
-              <h4 className="font-medium text-foreground mb-3">Quick Actions</h4>
-              <div className="space-y-2">
-                <Button variant="outline" className="w-full justify-start" asChild>
-                  <Link href="/client/list-counselors">
-                    <Users className="h-4 w-4 mr-2" />
-                    Find a Counselor
-                  </Link>
-                </Button>
-                <Button variant="outline" className="w-full justify-start" asChild>
-                  <Link href="/client/booking-history">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    View All Bookings
-                  </Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </PageLayout>

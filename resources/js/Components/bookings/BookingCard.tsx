@@ -76,7 +76,7 @@ export function BookingCard({
       case "pending_payment":
         return "Menunggu Pembayaran";
       case "paid":
-        return "Sudah Dibayar";
+        return "Dibayar";
       case "completed":
         return "Selesai";
       case "rescheduled":
@@ -111,6 +111,27 @@ export function BookingCard({
     }
   };
 
+  const getRefundBadge = (paymentStatus?: string) => {
+  if (paymentStatus === "refund") {
+    return {
+      variant: "outline" as const,
+      text: "Refund Diproses",
+      className: "border-blue-500 text-blue-700 bg-blue-50",
+    };
+  }
+
+  if (paymentStatus === "refunded") {
+    return {
+      variant: "default" as const,
+      text: "Dana Dikembalikan",
+      className: "bg-green-100 text-green-700",
+    };
+  }
+
+  return null;
+};
+
+
   const getRescheduleByText = (by?: string | null) => {
     switch (by) {
       case "client":
@@ -134,6 +155,8 @@ export function BookingCard({
 
   const rescheduleStatusBadge = getRescheduleStatusBadge(rescheduleStatus ?? "none");
   const rescheduleByText = getRescheduleByText(rescheduleBy);
+  const refundBadge = getRefundBadge(paymentStatus);
+
 
   return (
     <Card>
@@ -161,9 +184,23 @@ export function BookingCard({
                 </p>
               </div>
 
-              <Badge variant={getBadgeVariant(status) as any}>
-                {getStatusText(status, paymentStatus)}
-              </Badge>
+              <div className="flex flex-col items-end gap-1">
+                  {/* BOOKING STATUS */}
+                  <Badge variant={getBadgeVariant(status) as any}>
+                    {getStatusText(status)}
+                  </Badge>
+
+                  {/* REFUND STATUS (JIKA ADA) */}
+                  {status === "cancelled" && refundBadge && (
+                    <Badge
+                      variant={refundBadge.variant}
+                      className={`text-xs ${refundBadge.className}`}
+                    >
+                      {refundBadge.text}
+                    </Badge>
+                  )}
+                </div>
+
             </div>
 
             {/* RESCHEDULE STATUS ALERT */}

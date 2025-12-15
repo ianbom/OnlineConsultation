@@ -20,12 +20,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    return redirect()->route('login');
 });
 
 
@@ -42,7 +37,7 @@ Route::middleware(['auth'])->prefix('admin')->as('admin.')->group(function () {
     Route::put('refund-approve/{paymendId}',[ AdmRefundController::class, 'changeRefundStatus'])->name('payment.changeRefundStatus');
 });
 
-Route::middleware(['auth'])->prefix('counselor')->as('counselor.')->group(function () {
+Route::middleware(['role:counselor'])->prefix('counselor')->as('counselor.')->group(function () {
     Route::get('/dashboard', [CounselorDashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [CounselorProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile/update', [CounselorProfileController::class, 'update'])->name('profile.update');
@@ -56,7 +51,7 @@ Route::middleware(['auth'])->prefix('counselor')->as('counselor.')->group(functi
 
 
 
-Route::middleware(['auth'])->prefix('client')->as('client.')->group(function () {
+Route::middleware(['role:client'])->prefix('client')->as('client.')->group(function () {
     Route::get('/list-counselors', [ClientCounselorController::class, 'counselorList'])->name('counselor.list');
     Route::get('/counselor/{counselorId}', [ClientCounselorController::class, 'detailCounselor'])->name('counselor.show');
     Route::get('/pick-counselor/schedule/{counselorId}', [ClientCounselorController::class, 'pickCounselorSchedule'])->name('pick.schedule');
@@ -71,6 +66,7 @@ Route::middleware(['auth'])->prefix('client')->as('client.')->group(function () 
     Route::get('/my-profile', [ClientProfileController::class, 'myProfile'])->name('myProfile');
     Route::post('/update-profile', [ClientProfileController::class, 'updateProfile'])->name('profile.update');
     Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/faq', [ClientDashboardController::class, 'faq'])->name('faq');
 });
 
 
@@ -87,7 +83,7 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
-Route::view('/', 'index');
+
 Route::view('/analytics', 'analytics');
 Route::view('/finance', 'finance');
 Route::view('/crypto', 'crypto');

@@ -11,19 +11,19 @@ export function Footer() {
 
           {/* Left */}
           <p className="text-xs text-muted-foreground text-center md:text-left">
-            © {currentYear} Nama Perusahaan. Hak cipta dilindungi.
+            © {currentYear} Persona Quality. Hak cipta dilindungi.
           </p>
 
           {/* Center Links */}
           <div className="flex gap-4 text-xs">
-            <Link href="/tentang" className="hover:text-foreground">
-              Tentang
+            <Link href="/client/dashboard" className="hover:text-foreground">
+              Dashboard
             </Link>
-            <Link href="/kebijakan-privasi" className="hover:text-foreground">
-              Privasi
+            <Link href="/client/list-counselors" className="hover:text-foreground">
+              Konselor
             </Link>
-            <Link href="/syarat-ketentuan" className="hover:text-foreground">
-              Syarat
+            <Link href="/client/my-profile" className="hover:text-foreground">
+              Profile
             </Link>
           </div>
 

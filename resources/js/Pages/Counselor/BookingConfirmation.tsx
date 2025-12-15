@@ -231,14 +231,14 @@ export default function BookingConfirmation({ counselor, schedules }: Props) {
         {/* Notes for Counselor */}
         <Card className="mb-6">
           <CardHeader className="pb-4">
-            <CardTitle className="text-lg">Catatan untuk Konselor (Opsional)</CardTitle>
+            <CardTitle className="text-lg">Keluhan yang dialami (Opsional)</CardTitle>
           </CardHeader>
 
           <CardContent>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Tambahkan catatan penting sebelum sesi dimulai, misalnya: kondisi yang ingin dibahas, batasan waktu, atau permintaan khusus."
+              placeholder="Ceritakan keluhan Anda sebelum sesi dimulai "
               className="
                 w-full h-28 p-3 rounded-lg border border-border
                 bg-background text-foreground text-sm

@@ -14,8 +14,8 @@ class CounselorsWorkDay extends Model
     protected $guarded = ['id'];
 
     protected $casts = [
-    'is_active' => 'integer',
-];
+        'is_active' => 'integer'
+    ];
 
     public function counselor()
     {
