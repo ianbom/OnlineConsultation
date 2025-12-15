@@ -18,7 +18,7 @@ export default function FAQPage() {
   const faqData: FAQCategory[] = [
     {
       title: "Tentang Layanan",
-      icon: "ℹ️",
+      icon: "",
       items: [
         {
           question: "Apa itu platform OnlineConsultant?",
@@ -36,7 +36,7 @@ export default function FAQPage() {
     },
     {
       title: "Booking & Jadwal",
-      icon: "📅",
+      icon: "",
       items: [
         {
           question: "Bagaimana cara melakukan booking?",
@@ -54,7 +54,7 @@ export default function FAQPage() {
     },
     {
       title: "Pembayaran & Refund",
-      icon: "💳",
+      icon: "",
       items: [
         {
           question: "Metode pembayaran apa saja yang diterima?",
@@ -72,7 +72,7 @@ export default function FAQPage() {
     },
     {
       title: "Konselor",
-      icon: "👨‍⚕️",
+      icon: "",
       items: [
         {
           question: "Apakah konselor terverifikasi?",
@@ -90,7 +90,7 @@ export default function FAQPage() {
     },
     {
       title: "Bantuan & Kontak",
-      icon: "📞",
+      icon: "",
       items: [
         {
           question: "Bagaimana jika ada masalah teknis?",
