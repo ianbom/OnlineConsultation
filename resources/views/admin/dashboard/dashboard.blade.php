@@ -6,13 +6,13 @@
                 <a href="javascript:;" class="text-primary hover:underline">Dashboard</a>
             </li>
             <li class="before:content-['/'] ltr:before:mr-1 rtl:before:ml-1">
-                <span>Sales</span>
+                <span>Admin</span>
             </li>
         </ul>
 
         <div class="pt-5">
-            <!-- Main Statistics Component -->
-            <x-admin.main-statistics
+            <x-main-statistics
+                :showClient="true"
                 :totalClients="$totalClients"
                 :filteredRevenue="$filteredRevenue"
                 :filteredBookings="$filteredBookings"
@@ -21,14 +21,13 @@
                 :filterYear="$filterYear"
             />
 
-            <!-- Statistics Chart Component -->
-            <x-admin.statistics-chart
+            <x-statistics-chart
                 :chartIncome="$chartIncome"
                 :chartBookings="$chartBookings"
             />
 
             <!-- Recent Bookings Component -->
-            <x-admin.recent-bookings
+            <x-recent-bookings
                 :bookings="$recentBookings"
             />
         </div>
@@ -75,5 +74,5 @@
             window.location.href = url.toString();
         }
     </script>
-   
+
 </x-admin.app>

@@ -1,4 +1,4 @@
-@props(['totalClients', 'filteredRevenue', 'filteredBookings', 'filterType', 'filterMonth', 'filterYear'])
+@props(['totalClients', 'filteredRevenue', 'filteredBookings', 'filterType', 'filterMonth', 'filterYear', 'showClient'])
 
 <!-- Stats Cards with Filter -->
 <div class="mb-6">
@@ -30,6 +30,8 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <!-- Total Clients -->
+
+        @if ($showClient == true)
         <div class="panel h-full">
             <div class="flex items-center">
                 <div class="shrink-0">
@@ -48,6 +50,9 @@
                 </div>
             </div>
         </div>
+        @endif
+
+
 
         <!-- Total Revenue (Filtered) -->
         <div class="panel h-full">
