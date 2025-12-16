@@ -12,11 +12,48 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
 {
     $today = Carbon::today();
     $weekStart = Carbon::now()->startOfWeek();
     $monthStart = Carbon::now()->startOfMonth();
+
+    // Get filter parameters
+    $filterType = $request->get('filter_type', 'all'); // all, last7days, month, year
+    $filterMonth = $request->get('filter_month', Carbon::now()->month);
+    $filterYear = $request->get('filter_year', Carbon::now()->year);
+
+    /* ===============================
+     * CLIENTS
+     * =============================== */
+    $totalClients = \App\Models\User::where('role', 'client')->count();
+
+    /* ===============================
+     * FILTERED BOOKINGS & REVENUE
+     * =============================== */
+    $bookingQuery = Booking::query();
+    $paymentQuery = Payment::where('status', 'success');
+
+    switch ($filterType) {
+        case 'last7days':
+            $startDate = Carbon::now()->subDays(6)->startOfDay();
+            $bookingQuery->where('created_at', '>=', $startDate);
+            $paymentQuery->where('created_at', '>=', $startDate);
+            break;
+        case 'month':
+            $bookingQuery->whereYear('created_at', $filterYear)
+                        ->whereMonth('created_at', $filterMonth);
+            $paymentQuery->whereYear('created_at', $filterYear)
+                        ->whereMonth('created_at', $filterMonth);
+            break;
+        case 'year':
+            $bookingQuery->whereYear('created_at', $filterYear);
+            $paymentQuery->whereYear('created_at', $filterYear);
+            break;
+    }
+
+    $filteredBookings = $bookingQuery->count();
+    $filteredRevenue = $paymentQuery->sum('amount');
 
     /* ===============================
      * COUNSELOR
@@ -84,9 +121,11 @@ class DashboardController extends Controller
         ->get();
 
     /* ===============================
-     * CHART: INCOME PER MONTH
+     * CHART: INCOME PER MONTH (Current Year)
      * =============================== */
+    $currentYear = Carbon::now()->year;
     $incomeByMonth = Payment::where('status', 'success')
+        ->whereYear('created_at', $currentYear)
         ->selectRaw('MONTH(created_at) as month, SUM(amount) as total')
         ->groupBy('month')
         ->pluck('total', 'month');
@@ -96,7 +135,30 @@ class DashboardController extends Controller
         $chartIncome[] = $incomeByMonth[$i] ?? 0;
     }
 
+    /* ===============================
+     * CHART: BOOKINGS PER MONTH (Current Year)
+     * =============================== */
+    $bookingsByMonth = Booking::whereYear('created_at', $currentYear)
+        ->selectRaw('MONTH(created_at) as month, COUNT(*) as total')
+        ->groupBy('month')
+        ->pluck('total', 'month');
+
+    $chartBookings = [];
+    for ($i = 1; $i <= 12; $i++) {
+        $chartBookings[] = $bookingsByMonth[$i] ?? 0;
+    }
+
     return view('admin.dashboard.dashboard', [
+        // Clients
+        'totalClients'        => $totalClients,
+
+        // Filtered Stats
+        'filteredBookings'    => $filteredBookings,
+        'filteredRevenue'     => $filteredRevenue,
+        'filterType'          => $filterType,
+        'filterMonth'         => $filterMonth,
+        'filterYear'          => $filterYear,
+
         // Counselor
         'totalCounselors'     => $totalCounselors,
         'activeCounselors'    => $activeCounselors,
@@ -127,8 +189,11 @@ class DashboardController extends Controller
         'recentBookings'      => $recentBookings,
         'recentPayments'      => $recentPayments,
 
-        // Chart
+        // Chart Income
         'chartIncome'         => $chartIncome,
+
+        // Chart Bookings
+        'chartBookings'       => $chartBookings,
     ]);
 }
 }
