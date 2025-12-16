@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\BookingController as AdmBookingController;
+use App\Http\Controllers\Admin\ClientController as AdmClientController;
 use App\Http\Controllers\Admin\CounselorController as AdmCounselorController;
 use App\Http\Controllers\Admin\CounselorWorkDayController as AdmCounselorWorkDayController;
 use App\Http\Controllers\Admin\DashboardController as AdmDashboardController;
@@ -35,6 +36,7 @@ Route::middleware(['auth'])->prefix('admin')->as('admin.')->group(function () {
     Route::resource('booking', AdmBookingController::class);
     Route::resource('refund', AdmRefundController::class);
     Route::put('refund-approve/{paymendId}',[ AdmRefundController::class, 'changeRefundStatus'])->name('payment.changeRefundStatus');
+    Route::resource('client', AdmClientController::class);
 });
 
 Route::middleware(['role:counselor'])->prefix('counselor')->as('counselor.')->group(function () {

@@ -168,8 +168,8 @@ export default function CounselorsList() {
       ) : (
         <EmptyState
           icon="search"
-          title="No counselors found"
-          description="Try adjusting your search or filters."
+          title="Konselor tidak ditemukan"
+          description="Coba ganti kata kunci anda."
         />
       )}
     </PageLayout>

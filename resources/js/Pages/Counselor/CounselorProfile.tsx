@@ -103,16 +103,28 @@ export default function CounselorProfile({ counselor }: Props) {
 
               {/* Nama & Status */}
               <div className="flex-1">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                  <h1 className="font-display text-2xl font-semibold text-foreground">
-                    {counselor.user.name}
-                  </h1>
-
-                  <Badge variant={isAvailable ? "success" : "secondary"}>
-                    {isAvailable ? "Tersedia" : "Tidak Tersedia"}
-                  </Badge>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                    <h1 className="font-display text-2xl font-semibold text-foreground">
+                      {counselor.user.name}
+                    </h1>
+                                
+                    <Badge
+                      variant={isAvailable ? "success" : "secondary"}
+                      className="
+                        inline-flex
+                        w-fit
+                        px-2.5 py-0.5
+                        text-xs
+                        whitespace-nowrap
+                        self-start
+                        sm:self-auto
+                      "
+                    >
+                      {isAvailable ? "Tersedia" : "Tidak Tersedia"}
+                    </Badge>
+                  </div>
                 </div>
-              </div>
+
 
               {/* Harga */}
               <div className="text-right">

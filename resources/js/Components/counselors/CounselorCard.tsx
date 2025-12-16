@@ -62,17 +62,19 @@ export function CounselorCard({
             <Badge
               key={spec}
               variant="secondary"
-              className="text-[10px] px-2 py-0.5"
+              className="text-[10px] px-2 py-0.5 whitespace-nowrap"
             >
-              {spec}
+              {spec.replace(/,/g, "")}
             </Badge>
           ))}
+        
           {specializations.length > 2 && (
             <Badge variant="outline" className="text-[10px] px-2 py-0.5">
               +{specializations.length - 2}
             </Badge>
           )}
         </div>
+
 
         {/* Bottom Section */}
         <div className="flex items-center justify-between mt-4">
