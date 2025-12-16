@@ -5,22 +5,21 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCounselorRequest;
 use App\Http\Requests\UpdateCounselorRequest;
-use App\Models\Booking;
 use App\Models\Counselor;
-use App\Models\Payment;
-use App\Models\User;
 use App\Services\CounselorService;
-use Carbon\Carbon;
+use App\Services\DashboardService;
 use Illuminate\Http\Request;
 
 class CounselorController extends Controller
 {
 
     protected $counselorService;
+    protected $dashboardService;
 
-    public function __construct(CounselorService $counselorService)
+    public function __construct(CounselorService $counselorService, DashboardService $dashboardService)
     {
         $this->counselorService = $counselorService;
+        $this->dashboardService = $dashboardService;
     }
 
     public function index()
@@ -69,88 +68,19 @@ class CounselorController extends Controller
     }
 
     public function show($counselorId)
-{
-    // ============================
-    // GET COUNSELOR DETAIL
-    // ============================
-    $counselor = Counselor::with('user')->findOrFail($counselorId);
+    {
+        // Get counselor detail
+        $counselor = Counselor::with('user')->findOrFail($counselorId);
 
-    $today      = Carbon::today();
-    $weekStart  = Carbon::now()->startOfWeek();
-    $monthStart = Carbon::now()->startOfMonth();
+        // Get all dashboard data using DashboardService
+        $dashboardData = $this->dashboardService->getCounselorDashboardData($counselor->id);
 
-    // ============================
-    // BOOKING STATISTICS
-    // ============================
-
-    $todayBookings = Booking::where('counselor_id', $counselor->id)
-        ->whereDate('created_at', $today)
-        ->count();
-
-    $weeklyBookings = Booking::where('counselor_id', $counselor->id)
-        ->whereBetween('created_at', [$weekStart, now()])
-        ->count();
-
-    $monthlyBookings = Booking::where('counselor_id', $counselor->id)
-        ->whereBetween('created_at', [$monthStart, now()])
-        ->count();
-
-    $completedBookings = Booking::where('counselor_id', $counselor->id)
-        ->where('status', 'completed')
-        ->count();
-
-    // ============================
-    // TOTAL INCOME (SUCCESS ONLY)
-    // ============================
-
-    $totalIncome = Payment::where('status', 'success')
-        ->whereHas('booking', function ($query) use ($counselor) {
-            $query->where('counselor_id', $counselor->id);
-        })
-        ->sum('amount');
-
-    // ============================
-    // RECENT BOOKINGS
-    // ============================
-
-    $recentBookings = Booking::with(['client', 'payment'])
-        ->where('counselor_id', $counselor->id)
-        ->latest()
-        ->limit(5)
-        ->get();
-
-    // ============================
-    // INCOME CHART (PER MONTH)
-    // ============================
-
-    $incomeByMonth = Payment::where('status', 'success')
-        ->whereHas('booking', function ($query) use ($counselor) {
-            $query->where('counselor_id', $counselor->id);
-        })
-        ->selectRaw('MONTH(created_at) as month, SUM(amount) as total')
-        ->groupBy('month')
-        ->pluck('total', 'month');
-
-    $chartIncome = [];
-    for ($i = 1; $i <= 12; $i++) {
-        $chartIncome[] = $incomeByMonth[$i] ?? 0;
+        // Return view with counselor and dashboard data
+        return view('admin.counselor.detail', array_merge(
+            ['counselor' => $counselor],
+            $dashboardData
+        ));
     }
-
-    // ============================
-    // RETURN VIEW
-    // ============================
-
-    return view('admin.counselor.detail', [
-        'counselor'           => $counselor,
-        'todayBookings'       => $todayBookings,
-        'weeklyBookings'      => $weeklyBookings,
-        'monthlyBookings'     => $monthlyBookings,
-        'completedBookings'   => $completedBookings,
-        'totalIncome'         => $totalIncome,
-        'recentBookings'      => $recentBookings,
-        'chartIncome'         => $chartIncome,
-    ]);
-}
 
 
 }

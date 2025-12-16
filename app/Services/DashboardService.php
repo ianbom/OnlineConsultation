@@ -28,21 +28,26 @@ class DashboardService
     }
 
 
-    public function getBookingStats(): array
+    public function getBookingStats(?int $counselorId = null): array
     {
         $today = Carbon::today();
         $weekStart = Carbon::now()->startOfWeek();
         $monthStart = Carbon::now()->startOfMonth();
 
+        $query = Booking::query();
+        if ($counselorId) {
+            $query->where('counselor_id', $counselorId);
+        }
+
         return [
-            'total' => Booking::count(),
-            'today' => Booking::whereDate('created_at', $today)->count(),
-            'weekly' => Booking::whereBetween('created_at', [$weekStart, now()])->count(),
-            'monthly' => Booking::whereBetween('created_at', [$monthStart, now()])->count(),
-            'completed' => Booking::where('status', 'completed')->count(),
-            'cancelled' => Booking::where('status', 'cancelled')->count(),
-            'rescheduled' => Booking::where('status', 'rescheduled')->count(),
-            'paid' => Booking::where('status', 'paid')->count(),
+            'total' => (clone $query)->where('status', 'completed')->count(),
+            'today' => (clone $query)->where('status', 'completed')->whereDate('created_at', $today)->count(),
+            'weekly' => (clone $query)->where('status', 'completed')->whereBetween('created_at', [$weekStart, now()])->count(),
+            'monthly' => (clone $query)->where('status', 'completed')->whereBetween('created_at', [$monthStart, now()])->count(),
+            'completed' => (clone $query)->where('status', 'completed')->count(),
+            'cancelled' => (clone $query)->where('status', 'cancelled')->count(),
+            'rescheduled' => (clone $query)->where('status', 'rescheduled')->count(),
+            'paid' => (clone $query)->where('status', 'paid')->count(),
         ];
     }
 
@@ -51,7 +56,7 @@ class DashboardService
      */
     public function getFilteredStats(string $filterType, int $filterMonth, int $filterYear): array
     {
-        $bookingQuery = Booking::query();
+        $bookingQuery = Booking::where('status', 'completed');
         $paymentQuery = Payment::where('status', 'success');
 
         switch ($filterType) {
@@ -104,16 +109,38 @@ class DashboardService
     }
 
     /**
+     * Get total income (optionally filtered by counselor)
+     */
+    public function getTotalIncome(?int $counselorId = null): float
+    {
+        $query = Payment::where('status', 'success');
+
+        if ($counselorId) {
+            $query->whereHas('booking', function ($q) use ($counselorId) {
+                $q->where('counselor_id', $counselorId)->where('status', 'completed');
+            });
+        }
+
+        return $query->sum('amount');
+    }
+
+    /**
      * Get recent bookings
      */
-    public function getRecentBookings(int $limit = 5)
+    public function getRecentBookings(int $limit = 5, ?int $counselorId = null)
     {
-        return Booking::with([
+        $query = Booking::with([
                 'client',
                 'counselor.user',
                 'payment'
-            ])
-            ->latest()
+        ]);
+
+
+        if ($counselorId) {
+            $query->where('counselor_id', $counselorId);
+        }
+
+        return $query->latest()
             ->limit($limit)
             ->get();
     }
@@ -135,11 +162,18 @@ class DashboardService
     /**
      * Get monthly income chart data for current year
      */
-    public function getMonthlyIncomeChart(): array
+    public function getMonthlyIncomeChart(?int $counselorId = null): array
     {
         $currentYear = Carbon::now()->year;
-        $incomeByMonth = Payment::where('status', 'success')
-            ->whereYear('created_at', $currentYear)
+        $query = Payment::where('status', 'success')
+            ->whereHas('booking', function ($q) use ($counselorId) {
+                $q->where('status', 'completed');
+                if ($counselorId) {
+                    $q->where('counselor_id', $counselorId);
+                }
+            });
+
+        $incomeByMonth = $query->whereYear('created_at', $currentYear)
             ->selectRaw('MONTH(created_at) as month, SUM(amount) as total')
             ->groupBy('month')
             ->pluck('total', 'month');
@@ -155,10 +189,16 @@ class DashboardService
     /**
      * Get monthly bookings chart data for current year
      */
-    public function getMonthlyBookingsChart(): array
+    public function getMonthlyBookingsChart(?int $counselorId = null): array
     {
         $currentYear = Carbon::now()->year;
-        $bookingsByMonth = Booking::whereYear('created_at', $currentYear)
+        $query = Booking::where('status', 'completed');
+
+        if ($counselorId) {
+            $query->where('counselor_id', $counselorId);
+        }
+
+        $bookingsByMonth = $query->whereYear('created_at', $currentYear)
             ->selectRaw('MONTH(created_at) as month, COUNT(*) as total')
             ->groupBy('month')
             ->pluck('total', 'month');
@@ -198,6 +238,26 @@ class DashboardService
             // Charts
             'chartIncome' => $this->getMonthlyIncomeChart(),
             'chartBookings' => $this->getMonthlyBookingsChart(),
+        ];
+    }
+
+    /**
+     * Get counselor dashboard data
+     */
+    public function getCounselorDashboardData(int $counselorId): array
+    {
+        $bookingStats = $this->getBookingStats($counselorId);
+
+        return [
+            'totalClients' => 0, // Not applicable for counselor
+            'filteredRevenue' => $this->getTotalIncome($counselorId),
+            'filteredBookings' => $bookingStats['total'],
+            'filterType' => 'all',
+            'filterMonth' => null,
+            'filterYear' => null,
+            'recentBookings' => $this->getRecentBookings(10, $counselorId),
+            'chartIncome' => $this->getMonthlyIncomeChart($counselorId),
+            'chartBookings' => $this->getMonthlyBookingsChart($counselorId),
         ];
     }
 }
