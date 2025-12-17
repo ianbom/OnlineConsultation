@@ -28,7 +28,7 @@ class UpdateCounselorProfileRequest extends FormRequest
         'name'              => 'required|string|max:255',
         'email'             => 'required|email|unique:users,email,' . $userId,
         'phone'             => 'nullable|string|max:20',
-        'profile_pic'       => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+        'profile_pic'       => 'nullable|string',  // Changed to accept base64 string
 
         // Counselor table fields:
         'education'         => 'required|string|max:255',

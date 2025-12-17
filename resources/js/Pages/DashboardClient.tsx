@@ -131,8 +131,25 @@ export default function Dashboard({
                 />
               ))
             ) : (
-              <div className="text-center py-6 text-muted-foreground text-sm">
-                Tidak ada sesi mendatang
+              <div className="flex flex-col items-center justify-center py-12 px-4">
+                <div className="relative mb-4">
+                  <div className="absolute inset-0 bg-primary/5 rounded-full blur-2xl"></div>
+                  <div className="relative bg-gradient-to-br from-primary/10 to-primary/5 rounded-full p-6">
+                    <Calendar className="h-12 w-12 text-primary" />
+                  </div>
+                </div>
+                <h3 className="text-base font-semibold text-foreground mb-1">
+                  Belum Ada Sesi Terjadwal
+                </h3>
+                <p className="text-sm text-muted-foreground text-center mb-4 max-w-xs">
+                  Jadwalkan konsultasi pertama Anda dengan konselor profesional kami
+                </p>
+                <Button size="sm" asChild>
+                  <Link href="/client/list-counselors">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Buat Jadwal Baru
+                  </Link>
+                </Button>
               </div>
             )}
           </CardContent>
@@ -173,35 +190,31 @@ export default function Dashboard({
                 />
               ))
             ) : (
-              <div className="text-center py-6 text-muted-foreground text-sm">
-                Tidak ada konsultasi terbaru
+              <div className="flex flex-col items-center justify-center py-12 px-4">
+                <div className="relative mb-4">
+                  <div className="absolute inset-0 bg-success/5 rounded-full blur-2xl"></div>
+                  <div className="relative bg-gradient-to-br from-success/10 to-success/5 rounded-full p-6">
+                    <Clock className="h-12 w-12 text-success" />
+                  </div>
+                </div>
+                <h3 className="text-base font-semibold text-foreground mb-1">
+                  Belum Ada Riwayat Konsultasi
+                </h3>
+                <p className="text-sm text-muted-foreground text-center mb-4 max-w-xs">
+                  Mulai perjalanan kesehatan mental Anda bersama konselor terpercaya
+                </p>
+                <Button size="sm" variant="outline" asChild>
+                  <Link href="/client/list-counselors">
+                    <Users className="h-4 w-4 mr-2" />
+                    Lihat Konselor
+                  </Link>
+                </Button>
               </div>
             )}
           </CardContent>
         </Card>
       </div>
 
-      {/* Pending Payment */}
-      {/* {pendingPaymentBooking.length > 0 && (
-        <Card className="border-warning/30 bg-warning/5">
-          <CardContent className="p-4">
-            <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-warning/10">
-                <CreditCard className="h-5 w-5 text-warning" />
-              </div>
-              <div className="flex-1">
-                <h4 className="font-medium text-foreground">Payment Pending</h4>
-                <p className="text-sm text-muted-foreground mt-0.5">
-                  You have {pendingPaymentBooking.length} pending payment{pendingPaymentBooking.length > 1 ? 's' : ''}
-                </p>
-                <Button variant="accent" size="sm" className="mt-3" asChild>
-                  <Link href="/client/booking-history">View Payments</Link>
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )} */}
     </PageLayout>
   );
 }

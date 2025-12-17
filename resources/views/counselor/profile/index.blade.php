@@ -1,5 +1,8 @@
 <x-counselor.app>
 
+{{-- Cropper.js CSS --}}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+
 <div class="space-y-6">
     {{-- Breadcrumb --}}
     <ul class="flex items-center space-x-2 rtl:space-x-reverse text-sm">
@@ -52,7 +55,6 @@
                             Pilih Foto Baru
                         </label>
                         <input type="file"
-                               name="profile_pic"
                                id="profile-pic-input"
                                accept="image/jpeg,image/jpg,image/png,image/gif"
                                class="block w-full text-sm text-gray-600
@@ -62,7 +64,8 @@
                                       file:bg-primary/10 file:text-primary
                                       hover:file:bg-primary/20
                                       cursor-pointer transition-all">
-                        <p class="text-xs text-gray-500 mt-2">JPG, PNG atau GIF (max. 2MB)</p>
+                        <input type="hidden" name="profile_pic" id="cropped-image-data">
+                        <p class="text-xs text-gray-500 mt-2">JPG, PNG atau GIF (max. 2MB) - Rasio 1:1</p>
                         @error('profile_pic')
                             <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                         @enderror
@@ -252,16 +255,153 @@
 
 </div>
 
+{{-- Modal Crop Image --}}
+<div id="crop-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+        {{-- Modal Header --}}
+        <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-gray-800">Crop Foto Profil</h3>
+            <button type="button" id="close-crop-modal" class="text-gray-400 hover:text-gray-600 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        {{-- Modal Body --}}
+        <div class="p-4 overflow-auto max-h-[calc(90vh-160px)]">
+            <div class="bg-gray-100 rounded-lg overflow-hidden">
+                <img id="image-to-crop" src="" alt="Image to crop" class="max-w-full">
+            </div>
+            <p class="text-sm text-gray-600 mt-3 text-center">Geser dan zoom untuk menyesuaikan area foto (rasio 1:1)</p>
+        </div>
+
+        {{-- Modal Footer --}}
+        <div class="p-4 border-t border-gray-200 flex items-center justify-end gap-3">
+            <button type="button" id="cancel-crop" class="btn bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-5 py-2 rounded-lg font-medium transition">
+                Batal
+            </button>
+            <button type="button" id="apply-crop" class="btn btn-primary px-5 py-2 rounded-lg font-medium shadow-sm hover:shadow transition">
+                Terapkan Crop
+            </button>
+        </div>
+    </div>
+</div>
+
+{{-- Cropper.js Library --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+
 <script>
-    // Preview image before upload
-    document.getElementById('profile-pic-input').addEventListener('change', function(e) {
+    let cropper = null;
+    const modal = document.getElementById('crop-modal');
+    const imageToCrop = document.getElementById('image-to-crop');
+    const profilePicInput = document.getElementById('profile-pic-input');
+    const previewImage = document.getElementById('preview-image');
+    const croppedImageData = document.getElementById('cropped-image-data');
+
+    // When user selects a file
+    profilePicInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
+
         if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('preview-image').src = e.target.result;
+            // Validate file type
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            if (!validTypes.includes(file.type)) {
+                alert('Format file tidak didukung. Gunakan JPG, PNG, atau GIF.');
+                e.target.value = '';
+                return;
             }
+
+            // Validate file size (2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('Ukuran file terlalu besar. Maksimal 2MB.');
+                e.target.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                imageToCrop.src = event.target.result;
+                modal.classList.remove('hidden');
+
+                // Initialize cropper after image loads
+                imageToCrop.onload = function() {
+                    if (cropper) {
+                        cropper.destroy();
+                    }
+
+                    cropper = new Cropper(imageToCrop, {
+                        aspectRatio: 1 / 1,
+                        viewMode: 2,
+                        dragMode: 'move',
+                        autoCropArea: 1,
+                        restore: false,
+                        guides: true,
+                        center: true,
+                        highlight: false,
+                        cropBoxMovable: true,
+                        cropBoxResizable: true,
+                        toggleDragModeOnDblclick: false,
+                    });
+                };
+            };
             reader.readAsDataURL(file);
+        }
+    });
+
+    // Apply crop button
+    document.getElementById('apply-crop').addEventListener('click', function() {
+        if (cropper) {
+            const canvas = cropper.getCroppedCanvas({
+                width: 500,
+                height: 500,
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high',
+            });
+
+            // Convert canvas to blob then to base64
+            canvas.toBlob(function(blob) {
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    const base64data = reader.result;
+
+                    // Set preview image
+                    previewImage.src = base64data;
+
+                    // Set hidden input with cropped image data
+                    croppedImageData.value = base64data;
+
+                    // Close modal
+                    modal.classList.add('hidden');
+
+                    // Destroy cropper
+                    if (cropper) {
+                        cropper.destroy();
+                        cropper = null;
+                    }
+                };
+                reader.readAsDataURL(blob);
+            }, 'image/jpeg', 0.9);
+        }
+    });
+
+    // Cancel/Close modal buttons
+    function closeModal() {
+        modal.classList.add('hidden');
+        profilePicInput.value = '';
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+    }
+
+    document.getElementById('cancel-crop').addEventListener('click', closeModal);
+    document.getElementById('close-crop-modal').addEventListener('click', closeModal);
+
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeModal();
         }
     });
 </script>
