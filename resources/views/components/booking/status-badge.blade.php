@@ -1,17 +1,37 @@
-@props(['status'])
+@props(['status', 'size' => 'default'])
 
-<div class="bg-white rounded-lg shadow-sm p-6">
-    <div class="flex items-center justify-between">
-        <h2 class="text-lg font-semibold text-gray-900">Status Booking</h2>
-        <span class="px-4 py-2 rounded-full text-sm font-semibold
-            @if($status === 'completed') bg-green-100 text-green-800
-            @elseif($status === 'paid') bg-blue-100 text-blue-800
-            @elseif($status === 'pending_payment') bg-yellow-100 text-yellow-800
-            @elseif($status === 'cancelled') bg-red-100 text-red-800
-            @elseif($status === 'rescheduled') bg-purple-100 text-purple-800
-            @else bg-gray-100 text-gray-800
-            @endif">
-            {{ ucfirst(str_replace('_', ' ', $status)) }}
-        </span>
-    </div>
-</div>
+@php
+$sizeClasses = $size === 'small' ? 'px-3 py-1 text-xs' : 'px-4 py-1.5 text-sm';
+$iconSize = $size === 'small' ? 'text-[14px]' : 'text-[16px]';
+@endphp
+
+@if($status === 'paid')
+<span class="inline-flex items-center gap-1.5 {{ $sizeClasses }} rounded-full font-bold bg-green-100 text-green-800 border border-green-200">
+    <span class="material-symbols-outlined {{ $iconSize }} icon-filled">check_circle</span>
+    Paid
+</span>
+@elseif($status === 'pending_payment')
+<span class="inline-flex items-center gap-1.5 {{ $sizeClasses }} rounded-full font-bold bg-yellow-100 text-yellow-800 border border-yellow-200">
+    <span class="material-symbols-outlined {{ $iconSize }} icon-filled">pending</span>
+    Pending Payment
+</span>
+@elseif($status === 'completed')
+<span class="inline-flex items-center gap-1.5 {{ $sizeClasses }} rounded-full font-bold bg-blue-100 text-blue-800 border border-blue-200">
+    <span class="material-symbols-outlined {{ $iconSize }} icon-filled">task_alt</span>
+    Completed
+</span>
+@elseif($status === 'cancelled')
+<span class="inline-flex items-center gap-1.5 {{ $sizeClasses }} rounded-full font-bold bg-red-100 text-red-800 border border-red-200">
+    <span class="material-symbols-outlined {{ $iconSize }} icon-filled">cancel</span>
+    Cancelled
+</span>
+@elseif($status === 'rescheduled')
+<span class="inline-flex items-center gap-1.5 {{ $sizeClasses }} rounded-full font-bold bg-purple-100 text-purple-800 border border-purple-200">
+    <span class="material-symbols-outlined {{ $iconSize }} icon-filled">event_repeat</span>
+    Rescheduled
+</span>
+@else
+<span class="inline-flex items-center gap-1.5 {{ $sizeClasses }} rounded-full font-bold bg-gray-100 text-gray-800 border border-gray-200">
+    {{ ucfirst(str_replace('_', ' ', $status)) }}
+</span>
+@endif

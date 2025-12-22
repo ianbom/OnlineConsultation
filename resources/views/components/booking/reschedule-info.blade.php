@@ -1,116 +1,102 @@
-@props(['booking'])
+@props(['booking', 'showActions' => true])
 
 @if($booking->reschedule_status !== 'none')
-<div class="bg-white rounded-lg shadow-sm p-6">
-    <h2 class="text-lg font-semibold text-gray-900 mb-4">Informasi Reschedule</h2>
+@php
+    $mainAvailable = $booking->schedule?->is_available;
+    $secondAvailable = $booking->secondSchedule?->is_available;
 
-    {{-- STATUS KETERSEDIAAN JADWAL --}}
-    @php
-        $mainAvailable = $booking->schedule?->is_available;
-        $secondAvailable = $booking->secondSchedule?->is_available;
+    $anyUnavailable =
+        ($booking->schedule && !$booking->schedule->is_available) ||
+        ($booking->secondSchedule && !$booking->secondSchedule->is_available);
 
-        $anyUnavailable =
-            ($booking->schedule && !$booking->schedule->is_available) ||
-            ($booking->secondSchedule && !$booking->secondSchedule->is_available);
+    $allAvailable =
+        ($booking->schedule && $booking->schedule->is_available) &&
+        (!$booking->secondSchedule || $booking->secondSchedule->is_available);
+@endphp
 
-        $allAvailable =
-            ($booking->schedule && $booking->schedule->is_available) &&
-            (!$booking->secondSchedule || $booking->secondSchedule->is_available);
-    @endphp
-
-    {{-- Jika PENDING dan ada jadwal tidak tersedia --}}
-    @if($booking->reschedule_status === 'pending' && $anyUnavailable)
-        <div class="mt-3 p-3 bg-red-100 border border-red-300 rounded-lg">
-            <p class="text-sm font-semibold text-red-700">
-                ⚠️ Jadwal yang diminta tidak tersedia. Silakan hubungi klien untuk memilih jadwal lain.
-            </p>
+<section class="bg-white rounded-2xl border border-amber-200 shadow-sm overflow-hidden">
+    <div class="bg-amber-50 p-4 border-b border-amber-200 flex items-center justify-between">
+        <h3 class="text-base font-bold text-amber-800 flex items-center gap-2">
+            <span class="material-symbols-outlined text-amber-600">event_repeat</span>
+            Reschedule Information
+        </h3>
+        <span class="px-3 py-1 rounded-full text-xs font-semibold
+            @if($booking->reschedule_status === 'pending') bg-yellow-100 text-yellow-800 border border-yellow-200
+            @elseif($booking->reschedule_status === 'approved') bg-green-100 text-green-800 border border-green-200
+            @elseif($booking->reschedule_status === 'rejected') bg-red-100 text-red-800 border border-red-200
+            @else bg-gray-100 text-gray-800 border border-gray-200
+            @endif">
+            {{ ucfirst($booking->reschedule_status) }}
+        </span>
+    </div>
+    <div class="p-6">
+        {{-- Alert Status Ketersediaan Jadwal --}}
+        @if($booking->reschedule_status === 'pending' && $anyUnavailable)
+        <div class="p-3 bg-red-50 border border-red-200 rounded-xl mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-red-500">warning</span>
+            <p class="text-sm text-red-700">Jadwal yang diminta tidak tersedia. Silakan hubungi klien untuk memilih jadwal lain.</p>
         </div>
-    @endif
-
-    {{-- Jika PENDING dan semua jadwal tersedia --}}
-    @if($booking->reschedule_status === 'pending' && $allAvailable)
-        <div class="mt-3 p-3 bg-green-100 border border-green-300 rounded-lg">
-            <p class="text-sm font-semibold text-green-700">
-                ✅ Jadwal yang diminta tersedia. Anda bisa menyetujui permintaan ini.
-            </p>
-        </div>
-    @endif
-
-
-    <div class="space-y-3 mt-4">
-
-        {{-- Status --}}
-        <div class="flex justify-between items-center pb-3 border-b">
-            <span class="text-gray-600">Status Reschedule</span>
-            <span class="px-3 py-1 rounded-full text-xs font-semibold
-                @if($booking->reschedule_status === 'pending') bg-yellow-100 text-yellow-800
-                @elseif($booking->reschedule_status === 'approved') bg-green-100 text-green-800
-                @elseif($booking->reschedule_status === 'rejected') bg-red-100 text-red-800
-                @else bg-gray-100 text-gray-800
-                @endif">
-                {{ ucfirst($booking->reschedule_status) }}
-            </span>
-        </div>
-
-        {{-- Requested by --}}
-        <div class="flex justify-between items-center pb-3 border-b">
-            <span class="text-gray-600">Diminta Oleh</span>
-            <span class="font-semibold text-gray-900">
-                {{ ucfirst($booking->reschedule_requested_by) }}
-            </span>
-        </div>
-
-        {{-- Reason --}}
-        @if($booking->reschedule_reason)
-        <div class="pb-3 border-b">
-            <span class="text-gray-600 text-sm">Alasan Reschedule</span>
-            <p class="mt-1 text-gray-800">{{ $booking->reschedule_reason }}</p>
+        @elseif($booking->reschedule_status === 'pending' && $allAvailable)
+        <div class="p-3 bg-green-50 border border-green-200 rounded-xl mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-green-500">check_circle</span>
+            <p class="text-sm text-green-700">Jadwal yang diminta tersedia. Anda bisa menyetujui permintaan ini.</p>
         </div>
         @endif
 
+        {{-- Info Grid --}}
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="bg-[#f8f6f6] p-3 rounded-xl border border-[#e6e0e0]">
+                <p class="text-xs text-[#83676c] mb-1">Requested By</p>
+                <p class="text-sm font-semibold text-[#171213]">{{ ucfirst($booking->reschedule_by ?? $booking->reschedule_requested_by ?? '-') }}</p>
+            </div>
+            <div class="bg-[#f8f6f6] p-3 rounded-xl border border-[#e6e0e0]">
+                <p class="text-xs text-[#83676c] mb-1">Status</p>
+                <p class="text-sm font-semibold text-[#171213]">{{ ucfirst($booking->reschedule_status) }}</p>
+            </div>
+        </div>
+
+        {{-- APPROVE / REJECT BUTTONS --}}
+        @if($showActions && $booking->reschedule_status === 'pending')
+        <div class="border-t border-[#e6e0e0] pt-4">
+            <p class="text-xs font-semibold text-[#83676c] uppercase tracking-wider mb-3">Actions</p>
+            <div class="flex flex-col gap-3">
+                {{-- Approve Button --}}
+                <form method="POST" action="{{ route('counselor.change.reshceduleStatus', $booking->id) }}">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="statusReschedule" value="approved">
+                    <button
+                        type="submit"
+                        class="w-full h-11 rounded-xl bg-green-600 text-white text-sm font-bold shadow-md hover:bg-green-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        @if($anyUnavailable) disabled @endif
+                    >
+                        <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                        Approve Reschedule
+                    </button>
+                </form>
+
+                {{-- Reject Form --}}
+                <form method="POST" action="{{ route('counselor.change.reshceduleStatus', $booking->id) }}" class="space-y-2">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="statusReschedule" value="rejected">
+                    <input
+                        type="text"
+                        name="rejection_reason"
+                        placeholder="Rejection reason (optional)"
+                        class="w-full h-11 px-4 border border-[#e6e0e0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-400"
+                    >
+                    <button
+                        type="submit"
+                        class="w-full h-11 rounded-xl bg-red-600 text-white text-sm font-bold shadow-md hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+                    >
+                        <span class="material-symbols-outlined text-[18px]">cancel</span>
+                        Reject Reschedule
+                    </button>
+                </form>
+            </div>
+        </div>
+        @endif
     </div>
-
-    {{-- APPROVE / REJECT BUTTONS --}}
-    @if($booking->reschedule_status === 'pending')
-    <div class="mt-4 flex flex-col md:flex-row gap-3">
-
-        {{-- Approve --}}
-        <form method="POST" action="{{ route('counselor.change.reshceduleStatus', $booking->id) }}">
-            @csrf
-            @method('PUT')
-            <input type="hidden" name="statusReschedule" value="approved">
-
-            <button
-                type="submit"
-                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                @if($anyUnavailable) disabled @endif
-            >
-                ✅ Setujui Reschedule
-            </button>
-        </form>
-
-        {{-- Reject --}}
-        <form method="POST" action="{{ route('counselor.change.reshceduleStatus', $booking->id) }}">
-            @csrf
-            @method('PUT')
-            <input type="hidden" name="statusReschedule" value="rejected">
-
-            <input
-                type="text"
-                name="rejection_reason"
-                placeholder="Alasan penolakan (opsional)"
-                class="border rounded-lg px-3 py-2 w-full md:w-60 text-sm"
-            >
-
-            <button
-                type="submit"
-                class="mt-2 md:mt-0 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-            >
-                ❌ Tolak Reschedule
-            </button>
-        </form>
-
-    </div>
-    @endif
-</div>
+</section>
 @endif

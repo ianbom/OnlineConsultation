@@ -1,72 +1,162 @@
 @props(['payment', 'booking'])
 
 @if($payment)
-<div class="bg-white rounded-lg shadow-sm p-6">
-    <h2 class="text-lg font-semibold text-gray-900 mb-4">Informasi Pembayaran</h2>
-    <div class="space-y-3">
-        <div class="flex justify-between items-center pb-3 border-b">
-            <span class="text-gray-600">Status</span>
-            <span class="px-3 py-1 rounded-full text-xs font-semibold
-                @if($payment->payment_status === 'paid') bg-green-100 text-green-800
-                @elseif($payment->payment_status === 'pending') bg-yellow-100 text-yellow-800
-                @elseif($payment->payment_status === 'failed') bg-red-100 text-red-800
-                @else bg-gray-100 text-gray-800
-                @endif">
-                {{ ucfirst($payment->payment_status) }}
-            </span>
+<section class="bg-white rounded-2xl border border-[#e6e0e0] shadow-sm p-6">
+    <h3 class="text-lg font-bold text-[#171213] flex items-center gap-2 mb-6">
+        <span class="material-symbols-outlined text-[#7b1e2d]">payments</span>
+        Payment Information
+    </h3>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {{-- Payment Summary --}}
+        <div class="bg-[#f8f6f6] rounded-xl p-4 border border-[#e6e0e0]">
+            <h4 class="text-sm font-bold text-[#171213] mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#7b1e2d] text-[18px]">receipt</span>
+                Payment Summary
+            </h4>
+            <div class="space-y-3">
+                <div class="flex justify-between">
+                    <span class="text-sm text-[#83676c]">Order ID</span>
+                    <span class="text-sm font-medium text-[#171213]">{{ $payment->order_id }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-sm text-[#83676c]">Amount</span>
+                    <span class="text-sm font-bold text-[#7b1e2d]">Rp {{ number_format($payment->amount, 0, ',', '.') }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-sm text-[#83676c]">Status</span>
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium
+                        @if($payment->status === 'success') bg-green-100 text-green-700
+                        @elseif($payment->status === 'pending') bg-yellow-100 text-yellow-700
+                        @elseif($payment->status === 'failed') bg-red-100 text-red-700
+                        @elseif($payment->status === 'refund' || $payment->status === 'refunded') bg-purple-100 text-purple-700
+                        @endif">
+                        {{ ucfirst($payment->status) }}
+                    </span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-sm text-[#83676c]">Payment Method</span>
+                    <span class="text-sm font-medium text-[#171213]">{{ $payment->method ?? '-' }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-sm text-[#83676c]">Payment Type</span>
+                    <span class="text-sm font-medium text-[#171213]">{{ $payment->payment_type ?? '-' }}</span>
+                </div>
+            </div>
         </div>
 
-        <div class="flex justify-between items-center pb-3 border-b">
-            <span class="text-gray-600">Jumlah</span>
-            <span class="font-semibold text-gray-900">Rp {{ number_format($payment->amount, 0, ',', '.') }}</span>
+        {{-- Midtrans Details --}}
+        <div class="bg-[#f8f6f6] rounded-xl p-4 border border-[#e6e0e0]">
+            <h4 class="text-sm font-bold text-[#171213] mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#7b1e2d] text-[18px]">credit_card</span>
+                Transaction Details
+            </h4>
+            <div class="space-y-3">
+                <div class="flex justify-between">
+                    <span class="text-sm text-[#83676c]">Transaction ID</span>
+                    <span class="text-sm font-medium text-[#171213]">{{ $payment->midtrans_transaction_id ?? '-' }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-sm text-[#83676c]">Transaction Status</span>
+                    <span class="text-sm font-medium text-[#171213]">{{ $payment->transaction_status ?? '-' }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-sm text-[#83676c]">Fraud Status</span>
+                    <span class="text-sm font-medium text-[#171213]">{{ $payment->fraud_status ?? '-' }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-sm text-[#83676c]">VA Number</span>
+                    <span class="text-sm font-medium text-[#171213]">{{ $payment->va_number ?? '-' }}</span>
+                </div>
+            </div>
         </div>
-
-        @if($payment->payment_type)
-        <div class="flex justify-between items-center pb-3 border-b">
-            <span class="text-gray-600">Metode</span>
-            <span class="text-gray-900">{{ str_replace('_', ' ', ucfirst($payment->payment_type)) }}</span>
-        </div>
-        @endif
-
-        @if($payment->va_number)
-        <div class="pb-3 border-b">
-            <span class="text-gray-600 text-sm">VA Number</span>
-            <p class="font-mono text-sm text-gray-900 mt-1">{{ $payment->va_number }}</p>
-        </div>
-        @endif
-
-        @if($payment->paid_at)
-        <div class="flex justify-between items-center pb-3 border-b">
-            <span class="text-gray-600">Dibayar</span>
-            <span class="text-sm text-gray-700">
-                {{ \Carbon\Carbon::parse($payment->paid_at)->format('d M Y, H:i') }}
-            </span>
-        </div>
-        @endif
-
-        @if($payment->transaction_status)
-        <div class="flex justify-between items-center">
-            <span class="text-gray-600 text-sm">Transaction Status</span>
-            <span class="text-sm text-gray-700">{{ ucfirst($payment->transaction_status) }}</span>
-        </div>
-        @endif
     </div>
 
-    <!-- Refund Information -->
-    @if($booking->refund_status !== 'none')
-    <div class="mt-4 pt-4 border-t">
-        <h3 class="font-semibold text-gray-900 mb-2">Refund</h3>
-        <div class="bg-purple-50 border-l-4 border-purple-500 p-3 rounded space-y-1">
-            <p class="text-sm">
-                Status: <span class="font-semibold">{{ ucfirst($booking->refund_status) }}</span>
-            </p>
-            @if($booking->refund_processed_at)
-            <p class="text-sm text-gray-600">
-                Diproses: {{ \Carbon\Carbon::parse($booking->refund_processed_at)->format('d M Y, H:i') }}
-            </p>
+    {{-- Timestamps --}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-[#f8f6f6] rounded-xl p-4 border border-[#e6e0e0]">
+            <h4 class="text-sm font-bold text-[#171213] mb-3 flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#7b1e2d] text-[18px]">schedule</span>
+                Timestamps
+            </h4>
+            <div class="space-y-2">
+                <div>
+                    <p class="text-xs text-[#83676c]">Created At</p>
+                    <p class="text-sm font-medium text-[#171213]">{{ $payment->created_at->format('M d, Y h:i A') }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-[#83676c]">Paid At</p>
+                    <p class="text-sm font-medium text-[#171213]">{{ $payment->paid_at ? \Carbon\Carbon::parse($payment->paid_at)->format('M d, Y h:i A') : '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-[#83676c]">Settlement Time</p>
+                    <p class="text-sm font-medium text-[#171213]">{{ $payment->settlement_time ? \Carbon\Carbon::parse($payment->settlement_time)->format('M d, Y h:i A') : '-' }}</p>
+                </div>
+            </div>
+        </div>
+
+        {{-- Payment URL --}}
+        <div class="bg-[#f8f6f6] rounded-xl p-4 border border-[#e6e0e0]">
+            <h4 class="text-sm font-bold text-[#171213] mb-3 flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#7b1e2d] text-[18px]">link</span>
+                Payment Link
+            </h4>
+            @if($payment->payment_url)
+            <a href="{{ $payment->payment_url }}" target="_blank" class="text-sm text-[#7b1e2d] hover:underline break-all">{{ $payment->payment_url }}</a>
+            @else
+            <p class="text-sm text-[#83676c]">No payment URL</p>
             @endif
+        </div>
+
+        {{-- Failure Info --}}
+        <div class="bg-[#f8f6f6] rounded-xl p-4 border border-[#e6e0e0]">
+            <h4 class="text-sm font-bold text-[#171213] mb-3 flex items-center gap-2">
+                <span class="material-symbols-outlined text-[#7b1e2d] text-[18px]">error</span>
+                Failure Info
+            </h4>
+            <p class="text-sm text-[#171213]">{{ $payment->failure_reason ?? 'No failure' }}</p>
+        </div>
+    </div>
+
+    {{-- Refund Info (if any) --}}
+    @if($booking && $booking->refund_status !== 'none')
+    <div class="mt-6 bg-purple-50 rounded-xl p-4 border border-purple-200">
+        <h4 class="text-sm font-bold text-purple-700 mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-purple-600 text-[18px]">currency_exchange</span>
+            Refund Details
+        </h4>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+                <p class="text-xs text-purple-600">Refund Status</p>
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium
+                    @if($booking->refund_status === 'requested') bg-orange-100 text-orange-700
+                    @elseif($booking->refund_status === 'processed') bg-blue-100 text-blue-700
+                    @elseif($booking->refund_status === 'done') bg-green-100 text-green-700
+                    @endif">
+                    {{ ucfirst($booking->refund_status) }}
+                </span>
+            </div>
+            <div>
+                <p class="text-xs text-purple-600">Refund Amount</p>
+                <p class="text-sm font-bold text-purple-800">Rp {{ number_format($payment->refund_amount ?? 0, 0, ',', '.') }}</p>
+            </div>
+            <div>
+                <p class="text-xs text-purple-600">Refund Processed At</p>
+                <p class="text-sm font-medium text-purple-800">{{ $booking->refund_processed_at ? \Carbon\Carbon::parse($booking->refund_processed_at)->format('M d, Y h:i A') : '-' }}</p>
+            </div>
         </div>
     </div>
     @endif
-</div>
+</section>
+@else
+<section class="bg-white rounded-2xl border border-[#e6e0e0] shadow-sm p-6">
+    <h3 class="text-lg font-bold text-[#171213] flex items-center gap-2 mb-4">
+        <span class="material-symbols-outlined text-[#7b1e2d]">payments</span>
+        Payment Information
+    </h3>
+    <div class="text-center py-8">
+        <span class="material-symbols-outlined text-[48px] text-[#e6e0e0]">receipt_long</span>
+        <p class="text-[#83676c] mt-2">No payment records found</p>
+    </div>
+</section>
 @endif

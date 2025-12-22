@@ -24,6 +24,10 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
+Route::get('/dbs', function () {
+    return view('dashboard');
+});
+
 
 Route::get('/tes', function () {
     return view('admin.dashboard.dashboard');

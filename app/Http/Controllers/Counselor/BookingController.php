@@ -23,7 +23,7 @@ class BookingController extends Controller
         $user = Auth::user();
 
         $bookings = Booking::where('counselor_id', $user->counselor->id)
-        ->with('client', 'schedule', 'secondSchedule', 'previousSchedule', 'previousSecondSchedule', 'payment')->get();
+        ->with('client', 'schedule', 'secondSchedule', 'previousSchedule', 'previousSecondSchedule', 'payment')->orderBy('created_at', 'desc')->get();
 
         return view('counselor.booking.index', ['bookings' => $bookings]);
     }

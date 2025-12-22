@@ -1,41 +1,72 @@
 @props(['booking'])
 
-<div class="bg-white rounded-lg shadow-sm p-6">
-    <h2 class="text-lg font-semibold text-gray-900 mb-4">Detail Konsultasi</h2>
-    <div class="space-y-3">
-        <div class="flex justify-between items-center pb-3 border-b">
-            <span class="text-gray-600">Tipe Konsultasi</span>
-            <span class="flex items-center space-x-2">
+<section class="bg-white rounded-2xl border border-[#e6e0e0] shadow-sm p-6">
+    <h3 class="text-lg font-bold text-[#171213] flex items-center gap-2 mb-6">
+        <span class="material-symbols-outlined text-[#7b1e2d]">info</span>
+        Session Details
+    </h3>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        <div class="bg-[#f8f6f6] p-4 rounded-xl border border-[#e6e0e0] text-center">
+            <p class="text-xs text-[#83676c] mb-1">Type</p>
+            <p class="font-bold text-[#171213] flex items-center justify-center gap-1">
                 @if($booking->consultation_type === 'online')
-                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                    </svg>
-                    <span class="font-semibold text-gray-900">Online</span>
+                <span class="material-symbols-outlined text-[18px]">videocam</span>
                 @else
-                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    </svg>
-                    <span class="font-semibold text-gray-900">Offline</span>
+                <span class="material-symbols-outlined text-[18px]">location_on</span>
                 @endif
-            </span>
+                {{ ucfirst($booking->consultation_type) }}
+            </p>
         </div>
-
-        <div class="flex justify-between items-center pb-3 border-b">
-            <span class="text-gray-600">Durasi</span>
-            <span class="font-semibold text-gray-900">{{ $booking->duration_hours }} Jam</span>
+        <div class="bg-[#f8f6f6] p-4 rounded-xl border border-[#e6e0e0] text-center">
+            <p class="text-xs text-[#83676c] mb-1">Duration</p>
+            <p class="font-bold text-[#171213] flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-[18px]">timer</span> {{ $booking->duration_hours }} Hour(s)
+            </p>
         </div>
-
-        <div class="flex justify-between items-center pb-3 border-b">
-            <span class="text-gray-600">Harga</span>
-            <span class="font-semibold text-gray-900">Rp {{ number_format($booking->price, 0, ',', '.') }}</span>
+        <div class="bg-[#f8f6f6] p-4 rounded-xl border border-[#e6e0e0] text-center">
+            <p class="text-xs text-[#83676c] mb-1">Price</p>
+            <p class="font-bold text-[#7b1e2d] text-lg">Rp {{ number_format($booking->price, 0, ',', '.') }}</p>
         </div>
-
-        <div class="flex justify-between items-center">
-            <span class="text-gray-600">Dibuat</span>
-            <span class="text-sm text-gray-700">
-                {{ \Carbon\Carbon::parse($booking->created_at)->format('d M Y, H:i') }}
-            </span>
+        <div class="bg-[#f8f6f6] p-4 rounded-xl border border-[#e6e0e0] text-center">
+            <p class="text-xs text-[#83676c] mb-1">Booking ID</p>
+            <p class="font-bold text-[#171213]">#{{ $booking->id }}</p>
         </div>
     </div>
-</div>
+
+    {{-- Additional Session Info --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="bg-[#f8f6f6] p-4 rounded-xl border border-[#e6e0e0]">
+            <p class="text-xs text-[#83676c] mb-1">Meeting Link Status</p>
+            <p class="font-medium text-[#171213]">
+                @if($booking->link_status)
+                <span class="inline-flex items-center gap-1">
+                    @if($booking->link_status === 'sent')
+                    <span class="material-symbols-outlined text-[16px] text-green-600">check_circle</span>
+                    @else
+                    <span class="material-symbols-outlined text-[16px] text-amber-600">pending</span>
+                    @endif
+                    {{ ucfirst($booking->link_status) }}
+                </span>
+                @else
+                <span class="text-[#83676c]">Not Set</span>
+                @endif
+            </p>
+        </div>
+        <div class="bg-[#f8f6f6] p-4 rounded-xl border border-[#e6e0e0]">
+            <p class="text-xs text-[#83676c] mb-1">Is Expired</p>
+            <p class="font-medium text-[#171213]">
+                @if($booking->is_expired)
+                <span class="inline-flex items-center gap-1 text-red-600">
+                    <span class="material-symbols-outlined text-[16px]">timer_off</span>
+                    Yes
+                </span>
+                @else
+                <span class="inline-flex items-center gap-1 text-green-600">
+                    <span class="material-symbols-outlined text-[16px]">check</span>
+                    No
+                </span>
+                @endif
+            </p>
+        </div>
+    </div>
+</section>

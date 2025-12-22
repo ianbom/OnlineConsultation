@@ -1,108 +1,70 @@
 @props(['booking'])
 
-<div class="bg-white rounded-lg shadow-sm p-6">
-    <h2 class="text-lg font-semibold text-gray-900 mb-4">Jadwal Konsultasi</h2>
-
-    <!-- Current Schedule -->
-    <div class="border-l-4 border-primary pl-4 py-2 mb-4">
-        <p class="text-sm text-gray-500 mb-1">Jadwal Aktif</p>
-        <div class="flex items-center space-x-2">
-            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-            </svg>
-            <span class="font-semibold text-gray-900">
-                {{ \Carbon\Carbon::parse($booking->schedule->date)->isoFormat('dddd, D MMMM YYYY') }}
-            </span>
-        </div>
-        <div class="flex items-center space-x-2 mt-2">
-            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <span class="text-gray-700">
-                {{ \Carbon\Carbon::parse($booking->schedule->start_time)->format('H:i') }} -
-                {{ \Carbon\Carbon::parse($booking->schedule->end_time)->format('H:i') }}
-            </span>
-        </div>
+<section class="bg-white rounded-2xl border border-[#e6e0e0] shadow-sm overflow-hidden">
+    <div class="bg-[#7b1e2d]/5 p-4 border-b border-[#e6e0e0] flex items-center justify-between">
+        <h3 class="text-base font-bold text-[#171213] flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#7b1e2d]">calendar_month</span>
+            Schedule
+        </h3>
     </div>
+    <div class="p-6 space-y-6">
+        {{-- Primary Schedule --}}
+        <div class="flex items-start gap-4">
+            <div class="flex flex-col items-center justify-center w-14 h-14 bg-[#f8f6f6] rounded-xl border border-[#e6e0e0] text-center shrink-0">
+                <span class="text-xs font-bold text-[#7b1e2d] uppercase">{{ \Carbon\Carbon::parse($booking->schedule->date)->format('M') }}</span>
+                <span class="text-xl font-black text-[#171213]">{{ \Carbon\Carbon::parse($booking->schedule->date)->format('d') }}</span>
+            </div>
+            <div>
+                <p class="text-lg font-bold text-[#171213]">{{ \Carbon\Carbon::parse($booking->schedule->date)->format('l, F d, Y') }}</p>
+                <p class="text-[#83676c]">{{ $booking->schedule->start_time }} - {{ $booking->schedule->end_time }}</p>
+            </div>
+        </div>
 
-    @if($booking->second_schedule_id)
-    <!-- Second Schedule -->
-    <div class="border-l-4 border-green-500 pl-4 py-2 mb-4">
-        <p class="text-sm text-gray-500 mb-1">Jadwal Kedua</p>
-        <div class="flex items-center space-x-2">
-            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-            </svg>
-            <span class="font-semibold text-gray-900">
-                {{ \Carbon\Carbon::parse($booking->secondSchedule->date)->isoFormat('dddd, D MMMM YYYY') }}
-            </span>
+        {{-- Second Schedule --}}
+        @if ($booking->secondSchedule)
+        <div class="flex items-start gap-4">
+            <div class="flex flex-col items-center justify-center w-14 h-14 bg-[#f8f6f6] rounded-xl border border-[#e6e0e0] text-center shrink-0">
+                <span class="text-xs font-bold text-[#7b1e2d] uppercase">{{ \Carbon\Carbon::parse($booking->secondSchedule->date)->format('M') }}</span>
+                <span class="text-xl font-black text-[#171213]">{{ \Carbon\Carbon::parse($booking->secondSchedule->date)->format('d') }}</span>
+            </div>
+            <div>
+                <p class="text-lg font-bold text-[#171213]">{{ \Carbon\Carbon::parse($booking->secondSchedule->date)->format('l, F d, Y') }}</p>
+                <p class="text-[#83676c]">{{ $booking->secondSchedule->start_time }} - {{ $booking->secondSchedule->end_time }}</p>
+            </div>
         </div>
-        <div class="flex items-center space-x-2 mt-2">
-            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <span class="text-gray-700">
-                {{ \Carbon\Carbon::parse($booking->secondSchedule->start_time)->format('H:i') }} -
-                {{ \Carbon\Carbon::parse($booking->secondSchedule->end_time)->format('H:i') }}
-            </span>
+        @endif
+
+        {{-- Previous Schedule Info --}}
+        @if($booking->previous_schedule_id && $booking->previousSchedule)
+        <div class="border-t border-[#e6e0e0] pt-4">
+            <p class="text-xs font-semibold text-[#83676c] uppercase tracking-wider mb-3">Previous Schedule</p>
+            <div class="flex items-center gap-3 bg-[#f8f6f6] p-3 rounded-xl border border-[#e6e0e0]">
+                <div class="flex flex-col items-center justify-center w-12 h-12 bg-white rounded-lg border border-[#e6e0e0] text-center shrink-0">
+                    <span class="text-[10px] font-bold text-[#7b1e2d] uppercase">{{ \Carbon\Carbon::parse($booking->previousSchedule->date)->format('M') }}</span>
+                    <span class="text-base font-black text-[#171213]">{{ \Carbon\Carbon::parse($booking->previousSchedule->date)->format('d') }}</span>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-[#171213] line-through">{{ \Carbon\Carbon::parse($booking->previousSchedule->date)->format('l, M d, Y') }}</p>
+                    <p class="text-xs text-[#83676c] line-through">{{ $booking->previousSchedule->start_time }} - {{ $booking->previousSchedule->end_time }}</p>
+                </div>
+            </div>
         </div>
+        @endif
+
+        {{-- Previous Second Schedule Info --}}
+        @if($booking->previous_second_schedule_id && $booking->previousSecondSchedule)
+        <div class="border-t border-[#e6e0e0] pt-4">
+            <div class="flex items-center gap-3 bg-[#f8f6f6] p-3 rounded-xl border border-[#e6e0e0]">
+                <div class="flex flex-col items-center justify-center w-12 h-12 bg-white rounded-lg border border-[#e6e0e0] text-center shrink-0">
+                    <span class="text-[10px] font-bold text-[#7b1e2d] uppercase">{{ \Carbon\Carbon::parse($booking->previousSecondSchedule->date)->format('M') }}</span>
+                    <span class="text-base font-black text-[#171213]">{{ \Carbon\Carbon::parse($booking->previousSecondSchedule->date)->format('d') }}</span>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-[#171213] line-through">{{ \Carbon\Carbon::parse($booking->previousSecondSchedule->date)->format('l, M d, Y') }}</p>
+                    <p class="text-xs text-[#83676c] line-through">{{ $booking->previousSecondSchedule->start_time }} - {{ $booking->previousSecondSchedule->end_time }}</p>
+                </div>
+            </div>
+        </div>
+        @endif
     </div>
-    @endif
-
-    {{-- Previous MAIN Schedule --}}
-    @if($booking->previous_schedule_id && $booking->previousSchedule)
-    <div class="border-l-4 border-gray-400 pl-4 py-2 bg-gray-50 mb-3">
-        <p class="text-sm text-gray-500 mb-1">Jadwal Sebelumnya (Dirubah)</p>
-
-        <div class="flex items-center space-x-2">
-            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-            </svg>
-            <span class="font-medium text-gray-700 line-through">
-                {{ \Carbon\Carbon::parse($booking->previousSchedule->date)->isoFormat('dddd, D MMMM YYYY') }}
-            </span>
-        </div>
-
-        <div class="flex items-center space-x-2 mt-2">
-            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <span class="text-gray-600 line-through">
-                {{ \Carbon\Carbon::parse($booking->previousSchedule->start_time)->format('H:i') }} -
-                {{ \Carbon\Carbon::parse($booking->previousSchedule->end_time)->format('H:i') }}
-            </span>
-        </div>
-    </div>
-    @endif
-
-    {{-- Previous SECOND Schedule (Jika Ada) --}}
-    @if($booking->previous_second_schedule_id && $booking->previousSecondSchedule)
-    <div class="border-l-4 border-gray-400 pl-4 py-2 bg-gray-50">
-        <p class="text-sm text-gray-500 mb-1">Jadwal Kedua Sebelumnya (Dirubah)</p>
-
-        <div class="flex items-center space-x-2">
-            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-            </svg>
-            <span class="font-medium text-gray-700 line-through">
-                {{ \Carbon\Carbon::parse($booking->previousSecondSchedule->date)->isoFormat('dddd, D MMMM YYYY') }}
-            </span>
-        </div>
-
-        <div class="flex items-center space-x-2 mt-2">
-            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <span class="text-gray-600 line-through">
-                {{ \Carbon\Carbon::parse($booking->previousSecondSchedule->start_time)->format('H:i') }} -
-                {{ \Carbon\Carbon::parse($booking->previousSecondSchedule->end_time)->format('H:i') }}
-            </span>
-        </div>
-    </div>
-    @endif
-
-</div>
+</section>

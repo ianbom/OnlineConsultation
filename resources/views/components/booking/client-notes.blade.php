@@ -1,10 +1,11 @@
 @props(['notes'])
 
-@if($notes)
-<div class="bg-white rounded-lg shadow-sm p-6">
-    <h2 class="text-lg font-semibold text-gray-900 mb-3">Catatan Klien</h2>
-    <div class="bg-secondary border-l-4 border-primary p-4 rounded">
-        <p class="text-gray-700">{{ $notes }}</p>
+<section class="bg-white rounded-2xl border border-[#e6e0e0] shadow-sm p-6">
+    <h3 class="text-lg font-bold text-[#171213] flex items-center gap-2 mb-4">
+        <span class="material-symbols-outlined text-[#7b1e2d]">notes</span>
+        Client Notes
+    </h3>
+    <div class="bg-[#f8f6f6] rounded-xl p-4 border border-[#e6e0e0]">
+        <p class="text-sm text-[#171213]">{{ $notes ?? 'No notes provided by client.' }}</p>
     </div>
-</div>
-@endif
+</section>
