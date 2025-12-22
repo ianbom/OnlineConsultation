@@ -24,7 +24,7 @@ class UpdateClientProfileRequest extends FormRequest
         'name'              => 'nullable|string|max:255',
         'email'             => 'nullable|email|unique:users,email,' . $userId,
         'phone'             => 'nullable|string|max:20',
-        'profile_pic'       => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+        'profile_pic'       => 'nullable|file|image|mimes:jpg,jpeg,png,gif|max:2048',
 
         // Password optional - only validated if provided
         'password'          => 'nullable|min:8|confirmed',

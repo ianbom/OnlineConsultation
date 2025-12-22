@@ -30,7 +30,7 @@ export default function CounselorsList() {
   const { props } = usePage();
   const counselors = props.counselors as any[];
 
-  console.log("Counselors:", counselors[0].user.profile_pic);
+  console.log("Counselors:",counselors);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSpec, setSelectedSpec] = useState("All");
@@ -158,18 +158,16 @@ export default function CounselorsList() {
               name={c.user?.name ?? "Unknown"}
               photo={c.user?.profile_pic ?? ""}
               specializations={c.specialization ? c.specialization.split(" ") : []}
-              rating={4.8}
-              reviewCount={20}
               pricePerSession={c.price_per_session}
-              isAvailable={true}
+              isAvailable={c.status === 'active'}
             />
           ))}
         </div>
       ) : (
         <EmptyState
           icon="search"
-          title="No counselors found"
-          description="Try adjusting your search or filters."
+          title="Konselor tidak ditemukan"
+          description="Coba ganti kata kunci anda."
         />
       )}
     </PageLayout>

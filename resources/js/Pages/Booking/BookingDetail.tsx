@@ -198,7 +198,7 @@ export default function BookingDetail({ booking }: Props) {
                   </Card>
                 )}
 
-                <Button variant="outline" className="w-full my-2 transition hover:bg-primary hover:border-white hover:text-white" asChild>
+                <Button variant="outline" className="w-full my-2 bg-amber-50 border-primary transition hover:bg-primary hover:border-white hover:text-white" asChild>
                   <Link href={route("client.booking.history")}>
                     Lihat Semua Booking
                   </Link>

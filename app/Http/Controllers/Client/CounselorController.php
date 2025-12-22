@@ -11,7 +11,7 @@ class CounselorController extends Controller
 {
     public function counselorList()
     {
-        $counselors = Counselor::with('user')->where('status', 'active')->get();
+        $counselors = Counselor::with('user')->get();
 
 
         return Inertia::render('Counselor/CounselorsList', [

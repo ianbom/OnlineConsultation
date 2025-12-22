@@ -107,14 +107,24 @@ export function PendingPaymentStatus({ booking }: StatusComponentProps) {
 
 // Status: paid (confirmed)
 export function PaidStatus({ booking }: StatusComponentProps) {
-  const showRescheduleButton =
-    booking.status === "paid" &&
-    !booking.is_expired &&
-    booking.reschedule_status === "none";
-
   const sessionDate = new Date(booking.schedule.date);
   const now = new Date();
   const isPast = sessionDate < now;
+
+  // Kombinasikan tanggal dan waktu untuk mendapatkan datetime lengkap
+  const sessionDateTime = new Date(
+    `${booking.schedule.date}T${booking.schedule.start_time}`
+  );
+
+  // Hitung selisih waktu dalam jam
+  const hoursUntilSession = (sessionDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+  const isTooCloseToSession = hoursUntilSession < 2 && hoursUntilSession > 0;
+
+  const showRescheduleButton =
+    booking.status === "paid" &&
+    !booking.is_expired &&
+    booking.reschedule_status === "none" &&
+    hoursUntilSession >= 2; // Hanya tampilkan jika masih >= 2 jam
 
   const statusLabel = (value: string) => {
     return value.charAt(0).toUpperCase() + value.slice(1);
@@ -217,6 +227,26 @@ export function PaidStatus({ booking }: StatusComponentProps) {
       {/* =============================== */}
       {/* RESCHEDULE BUTTON               */}
       {/* =============================== */}
+      {/* Peringatan jika terlalu dekat dengan sesi */}
+      {isTooCloseToSession && booking.reschedule_status === "none" && (
+        <Card className="border-orange-300 bg-orange-50">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <Clock className="h-5 w-5 text-orange-600 mt-0.5" />
+              <div className="flex-1">
+                <h4 className="font-medium text-foreground mb-1">
+                  Reschedule Tidak Tersedia
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  Reschedule hanya dapat dilakukan minimal 2 jam sebelum sesi dimulai.
+                  Silakan hubungi konselor jika ada kendala.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {showRescheduleButton && (
         <Card className="border-primary/20 bg-primary/5">
           <CardContent className="pt-6">
@@ -230,7 +260,7 @@ export function PaidStatus({ booking }: StatusComponentProps) {
                 </h3>
                 <p className="text-muted-foreground text-sm mb-4">
                   Anda dapat melakukan reschedule sesi konseling ini jika ada
-                  perubahan jadwal.
+                  perubahan jadwal. Reschedule hanya dapat dilakukan minimal 2 jam sebelum sesi.
                 </p>
                 <Button asChild>
                   <Link href={route("client.pick.reschedule", booking.id)}>
@@ -434,6 +464,18 @@ export function RescheduledStatus({ booking }: StatusComponentProps) {
   const previous = booking.previous_schedule;
   const previousSecond = booking.previous_second_schedule;
 
+  const now = new Date();
+
+  // Kombinasikan tanggal dan waktu jadwal baru untuk mendapatkan datetime lengkap
+  const newSessionDateTime = new Date(
+    `${booking.schedule.date}T${booking.schedule.start_time}`
+  );
+
+  // Hitung selisih waktu dalam jam
+  const hoursUntilSession = (newSessionDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+  const isTooCloseToSession = hoursUntilSession < 2 && hoursUntilSession > 0;
+  const canReschedule = hoursUntilSession >= 2;
+
   return (
     <div className="space-y-4">
       {/* Alert Jadwal Diubah */}
@@ -480,6 +522,82 @@ export function RescheduledStatus({ booking }: StatusComponentProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Peringatan jika terlalu dekat dengan sesi */}
+      {isTooCloseToSession && (
+        <Card className="border-orange-300 bg-orange-50">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <Clock className="h-5 w-5 text-orange-600 mt-0.5" />
+              <div className="flex-1">
+                <h4 className="font-medium text-foreground mb-1">
+                  Reschedule & Pembatalan Tidak Tersedia
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  Reschedule dan pembatalan hanya dapat dilakukan minimal 2 jam sebelum sesi dimulai.
+                  Silakan hubungi konselor jika ada kendala.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Tombol reschedule jika masih memenuhi syarat waktu */}
+      {canReschedule && booking.reschedule_status === "approved" && (
+        <Card className="border-primary/20 bg-primary/5">
+          <CardContent className="pt-6">
+            <div className="flex items-start gap-4">
+              <div className="p-3 rounded-full bg-primary/10">
+                <Calendar className="h-6 w-6 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-lg mb-1">
+                  Perlu Mengubah Jadwal Lagi?
+                </h3>
+                <p className="text-muted-foreground text-sm mb-4">
+                  Anda dapat melakukan reschedule ulang jika diperlukan.
+                  Reschedule hanya dapat dilakukan minimal 2 jam sebelum sesi.
+                </p>
+                <Button asChild>
+                  <Link href={route("client.pick.reschedule", booking.id)}>
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Reschedule Ulang
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Tombol Cancel Booking jika masih >= 2 jam */}
+      {canReschedule && booking.reschedule_status === "approved" && (
+        <Card className="border-destructive/20 bg-destructive/5">
+          <CardContent className="pt-6">
+            <div className="flex items-start gap-4">
+              <div className="p-3 rounded-full bg-destructive/10">
+                <XCircle className="h-6 w-6 text-destructive" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-lg mb-1">
+                  Perlu Membatalkan Booking?
+                </h3>
+                <p className="text-muted-foreground text-sm mb-4">
+                  Pembatalan hanya dapat dilakukan minimal 2 jam sebelum sesi dimulai.
+                  Dana akan dikembalikan sesuai kebijakan refund.
+                </p>
+                <Button variant="destructive" asChild>
+                  <Link href={route("client.booking.cancel", booking.id)}>
+                    <XCircle className="h-4 w-4 mr-2" />
+                    Batalkan Booking
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Tombol Aksi */}
       {booking.meeting_link && (

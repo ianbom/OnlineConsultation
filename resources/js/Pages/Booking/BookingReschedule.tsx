@@ -160,7 +160,7 @@ export default function BookingReschedule({ booking, counselor, schedulesByDate 
       data,
       {
         onSuccess: () => {
-        
+
         },
         onFinish: () => {
           setIsRescheduling(false);
@@ -180,9 +180,9 @@ export default function BookingReschedule({ booking, counselor, schedulesByDate 
     <PageLayout>
       <div className="max-w-5xl mx-auto px-4">
         <Button variant="ghost" asChild className="mb-4">
-          <Link href={route("client.booking.history")}>
+          <Link href={route("client.booking.detail", booking.id)}>
             <ChevronLeft className="h-4 w-4 mr-1" />
-            Kembali ke Riwayat Booking
+            Kembali ke Detail Booking
           </Link>
         </Button>
 

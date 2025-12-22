@@ -7,6 +7,7 @@ import { BookingCard } from "@/Components/bookings/BookingCard";
 import { Calendar, Clock, CreditCard, ChevronRight, Users } from "lucide-react";
 
 import { User, Schedule, Booking ,Counselor, Payment } from "@/Interfaces";
+import { CtaCard } from "@/Components/ui/CtaCard";
 
 
 
@@ -25,21 +26,21 @@ export default function Dashboard({
 }: DashboardProps) {
   const stats = [
     {
-      label: "Upcoming Sessions",
+      label: "Sesi Mendatang",
       value: upcomingBooking.length,
       icon: Calendar,
       color: "text-info",
       bgColor: "bg-info/10",
     },
     {
-      label: "Completed Sessions",
+      label: "Sesi Selesai",
       value: completedBooking.length,
       icon: Clock,
       color: "text-success",
       bgColor: "bg-success/10",
     },
     {
-      label: "Pending Payments",
+      label: "Pembayaran Tertunda",
       value: pendingPaymentBooking.length,
       icon: CreditCard,
       color: "text-warning",
@@ -90,142 +91,130 @@ export default function Dashboard({
         ))}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Main Content */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Quick Actions */}
-          <Card>
-            <CardHeader className="flex-row items-center justify-between pb-4">
-              <CardTitle className="text-lg">Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <Button variant="outline" className="w-full justify-start" asChild>
+      {/* Quick Actions */}
+      <CtaCard/>
+
+      {/* Booking Cards Grid */}
+      <div className="grid gap-4 lg:grid-cols-2 mb-6 my-6">
+        {/* Upcoming Schedule */}
+        <Card>
+          <CardHeader className="flex-row items-center justify-between pb-3">
+            <CardTitle className="text-base">Sesi Mendatang</CardTitle>
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/client/booking-history">
+                Lihat Semua <ChevronRight className="h-4 w-4 ml-1" />
+              </Link>
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {upcomingBooking.length > 0 ? (
+              upcomingBooking.slice(0, 2).map((booking) => (
+                <BookingCard
+                  key={booking.id}
+                  id={booking.id}
+                  counselorName={booking.counselor.user.name}
+                  counselorPhoto={getImageUrl(booking.counselor.user.profile_pic ?? '')}
+                  date={formatDate(booking.schedule.date)}
+                  time={`${formatTime(booking.schedule.start_time)} - ${
+                    booking.second_schedule
+                      ? formatTime(booking.second_schedule.end_time)
+                      : formatTime(booking.schedule.end_time)
+                  }`}
+                  duration={`${booking.duration_hours} hour${booking.duration_hours > 1 ? 's' : ''}`}
+                  status={booking.status as any}
+                  specialization={booking.counselor.specialization}
+                  showActions={false}
+                  bookingType={booking.consultation_type}
+                  rescheduleStatus={booking.reschedule_status }
+                  rescheduleBy={booking.reschedule_by}
+                  paymentStatus={booking.payment?.status ?? "pending"}
+                />
+              ))
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 px-4">
+                <div className="relative mb-4">
+                  <div className="absolute inset-0 bg-primary/5 rounded-full blur-2xl"></div>
+                  <div className="relative bg-gradient-to-br from-primary/10 to-primary/5 rounded-full p-6">
+                    <Calendar className="h-12 w-12 text-primary" />
+                  </div>
+                </div>
+                <h3 className="text-base font-semibold text-foreground mb-1">
+                  Belum Ada Sesi Terjadwal
+                </h3>
+                <p className="text-sm text-muted-foreground text-center mb-4 max-w-xs">
+                  Jadwalkan konsultasi pertama Anda dengan konselor profesional kami
+                </p>
+                <Button size="sm" asChild>
                   <Link href="/client/list-counselors">
-                    <Users className="h-4 w-4 mr-2" />
-                    Find a Counselor
-                  </Link>
-                </Button>
-                <Button variant="outline" className="w-full justify-start" asChild>
-                  <Link href="/client/booking-history">
                     <Calendar className="h-4 w-4 mr-2" />
-                    View All Bookings
+                    Buat Jadwal Baru
                   </Link>
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            )}
+          </CardContent>
+        </Card>
 
-          {/* Upcoming Schedule */}
-          <Card>
-            <CardHeader className="flex-row items-center justify-between pb-4">
-              <CardTitle className="text-lg">Upcoming Sessions</CardTitle>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/client/booking-history">
-                  View All <ChevronRight className="h-4 w-4 ml-1" />
-                </Link>
-              </Button>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {upcomingBooking.length > 0 ? (
-                upcomingBooking.map((booking) => (
-                  <BookingCard
-                    key={booking.id}
-                    id={booking.id}
-                    counselorName={booking.counselor.user.name}
-                    counselorPhoto={getImageUrl(booking.counselor.user.profile_pic ?? '')}
-                    date={formatDate(booking.schedule.date)}
-                    time={`${formatTime(booking.schedule.start_time)} - ${
-                      booking.second_schedule
-                        ? formatTime(booking.second_schedule.end_time)
-                        : formatTime(booking.schedule.end_time)
-                    }`}
-                    duration={`${booking.duration_hours} hour${booking.duration_hours > 1 ? 's' : ''}`}
-                    status={booking.status as any}
-                    specialization={booking.counselor.specialization}
-                    showActions={false}
-                    bookingType={booking.consultation_type}
-                    rescheduleStatus={booking.reschedule_status }
-                    rescheduleBy={booking.reschedule_by}
-                    paymentStatus={booking.payment?.status ?? "pending"}
-                  />
-                ))
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  No upcoming sessions
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Recent History */}
-          <Card>
-            <CardHeader className="flex-row items-center justify-between pb-4">
-              <CardTitle className="text-lg">Recent Consultations</CardTitle>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/client/booking-history">
-                  View History <ChevronRight className="h-4 w-4 ml-1" />
-                </Link>
-              </Button>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {recentConsultations.length > 0 ? (
-                recentConsultations.slice(0, 2).map((booking) => (
-                  <BookingCard
-                    key={booking.id}
-                    id={booking.id}
-                    counselorName={booking.counselor.user.name}
-                    counselorPhoto={getImageUrl(booking.counselor.user.profile_pic ?? '')}
-                    date={formatDate(booking.schedule.date)}
-                    time={`${formatTime(booking.schedule.start_time)} - ${
-                      booking.second_schedule
-                        ? formatTime(booking.second_schedule.end_time)
-                        : formatTime(booking.schedule.end_time)
-                    }`}
-                    duration={`${booking.duration_hours} hour${booking.duration_hours > 1 ? 's' : ''}`}
-                    status={booking.status as any}
-                    specialization={booking.counselor.specialization}
-                    showActions={false}
-                    bookingType={booking.consultation_type}
-                    rescheduleStatus={booking.reschedule_status }
-                    rescheduleBy={booking.reschedule_by}
-                    paymentStatus={booking.payment?.status ?? "pending"}
-                  />
-                ))
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  No recent consultations
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Pending Payment */}
-          {pendingPaymentBooking.length > 0 && (
-            <Card className="border-warning/30 bg-warning/5">
-              <CardContent className="p-4">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-warning/10">
-                    <CreditCard className="h-5 w-5 text-warning" />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-medium text-foreground">Payment Pending</h4>
-                    <p className="text-sm text-muted-foreground mt-0.5">
-                      You have {pendingPaymentBooking.length} pending payment{pendingPaymentBooking.length > 1 ? 's' : ''}
-                    </p>
-                    <Button variant="accent" size="sm" className="mt-3" asChild>
-                      <Link href="/client/booking-history">View Payments</Link>
-                    </Button>
+        {/* Recent History */}
+        <Card>
+          <CardHeader className="flex-row items-center justify-between pb-3">
+            <CardTitle className="text-base">Konsultasi Terbaru</CardTitle>
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/client/booking-history">
+                Lihat Riwayat <ChevronRight className="h-4 w-4 ml-1" />
+              </Link>
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {recentConsultations.length > 0 ? (
+              recentConsultations.slice(0, 2).map((booking) => (
+                <BookingCard
+                  key={booking.id}
+                  id={booking.id}
+                  counselorName={booking.counselor.user.name}
+                  counselorPhoto={getImageUrl(booking.counselor.user.profile_pic ?? '')}
+                  date={formatDate(booking.schedule.date)}
+                  time={`${formatTime(booking.schedule.start_time)} - ${
+                    booking.second_schedule
+                      ? formatTime(booking.second_schedule.end_time)
+                      : formatTime(booking.schedule.end_time)
+                  }`}
+                  duration={`${booking.duration_hours} hour${booking.duration_hours > 1 ? 's' : ''}`}
+                  status={booking.status as any}
+                  specialization={booking.counselor.specialization}
+                  showActions={false}
+                  bookingType={booking.consultation_type}
+                  rescheduleStatus={booking.reschedule_status }
+                  rescheduleBy={booking.reschedule_by}
+                  paymentStatus={booking.payment?.status ?? "pending"}
+                />
+              ))
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 px-4">
+                <div className="relative mb-4">
+                  <div className="absolute inset-0 bg-success/5 rounded-full blur-2xl"></div>
+                  <div className="relative bg-gradient-to-br from-success/10 to-success/5 rounded-full p-6">
+                    <Clock className="h-12 w-12 text-success" />
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+                <h3 className="text-base font-semibold text-foreground mb-1">
+                  Belum Ada Riwayat Konsultasi
+                </h3>
+                <p className="text-sm text-muted-foreground text-center mb-4 max-w-xs">
+                  Mulai perjalanan kesehatan mental Anda bersama konselor terpercaya
+                </p>
+                <Button size="sm" variant="outline" asChild>
+                  <Link href="/client/list-counselors">
+                    <Users className="h-4 w-4 mr-2" />
+                    Lihat Konselor
+                  </Link>
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
+
     </PageLayout>
   );
 }

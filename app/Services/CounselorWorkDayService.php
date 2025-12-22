@@ -66,7 +66,7 @@ class CounselorWorkDayService
     private function generateSchedules(CounselorsWorkDay $workday){
 
         $startDate = Carbon::today();
-        $endDate   = Carbon::today()->addDays(30);
+        $endDate   = Carbon::today()->addYear();
 
         $period = CarbonPeriod::create($startDate, $endDate);
 

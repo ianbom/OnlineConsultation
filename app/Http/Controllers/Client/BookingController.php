@@ -111,7 +111,7 @@ class BookingController extends Controller
 
        try {
            $this->bookingService->updateRescheduleBooking($bookingId, $data);
-           return redirect()->back()->with('success', 'Booking berhasil dijadwalkan ulang.');
+           return redirect()->route('client.booking.detail', ['bookingId' => $bookingId])->with('success', 'Booking berhasil dijadwalkan ulang.');
        } catch (\Throwable $th) {
            return redirect()->back()->with('error', 'Terjadi kesalahan');
        }

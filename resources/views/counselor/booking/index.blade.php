@@ -28,8 +28,9 @@
                             <th>Jadwal</th>
                             <th>Tipe</th>
                             <th>Status</th>
-                            <th>Status Reschedule</th>
-                            <th>Status Pembayaran</th>
+                            <th>Reschedule</th>
+                            <th>Pembayaran</th>
+                            <th>Dibuat Pada</th>
                             <th class="text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -97,7 +98,7 @@
                                     @elseif ($booking->status === 'rescheduled')
                                         <span class="badge bg-info">Dijadwalkan Ulang</span>
                                     @else
-                                        <span class="badge bg-secondary">{{ ucfirst($booking->status) }}</span>
+                                        <span class="badge bg-purple-300">{{ ucfirst($booking->status) }}</span>
                                     @endif
                                 </td>
                                 <td>
@@ -108,7 +109,7 @@
                                         $target = $by === 'client' ? 'Counselor' : ($by === 'counselor' ? 'Client' : null);
                                     @endphp
                                     @if ($status === 'none')
-                                        <span class="badge bg-secondary">Tidak Ada Reschedule</span>
+                                        <span class="badge bg-gray-500">-</span>
                                     @elseif ($status === 'pending')
                                         <span class="badge bg-warning">Pending</span>
                                     @elseif ($status === 'approved')
@@ -116,7 +117,7 @@
                                     @elseif ($status === 'rejected')
                                         <span class="badge bg-danger">Ditolak</span>
                                     @else
-                                        <span class="badge bg-secondary">{{ ucfirst($status) }}</span>
+                                        <span class="badge bg-purple-500">{{ ucfirst($status) }}</span>
                                     @endif
                                     @if($status !== 'none')
                                         <div class="text-xs text-gray-500 mt-1">
@@ -146,11 +147,19 @@
                                         @elseif ($booking->payment->status === 'failed')
                                             <span class="badge bg-danger">Gagal</span>
                                         @else
-                                            <span class="badge bg-secondary">{{ ucfirst($booking->payment->status) }}</span>
+                                            <span class="badge bg-purple-500">{{ ucfirst($booking->payment->status) }}</span>
                                         @endif
                                     @else
                                         <span class="text-gray-400">-</span>
                                     @endif
+                                </td>
+                                <td>
+                                    <div class="text-sm">
+                                        {{ \Carbon\Carbon::parse($booking->created_at)->format('d M Y') }}
+                                    </div>
+                                    <div class="text-xs text-gray-500">
+                                        {{ \Carbon\Carbon::parse($booking->created_at)->format('H:i') }}
+                                    </div>
                                 </td>
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-2">
@@ -163,7 +172,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center p-4">Tidak ada data booking</td>
+                                <td colspan="9" class="text-center p-4">Tidak ada data booking</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -262,7 +271,7 @@
 
                         <!-- Status Reschedule -->
                         <div class="mb-3">
-                            <div class="text-xs font-medium text-gray-500 mb-1">Status Reschedule</div>
+                            <div class="text-xs font-medium text-gray-500 mb-1">Reschedule</div>
                             @php
                                 $status = $booking->reschedule_status;
                                 $by = $booking->reschedule_by;
@@ -271,7 +280,7 @@
                             @endphp
                             <div>
                                 @if ($status === 'none')
-                                    <span class="badge bg-secondary text-xs">Tidak Ada Reschedule</span>
+                                    <span class="badge bg-gray-500 text-xs">-</span>
                                 @elseif ($status === 'pending')
                                     <span class="badge bg-warning text-xs">Pending</span>
                                 @elseif ($status === 'approved')
@@ -279,7 +288,7 @@
                                 @elseif ($status === 'rejected')
                                     <span class="badge bg-danger text-xs">Ditolak</span>
                                 @else
-                                    <span class="badge bg-secondary text-xs">{{ ucfirst($status) }}</span>
+                                    <span class="badge bg-purple-500 text-xs">{{ ucfirst($status) }}</span>
                                 @endif
                             </div>
                             @if($status !== 'none')
@@ -313,11 +322,22 @@
                                 @elseif ($booking->payment->status === 'failed')
                                     <span class="badge bg-danger text-xs">Gagal</span>
                                 @else
-                                    <span class="badge bg-secondary text-xs">{{ ucfirst($booking->payment->status) }}</span>
+                                    <span class="badge bg-purple-500 text-xs">{{ ucfirst($booking->payment->status) }}</span>
                                 @endif
                             @else
                                 <span class="text-gray-400 text-sm">-</span>
                             @endif
+                        </div>
+
+                        <!-- Dibuat Pada -->
+                        <div class="mb-3">
+                            <div class="text-xs font-medium text-gray-500 mb-1">Dibuat Pada</div>
+                            <div class="text-sm font-medium">
+                                {{ \Carbon\Carbon::parse($booking->created_at)->format('d M Y') }}
+                            </div>
+                            <div class="text-xs text-gray-600 dark:text-gray-400">
+                                {{ \Carbon\Carbon::parse($booking->created_at)->format('H:i') }}
+                            </div>
                         </div>
 
                         <!-- Action Button -->

@@ -9,3 +9,6 @@ use Illuminate\Support\Facades\Schedule;
 // })->purpose('Display an inspiring quote');
 
 Schedule::command('app:expired-booking')->everySecond();
+
+// Auto-reject reschedule requests that are less than 2 hours before session
+Schedule::command('reschedule:auto-reject')->everySecond();

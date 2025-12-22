@@ -33,7 +33,7 @@ export default function TimeSlots({
           Waktu Tersedia untuk {format(selectedDate, "EEEE, d MMMM")}
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          Pilih jadwal yang Anda inginkan
+          Pilih jadwal yang Anda inginkan (Max 2 jam berdampingan)
         </p>
       </CardHeader>
 

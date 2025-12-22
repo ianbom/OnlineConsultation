@@ -11,6 +11,7 @@ import { Separator } from "@/Components/ui/separator";
 import { Camera, Mail, Phone, Lock, Bell, User, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { ImageCropDialog } from "@/Components/ImageCropDialog";
 
 interface User {
   id: number;
@@ -36,6 +37,9 @@ export default function ClientProfile({ user }: Props) {
     user.profile_pic ? `/storage/${user.profile_pic}` : null
   );
   const [profilePicFile, setProfilePicFile] = useState<File | null>(null);
+  const [cropDialogOpen, setCropDialogOpen] = useState(false);
+  const [imageToCrop, setImageToCrop] = useState<string>("");
+  const [croppedImageBase64, setCroppedImageBase64] = useState<string>("");
 
   const [formData, setFormData] = useState({
     name: user.name,
@@ -84,15 +88,27 @@ export default function ClientProfile({ user }: Props) {
         return;
       }
 
-      setProfilePicFile(file);
-
-      // Preview image
+      // Read file and open crop dialog
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProfilePicPreview(reader.result as string);
+        setImageToCrop(reader.result as string);
+        setCropDialogOpen(true);
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleCropComplete = (croppedImage: string) => {
+    setCroppedImageBase64(croppedImage);
+    setProfilePicPreview(croppedImage);
+
+    // Convert base64 to File object for upload
+    fetch(croppedImage)
+      .then(res => res.blob())
+      .then(blob => {
+        const file = new File([blob], "profile.jpg", { type: "image/jpeg" });
+        setProfilePicFile(file);
+      });
   };
 
   const handleSave = (e: FormEvent) => {
@@ -329,63 +345,6 @@ export default function ClientProfile({ user }: Props) {
                 </p>
               </CardContent>
             </Card>
-
-            {/* Notifications */}
-            {/* <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Bell className="h-5 w-5 text-primary" />
-                  Preferensi Notifikasi
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-foreground">Notifikasi Push</p>
-                    <p className="text-sm text-muted-foreground">
-                      Terima notifikasi tentang appointment dan update
-                    </p>
-                  </div>
-                  <Switch
-                    checked={preferences.notifications}
-                    onCheckedChange={(checked) =>
-                      setPreferences(prev => ({ ...prev, notifications: checked }))
-                    }
-                  />
-                </div>
-                <Separator />
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-foreground">Pengingat Email</p>
-                    <p className="text-sm text-muted-foreground">
-                      Dapatkan pengingat email sebelum sesi Anda
-                    </p>
-                  </div>
-                  <Switch
-                    checked={preferences.emailReminders}
-                    onCheckedChange={(checked) =>
-                      setPreferences(prev => ({ ...prev, emailReminders: checked }))
-                    }
-                  />
-                </div>
-                <Separator />
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-foreground">Pengingat SMS</p>
-                    <p className="text-sm text-muted-foreground">
-                      Terima pengingat melalui pesan teks
-                    </p>
-                  </div>
-                  <Switch
-                    checked={preferences.smsReminders}
-                    onCheckedChange={(checked) =>
-                      setPreferences(prev => ({ ...prev, smsReminders: checked }))
-                    }
-                  />
-                </div>
-              </CardContent>
-            </Card> */}
-
             {/* Save Button */}
             <div className="flex justify-end">
               <Button size="lg" onClick={handleSave} disabled={processing}>
@@ -395,6 +354,20 @@ export default function ClientProfile({ user }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Image Crop Dialog */}
+      <ImageCropDialog
+        open={cropDialogOpen}
+        imageSrc={imageToCrop}
+        onCropComplete={handleCropComplete}
+        onClose={() => {
+          setCropDialogOpen(false);
+          // Reset file input
+          if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+          }
+        }}
+      />
     </PageLayout>
   );
 }
