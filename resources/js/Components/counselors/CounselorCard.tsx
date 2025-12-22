@@ -1,4 +1,3 @@
-import { Star } from "lucide-react";
 import { Link } from "@inertiajs/react";
 import { Card, CardContent } from "@/Components/ui/card";
 import { Badge } from "@/Components/ui/badge";
@@ -10,10 +9,8 @@ interface CounselorCardProps {
   name: string;
   photo: string;
   specializations: string[];
-  rating: number;
-  reviewCount: number;
   pricePerSession: number;
-  isAvailable?: boolean;
+  isAvailable: boolean;
 }
 
 export function CounselorCard({
@@ -22,7 +19,7 @@ export function CounselorCard({
   photo,
   specializations,
   pricePerSession,
-  isAvailable = true,
+  isAvailable,
 }: CounselorCardProps) {
   const baseUrl = import.meta.env.VITE_APP_URL;
   const photoUrl = photo
@@ -49,10 +46,10 @@ export function CounselorCard({
           </div>
 
           <Badge
-            variant={isAvailable ? "success" : "secondary"}
+            variant={isAvailable ? "success" : "destructive"}
             className="text-[10px] py-0.5 px-2"
           >
-            {isAvailable ? "Active" : "Off"}
+            {isAvailable ? "Active" : "Inactive"}
           </Badge>
         </div>
 
@@ -67,7 +64,7 @@ export function CounselorCard({
               {spec.replace(/,/g, "")}
             </Badge>
           ))}
-        
+
           {specializations.length > 2 && (
             <Badge variant="outline" className="text-[10px] px-2 py-0.5">
               +{specializations.length - 2}
@@ -85,13 +82,23 @@ export function CounselorCard({
             </span>
           </div>
 
-          <Button
+          {isAvailable ? (
+            <Button
               asChild
               size="sm"
               className="text-xs px-3 py-1 h-7 bg-primary hover:bg-primary/80"
             >
               <Link href={route("client.counselor.show", id)}>Pesan Konsultasi</Link>
             </Button>
+          ) : (
+            <Button
+              size="sm"
+              disabled
+              className="text-xs px-3 py-1 h-7"
+            >
+              Tidak Tersedia
+            </Button>
+          )}
 
         </div>
       </CardContent>

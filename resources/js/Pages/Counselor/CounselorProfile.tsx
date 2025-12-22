@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { User, WorkDay, Schedule, Counselor } from "@/Interfaces";
 
-const dayNames = ["monday", "tuesday", "wednesday", "thursday", "friday"];
+const dayNames = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 const dayLabels: Record<string, string> = {
   monday: "Senin",
   tuesday: "Selasa",
@@ -64,7 +64,6 @@ export default function CounselorProfile({ counselor }: Props) {
 
   const isAvailable = counselor.status === "active";
 
-  console.log('avaibility',availabilityByDay)
 
   return (
     <PageLayout>
@@ -107,7 +106,7 @@ export default function CounselorProfile({ counselor }: Props) {
                     <h1 className="font-display text-2xl font-semibold text-foreground">
                       {counselor.user.name}
                     </h1>
-                                
+
                     <Badge
                       variant={isAvailable ? "success" : "secondary"}
                       className="
@@ -217,6 +216,7 @@ export default function CounselorProfile({ counselor }: Props) {
                 <div className="space-y-3">
                   {dayNames.map((day) => {
                     const slots = availabilityByDay[day] || 0;
+                    const isAvailableDay = slots > 0;
                     return (
                       <div
                         key={day}
@@ -225,8 +225,8 @@ export default function CounselorProfile({ counselor }: Props) {
                         <span className="text-foreground font-medium">
                           {dayLabels[day]}
                         </span>
-                        <span className="text-muted-foreground">
-                          {slots > 0 ? `${slots} slot` : "Tidak tersedia"}
+                        <span className={`font-medium ${isAvailableDay ? 'text-green-600' : 'text-red-500'}`}>
+                          {isAvailableDay ? "Tersedia" : "Tidak tersedia"}
                         </span>
                       </div>
                     );
