@@ -4,7 +4,9 @@
 <div class="mb-6">
     <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-semibold dark:text-white-light">Statistik Utama</h2>
-        <div class="flex gap-2 items-center">
+
+        @if ($showClient == true)
+          <div class="flex gap-2 items-center">
             <select id="filterType" class="form-select text-sm" onchange="applyFilter()">
                 <option value="all" {{ $filterType == 'all' ? 'selected' : '' }}>Semua Data</option>
                 <option value="last7days" {{ $filterType == 'last7days' ? 'selected' : '' }}>7 Hari Terakhir</option>
@@ -26,6 +28,9 @@
                 @endfor
             </select>
         </div>
+        @endif
+
+
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
