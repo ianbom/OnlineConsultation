@@ -122,7 +122,7 @@
                 <div class="panel p-5">
                     <h3 class="text-lg font-semibold mb-4">Aksi</h3>
 
-                    <button type="submit" class="btn btn-success w-full mb-3">
+                    <button type="submit" class="btn btn-primary w-full mb-3">
                         <svg width="22" height="22" fill="none" class="mr-2">
                             <path d="M12 2v18M5 9l7 7 7-7" stroke="currentColor" stroke-width="1.5"/>
                         </svg>
@@ -130,7 +130,7 @@
                     </button>
 
                     <a href="{{ route('admin.workday.index') }}"
-                       class="btn btn-secondary w-full">
+                       class="btn btn-outline-primary w-full">
                         Batal
                     </a>
                 </div>
