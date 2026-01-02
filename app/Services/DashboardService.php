@@ -57,7 +57,9 @@ class DashboardService
     public function getFilteredStats(string $filterType, int $filterMonth, int $filterYear): array
     {
         $bookingQuery = Booking::where('status', 'completed');
-        $paymentQuery = Payment::where('status', 'success');
+        $paymentQuery = Payment::where('status', 'success')->whereHas('booking', function ($q) {
+            $q->where('status', 'completed');
+        });
 
         switch ($filterType) {
             case 'last7days':

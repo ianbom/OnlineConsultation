@@ -31,6 +31,7 @@ public function createPayment($booking)
         'customer_details' => [
             'first_name' => $booking->client->name,
             'email'      => $booking->client->email,
+            'phone'      => $booking->client->phone,
         ],
 
         'expiry' => [

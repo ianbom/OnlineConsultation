@@ -30,6 +30,7 @@
                             <th>Tipe</th>
                             <th>Harga</th>
                             <th>Status</th>
+                            <th>Dibuat Pada</th>
                             <th class="text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -90,6 +91,13 @@
                                     @endif
                                 </td>
 
+                                {{-- DIBUAT PADA --}}
+                                <td>
+                                    <div class="text-xs text-gray-500">
+                                        {{ optional($booking->created_at)->format('d-m-Y H:i') }}
+                                    </div>
+                                </td>
+
                                 {{-- AKSI --}}
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-2">
@@ -99,11 +107,12 @@
                                         </a>
                                     </div>
                                 </td>
+
                             </tr>
 
                         @empty
                             <tr>
-                                <td colspan="9" class="text-center p-4">Tidak ada data booking</td>
+                                <td colspan="10" class="text-center p-4">Tidak ada data booking</td>
                             </tr>
                         @endforelse
                     </tbody>

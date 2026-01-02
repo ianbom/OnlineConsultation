@@ -4,10 +4,10 @@
     <div class="flex items-center justify-between mb-6">
         <h3 class="text-lg font-bold text-[#171213] flex items-center gap-2">
             <span class="material-symbols-outlined text-[#7b1e2d]">person</span>
-            Client Information
+            Informasi Klien
         </h3>
         @if($showViewProfile && $viewProfileRoute)
-        <a href="{{ $viewProfileRoute }}" class="text-[#7b1e2d] text-sm font-medium hover:underline">View Profile</a>
+        <a href="{{ $viewProfileRoute }}" class="text-[#7b1e2d] text-sm font-medium hover:underline">Lihat Profil</a>
         @endif
     </div>
     <div class="flex flex-col sm:flex-row gap-6">
@@ -22,22 +22,22 @@
         </div>
         <div class="flex-grow grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8">
             <div>
-                <p class="text-xs font-semibold text-[#83676c] uppercase tracking-wider mb-1">Full Name</p>
+                <p class="text-xs font-semibold text-[#83676c] uppercase tracking-wider mb-1">Nama Lengkap</p>
                 <p class="text-base font-medium text-[#171213]">{{ $client->name }}</p>
             </div>
             <div>
-                <p class="text-xs font-semibold text-[#83676c] uppercase tracking-wider mb-1">Client ID</p>
-                <p class="text-base font-medium text-[#171213]">#CL-{{ $client->id }}</p>
+                <p class="text-xs font-semibold text-[#83676c] uppercase tracking-wider mb-1">ID Klien</p>
+                <p class="text-base font-medium text-[#171213]">#{{ $client->id }}</p>
             </div>
             <div>
-                <p class="text-xs font-semibold text-[#83676c] uppercase tracking-wider mb-1">Email Address</p>
+                <p class="text-xs font-semibold text-[#83676c] uppercase tracking-wider mb-1">Alamat Email</p>
                 <p class="text-base font-medium text-[#171213] flex items-center gap-2">
                     {{ $client->email }}
                     <span class="material-symbols-outlined text-[16px] text-[#83676c] cursor-pointer hover:text-[#7b1e2d]" onclick="copyToClipboard('{{ $client->email }}')">content_copy</span>
                 </p>
             </div>
             <div>
-                <p class="text-xs font-semibold text-[#83676c] uppercase tracking-wider mb-1">Phone Number</p>
+                <p class="text-xs font-semibold text-[#83676c] uppercase tracking-wider mb-1">Nomor HP</p>
                 <p class="text-base font-medium text-[#171213] flex items-center gap-2">
                     {{ $client->phone ?? '-' }}
                     @if($client->phone)
@@ -46,19 +46,19 @@
                 </p>
             </div>
             <div>
-                <p class="text-xs font-semibold text-[#83676c] uppercase tracking-wider mb-1">Role</p>
+                <p class="text-xs font-semibold text-[#83676c] uppercase tracking-wider mb-1">Peran</p>
                 <p class="text-base font-medium text-[#171213]">{{ ucfirst($client->role) }}</p>
             </div>
             <div>
-                <p class="text-xs font-semibold text-[#83676c] uppercase tracking-wider mb-1">Email Verified</p>
+                <p class="text-xs font-semibold text-[#83676c] uppercase tracking-wider mb-1">Email Terverifikasi</p>
                 <p class="text-base font-medium text-[#171213]">
                     @if($client->email_verified_at)
                     <span class="inline-flex items-center gap-1 text-green-600">
                         <span class="material-symbols-outlined text-[16px]">verified</span>
-                        Verified
+                        Terverifikasi
                     </span>
                     @else
-                    <span class="text-[#83676c]">Not Verified</span>
+                    <span class="text-[#83676c]">Belum Terverifikasi</span>
                     @endif
                 </p>
             </div>
