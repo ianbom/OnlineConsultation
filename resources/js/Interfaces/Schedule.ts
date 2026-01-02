@@ -2,9 +2,9 @@ export default interface Schedule {
   id: number;
   workday_id: number;
   counselor_id: number;
-  date: string;
-  start_time: string;
-  end_time: string;
+  date: string; // YYYY-MM-DD
+  start_time: string; // HH:MM:SS
+  end_time: string; // HH:MM:SS
   is_available: number;
   created_at: string;
   updated_at: string;

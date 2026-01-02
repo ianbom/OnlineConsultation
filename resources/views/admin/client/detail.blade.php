@@ -212,7 +212,7 @@
                             </thead>
                             <tbody>
                                 @forelse($recentBookings as $booking)
-                                <tr class="text-white-dark hover:text-black dark:hover:text-white-light/90 group">
+                                <tr class="text-gray-700 dark:text-white-dark hover:bg-primary/5 group">
                                     <td class="min-w-[150px] text-black dark:text-white">
                                         <div class="flex items-center">
                                             @if($booking->client->profile_pic)
@@ -234,9 +234,13 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <a href="#" class="text-primary hover:underline">
-                                            {{ $booking->payment->order_id ?? '-' }}
-                                        </a>
+                                        @if($booking->payment && $booking->payment->order_id)
+                                            <a href="{{ route('admin.booking.show', $booking->id) }}" class="text-primary hover:underline">
+                                                {{ $booking->payment->order_id }}
+                                            </a>
+                                        @else
+                                            <span>-</span>
+                                        @endif
                                     </td>
                                     <td>Rp {{ number_format($booking->price, 0, ',', '.') }}</td>
                                     <td>
@@ -314,7 +318,7 @@
                                         @elseif($booking->status == 'rescheduled')
                                             <span class="badge bg-warning shadow-md dark:group-hover:bg-transparent">Rescheduled</span>
                                         @else
-                                            <span class="badge bg-secondary shadow-md dark:group-hover:bg-transparent">{{ ucfirst($booking->status) }}</span>
+                                            <span class="badge bg-gray-700 shadow-md dark:group-hover:bg-transparent">{{ ucfirst($booking->status) }}</span>
                                         @endif
                                     </td>
                                 </tr>

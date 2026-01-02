@@ -1,5 +1,5 @@
-import './index.css';
 import './bootstrap';
+import './index.css';
 
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
@@ -19,9 +19,8 @@ createInertiaApp({
 
         root.render(
             <div className="font-poppins">
-
                 <App {...props} />
-            </div>
+            </div>,
         );
     },
     progress: {

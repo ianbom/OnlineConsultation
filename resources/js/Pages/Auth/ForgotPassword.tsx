@@ -21,8 +21,9 @@ export default function ForgotPassword({ status }: { status?: string }) {
             <Head title="Forgot Password" />
 
             <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-                Lupa kata sandi?
-Tidak masalah. Silakan masukkan alamat email Anda dan kami akan mengirimkan tautan untuk mengatur ulang kata sandi, sehingga Anda dapat membuat kata sandi baru.
+                Lupa kata sandi? Tidak masalah. Silakan masukkan alamat email
+                Anda dan kami akan mengirimkan tautan untuk mengatur ulang kata
+                sandi, sehingga Anda dapat membuat kata sandi baru.
             </div>
 
             {status && (
