@@ -43,7 +43,7 @@ Route::middleware(['auth'])->prefix('admin')->as('admin.')->group(function () {
     Route::resource('client', AdmClientController::class);
 });
 
-Route::middleware(['role:counselor'])->prefix('counselor')->as('counselor.')->group(function () {
+Route::middleware(['role:counselor,admin'])->prefix('counselor')->as('counselor.')->group(function () {
     Route::get('/dashboard', [CounselorDashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [CounselorProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile/update', [CounselorProfileController::class, 'update'])->name('profile.update');
