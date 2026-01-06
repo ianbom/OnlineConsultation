@@ -2,11 +2,12 @@ import { BookingCard } from '@/Components/bookings/BookingCard';
 import { PageLayout } from '@/Components/layout/PageLayout';
 import { Button } from '@/Components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { Calendar, ChevronRight, Clock, CreditCard, Users } from 'lucide-react';
 
 import { CtaCard } from '@/Components/ui/CtaCard';
 import { Booking } from '@/Interfaces';
+import { PageProps } from '@/types';
 
 interface DashboardProps {
     upcomingBooking: Booking[];
@@ -21,6 +22,8 @@ export default function Dashboard({
     pendingPaymentBooking = [],
     recentConsultations = [],
 }: DashboardProps) {
+    const { auth } = usePage<PageProps>().props;
+
     const stats = [
         {
             label: 'Sesi Mendatang',
@@ -66,7 +69,7 @@ export default function Dashboard({
 
     return (
         <PageLayout
-            title="Selamat Datang Kembali"
+            title={`Selamat Datang, ${auth.user.name}`}
             description="Berikut adalah ringkasan penggunaan Persona Quality"
         >
             {/* Stats Grid */}
@@ -130,16 +133,15 @@ export default function Dashboard({
                                                 .profile_pic ?? '',
                                         )}
                                         date={formatDate(booking.schedule.date)}
-                                        time={`${formatTime(booking.schedule.start_time)} - ${
-                                            booking.second_schedule
+                                        time={`${formatTime(booking.schedule.start_time)} - ${booking.second_schedule
                                                 ? formatTime(
-                                                      booking.second_schedule
-                                                          .end_time,
-                                                  )
+                                                    booking.second_schedule
+                                                        .end_time,
+                                                )
                                                 : formatTime(
-                                                      booking.schedule.end_time,
-                                                  )
-                                        }`}
+                                                    booking.schedule.end_time,
+                                                )
+                                            }`}
                                         duration={`${booking.duration_hours} hour${booking.duration_hours > 1 ? 's' : ''}`}
                                         status={booking.status as any}
                                         specialization={
@@ -186,7 +188,7 @@ export default function Dashboard({
                 <Card>
                     <CardHeader className="flex-row items-center justify-between pb-3">
                         <CardTitle className="text-base">
-                            Konsultasi Terbaru
+                            Riwayat Konsultasi
                         </CardTitle>
                         <Button variant="ghost" size="sm" asChild>
                             <Link href="/client/booking-history">
@@ -211,16 +213,15 @@ export default function Dashboard({
                                                 .profile_pic ?? '',
                                         )}
                                         date={formatDate(booking.schedule.date)}
-                                        time={`${formatTime(booking.schedule.start_time)} - ${
-                                            booking.second_schedule
+                                        time={`${formatTime(booking.schedule.start_time)} - ${booking.second_schedule
                                                 ? formatTime(
-                                                      booking.second_schedule
-                                                          .end_time,
-                                                  )
+                                                    booking.second_schedule
+                                                        .end_time,
+                                                )
                                                 : formatTime(
-                                                      booking.schedule.end_time,
-                                                  )
-                                        }`}
+                                                    booking.schedule.end_time,
+                                                )
+                                            }`}
                                         duration={`${booking.duration_hours} hour${booking.duration_hours > 1 ? 's' : ''}`}
                                         status={booking.status as any}
                                         specialization={

@@ -1,18 +1,18 @@
+import { DurationSelector } from '@/Components/bookings/DurationSelector';
+import { SelectedScheduleSummary } from '@/Components/bookings/SelectedScheduleSummary';
 import { PageLayout } from '@/Components/layout/PageLayout';
-import { Alert, AlertDescription } from '@/Components/ui/alert';
-import { Button } from '@/Components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
-import { Link, router } from '@inertiajs/react';
-import { addDays, format } from 'date-fns';
-import { id as idLocale } from 'date-fns/locale';
-import { AlertCircle, Calendar, ChevronLeft, Clock, Info } from 'lucide-react';
-import { useState } from 'react';
-
 import CalendarGrid from '@/Components/schedule/CalendarGrid';
 import CalendarHeader from '@/Components/schedule/CalendarHeader';
 import TimeSlots from '@/Components/schedule/TimeSlots';
-
+import { Alert, AlertDescription } from '@/Components/ui/alert';
+import { Button } from '@/Components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Booking, Counselor, Schedule } from '@/Interfaces';
+import { getProfilePicUrl } from '@/utils/booking';
+import { Link, router } from '@inertiajs/react';
+import { addDays, format } from 'date-fns';
+import { AlertCircle, Calendar, ChevronLeft, Info } from 'lucide-react';
+import { useState } from 'react';
 
 interface TimeSlot {
     id: number;
@@ -26,7 +26,6 @@ interface Props {
     booking: Booking;
     counselor: Counselor;
     schedulesByDate: Record<string, Schedule[]>;
-    // original booking info (optional). If provided, reschedule must match this session count.
     originalDurationHours?: 1 | 2;
     originalSecondScheduleId?: number | null;
 }
@@ -36,8 +35,8 @@ export default function BookingReschedule({
     counselor,
     schedulesByDate = {},
     originalDurationHours,
-    originalSecondScheduleId,
 }: Props) {
+    // Week navigation state
     const [weekStart, setWeekStart] = useState(() => {
         const today = new Date();
         const day = today.getDay();
@@ -46,10 +45,13 @@ export default function BookingReschedule({
         monday.setHours(0, 0, 0, 0);
         return monday;
     });
+
+    // Selection state
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [selectedSlots, setSelectedSlots] = useState<TimeSlot[]>([]);
     const [isRescheduling, setIsRescheduling] = useState(false);
-    // Determine locked duration from original booking (either explicit prop or booking data)
+
+    // Duration state
     const initialDuration = (originalDurationHours ??
         booking?.duration_hours ??
         1) as 1 | 2;
@@ -60,6 +62,7 @@ export default function BookingReschedule({
 
     const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
     const maxSessions = durationHours;
+    const photoUrl = getProfilePicUrl(counselor.user.profile_pic);
 
     // Helper functions
     const isAdjacent = (time1: string, time2: string) => {
@@ -95,6 +98,7 @@ export default function BookingReschedule({
             .sort((a, b) => a.time.localeCompare(b.time));
     };
 
+    // Event handlers
     const handlePrevWeek = () => {
         setWeekStart(addDays(weekStart, -7));
         setSelectedDate(null);
@@ -126,13 +130,17 @@ export default function BookingReschedule({
         const sorted = [...selectedSlots, slot].sort((a, b) =>
             a.time.localeCompare(b.time),
         );
-
         setSelectedSlots(sorted);
     };
 
     const handleDurationChange = (hours: 1 | 2) => {
-        if (lockedDuration) return; // duration locked to original booking
+        if (lockedDuration) return;
         setDurationHours(hours);
+        setSelectedSlots([]);
+    };
+
+    const handleReset = () => {
+        setSelectedDate(null);
         setSelectedSlots([]);
     };
 
@@ -141,6 +149,7 @@ export default function BookingReschedule({
 
         setIsRescheduling(true);
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const data: any = {
             schedule_id: selectedSlots[0].id,
             duration_hours: durationHours,
@@ -159,11 +168,6 @@ export default function BookingReschedule({
     };
 
     const availableSlots = selectedDate ? getAvailableSlots(selectedDate) : [];
-
-    const baseUrl = import.meta.env.VITE_APP_URL;
-    const photoUrl = counselor.user.profile_pic
-        ? `${baseUrl}/storage/${counselor.user.profile_pic}`
-        : '/default-avatar.png';
 
     return (
         <PageLayout>
@@ -220,55 +224,11 @@ export default function BookingReschedule({
                                     <p className="mb-3 text-sm font-medium">
                                         Pilih Durasi Sesi
                                     </p>
-                                    <div className="space-y-2">
-                                        <button
-                                            onClick={() =>
-                                                handleDurationChange(1)
-                                            }
-                                            disabled={lockedDuration}
-                                            className={`w-full rounded-lg border-2 p-3 text-left transition-colors ${
-                                                durationHours === 1
-                                                    ? 'border-primary bg-primary/5'
-                                                    : 'border-border hover:border-primary/50'
-                                            } ${lockedDuration ? 'cursor-not-allowed opacity-60' : ''}`}
-                                        >
-                                            <div className="flex items-center justify-between">
-                                                <div>
-                                                    <p className="font-medium">
-                                                        1 Jam
-                                                    </p>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        Sesi standar
-                                                    </p>
-                                                </div>
-                                                <Clock className="h-5 w-5 text-muted-foreground" />
-                                            </div>
-                                        </button>
-
-                                        <button
-                                            onClick={() =>
-                                                handleDurationChange(2)
-                                            }
-                                            disabled={lockedDuration}
-                                            className={`w-full rounded-lg border-2 p-3 text-left transition-colors ${
-                                                durationHours === 2
-                                                    ? 'border-primary bg-primary/5'
-                                                    : 'border-border hover:border-primary/50'
-                                            } ${lockedDuration ? 'cursor-not-allowed opacity-60' : ''}`}
-                                        >
-                                            <div className="flex items-center justify-between">
-                                                <div>
-                                                    <p className="font-medium">
-                                                        2 Jam
-                                                    </p>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        Sesi extended
-                                                    </p>
-                                                </div>
-                                                <Clock className="h-5 w-5 text-muted-foreground" />
-                                            </div>
-                                        </button>
-                                    </div>
+                                    <DurationSelector
+                                        duration={durationHours}
+                                        onChange={handleDurationChange}
+                                        locked={lockedDuration}
+                                    />
                                 </div>
 
                                 {durationHours === 2 && (
@@ -343,82 +303,15 @@ export default function BookingReschedule({
                                 )}
 
                                 {/* Selected Info & Button */}
-                                {selectedSlots.length > 0 && (
-                                    <div className="space-y-3 border-t pt-4">
-                                        <div className="space-y-2 rounded-lg bg-primary/5 p-4">
-                                            <p className="text-sm font-medium">
-                                                Jadwal Baru:
-                                            </p>
-                                            <div className="flex items-start gap-2">
-                                                <Calendar className="mt-0.5 h-4 w-4 text-primary" />
-                                                <div className="text-sm">
-                                                    <p className="font-medium">
-                                                        {selectedDate &&
-                                                            format(
-                                                                selectedDate,
-                                                                'EEEE, dd MMMM yyyy',
-                                                                {
-                                                                    locale: idLocale,
-                                                                },
-                                                            )}
-                                                    </p>
-                                                    <p className="text-muted-foreground">
-                                                        {selectedSlots[0].time}{' '}
-                                                        -{' '}
-                                                        {selectedSlots[
-                                                            selectedSlots.length -
-                                                                1
-                                                        ].endTime.substring(
-                                                            0,
-                                                            5,
-                                                        )}
-                                                    </p>
-                                                    <p className="mt-1 text-xs text-muted-foreground">
-                                                        Durasi: {durationHours}{' '}
-                                                        jam
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            {maxSessions === 2 &&
-                                                selectedSlots.length === 1 && (
-                                                    <Alert>
-                                                        <AlertCircle className="h-4 w-4" />
-                                                        <AlertDescription>
-                                                            Pilih 1 slot lagi
-                                                            yang berurutan untuk
-                                                            sesi 2 jam.
-                                                        </AlertDescription>
-                                                    </Alert>
-                                                )}
-                                        </div>
-
-                                        <div className="flex gap-3">
-                                            <Button
-                                                variant="outline"
-                                                onClick={() => {
-                                                    setSelectedDate(null);
-                                                    setSelectedSlots([]);
-                                                }}
-                                                className="flex-1"
-                                            >
-                                                Reset
-                                            </Button>
-                                            <Button
-                                                onClick={handleReschedule}
-                                                disabled={
-                                                    isRescheduling ||
-                                                    selectedSlots.length !==
-                                                        durationHours
-                                                }
-                                                className="flex-1"
-                                            >
-                                                {isRescheduling
-                                                    ? 'Memproses...'
-                                                    : 'Konfirmasi Reschedule'}
-                                            </Button>
-                                        </div>
-                                    </div>
-                                )}
+                                <SelectedScheduleSummary
+                                    selectedDate={selectedDate}
+                                    selectedSlots={selectedSlots}
+                                    durationHours={durationHours}
+                                    maxSessions={maxSessions}
+                                    onReset={handleReset}
+                                    onConfirm={handleReschedule}
+                                    isProcessing={isRescheduling}
+                                />
 
                                 {!selectedDate && (
                                     <div className="py-12 text-center">
