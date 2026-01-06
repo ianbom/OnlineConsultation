@@ -186,7 +186,7 @@ export default function Dashboard({
                 <Card>
                     <CardHeader className="flex-row items-center justify-between pb-3">
                         <CardTitle className="text-base">
-                            Konsultasi Terbaru
+                            Riwayat Konsultasi
                         </CardTitle>
                         <Button variant="ghost" size="sm" asChild>
                             <Link href="/client/booking-history">
