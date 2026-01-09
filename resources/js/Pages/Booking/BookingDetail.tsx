@@ -34,6 +34,9 @@ export default function BookingDetail({ booking }: Props) {
         : null;
     const timeLeft = useCountdown(expiryTime);
 
+    console.log(expiryTime);
+    console.log(timeLeft);
+
     // Generate WhatsApp message based on status
     const getWhatsAppMessage = () => {
         const counselorName = booking.counselor.user.name;
@@ -94,7 +97,7 @@ Mohon informasi terkait proses refund saya. Terima kasih! 🙏`;
 
     const handleWhatsAppClick = () => {
         const message = getWhatsAppMessage();
-        const phone = booking.counselor.user.phone || '6281913811966';
+        const phone = '6281913811966';
         const cleanPhone = phone.replace(/\D/g, '').replace(/^0/, '62');
         const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
         window.open(waUrl, '_blank');
