@@ -43,6 +43,7 @@ class CounselorService
         'specialization'   => $data['specialization'],
         'description'      => $data['description'],
         'price_per_session'=> $data['price_per_session'],
+        'online_price_per_session'=> $data['online_price_per_session'],
         'status'           => 'active',
     ]);
 }
@@ -76,6 +77,7 @@ public function update($counselor, array $data)
         'specialization'   => $data['specialization'],
         'description'      => $data['description'],
         'price_per_session'=> $data['price_per_session'],
+        'online_price_per_session'=> $data['online_price_per_session'],
         'status'           => $data['status'],
     ]);
 

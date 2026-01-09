@@ -25,7 +25,10 @@ class BookingService
         $counselor = Counselor::findOrFail($counselorId);
 
         $duration = $secondId ? 2 : 1;
-        $price = $duration * $counselor->price_per_session;
+        $pricePerSession = $type === 'online' 
+            ? $counselor->online_price_per_session 
+            : $counselor->price_per_session;
+        $price = $duration * $pricePerSession;
 
         $booking = Booking::create([
             'client_id' => $client->id,

@@ -20,7 +20,9 @@ import {
     getBookingStatusBadge,
 } from '@/utils/booking';
 import { Link, router } from '@inertiajs/react';
-import { ChevronLeft, Printer } from 'lucide-react';
+import { format } from 'date-fns';
+import { id as idLocale } from 'date-fns/locale';
+import { ChevronLeft, MessageCircle, Printer } from 'lucide-react';
 
 interface Props {
     booking: Booking;
@@ -31,6 +33,77 @@ export default function BookingDetail({ booking }: Props) {
         ? new Date(booking.payment.expiry_time)
         : null;
     const timeLeft = useCountdown(expiryTime);
+
+    // Generate WhatsApp message based on status
+    const getWhatsAppMessage = () => {
+        const counselorName = booking.counselor.user.name;
+        const scheduleDate = format(
+            new Date(booking.schedule.date),
+            'EEEE, d MMMM yyyy',
+            { locale: idLocale }
+        );
+        const scheduleTime = `${booking.schedule.start_time.slice(0, 5)} - ${booking.schedule.end_time.slice(0, 5)}`;
+        const consultationType = booking.consultation_type === 'online' ? 'Online' : 'Tatap Muka';
+        const bookingCode = `#${booking.id}`;
+
+        switch (booking.status) {
+            case 'paid':
+                return `Halo Kak ${counselorName}, 👋
+
+Saya ingin konfirmasi jadwal konseling saya:
+
+📋 *Detail Booking*
+• Kode Booking: ${bookingCode}
+• Tanggal: ${scheduleDate}
+• Waktu: ${scheduleTime} WIB
+• Tipe: ${consultationType}
+
+Mohon informasi lebih lanjut untuk persiapan sesi konseling. Terima kasih! 🙏`;
+
+            case 'rescheduled':
+                return `Halo Kak ${counselorName}, 👋
+
+Saya ingin mengkonfirmasi jadwal konseling saya yang telah di-reschedule:
+
+📋 *Detail Booking*
+• Kode Booking: ${bookingCode}
+• Jadwal Baru: ${scheduleDate}
+• Waktu: ${scheduleTime} WIB
+• Tipe: ${consultationType}
+
+Mohon konfirmasi apakah jadwal baru ini sudah sesuai. Terima kasih! 🙏`;
+
+            default:
+                // For refund status
+                if (booking.refund_status === 'requested' || booking.refund_status === 'processed') {
+                    return `Halo Admin, 👋
+
+Saya ingin menanyakan status refund untuk booking saya:
+
+📋 *Detail Booking*
+• Kode Booking: ${bookingCode}
+• Konselor: ${counselorName}
+• Tanggal Booking: ${scheduleDate}
+• Status Refund: ${booking.refund_status === 'requested' ? 'Diminta' : 'Diproses'}
+
+Mohon informasi terkait proses refund saya. Terima kasih! 🙏`;
+                }
+                return '';
+        }
+    };
+
+    const handleWhatsAppClick = () => {
+        const message = getWhatsAppMessage();
+        const phone = booking.counselor.user.phone || '6281913811966';
+        const cleanPhone = phone.replace(/\D/g, '').replace(/^0/, '62');
+        const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+        window.open(waUrl, '_blank');
+    };
+
+    // Check if WhatsApp button should be shown
+    const showWhatsAppButton =
+        ['paid', 'rescheduled'].includes(booking.status) ||
+        ['requested', 'processed'].includes(booking.refund_status);
 
     const renderStatusComponent = () => {
         if (booking.is_expired) {
@@ -163,6 +236,20 @@ export default function BookingDetail({ booking }: Props) {
                                         </p>
                                     </CardContent>
                                 </Card>
+                            )}
+
+                            {/* WhatsApp CTA Button */}
+                            {showWhatsAppButton && (
+                                <Button
+                                    variant="default"
+                                    className="my-2 w-full gap-2 bg-green-600 hover:bg-green-700"
+                                    onClick={handleWhatsAppClick}
+                                >
+                                    <MessageCircle className="h-4 w-4" />
+                                    {booking.refund_status !== 'none'
+                                        ? 'Hubungi Admin via WhatsApp'
+                                        : 'Hubungi Konselor via WhatsApp'}
+                                </Button>
                             )}
 
                             <Button

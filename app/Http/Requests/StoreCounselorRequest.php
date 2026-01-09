@@ -29,6 +29,7 @@ class StoreCounselorRequest extends FormRequest
             'specialization'    => 'required|string',
             'description'       => 'required|string',
             'price_per_session' => 'required|integer|min:0',
+            'online_price_per_session' => 'required|integer|min:0',
             'profile_pic'       => 'nullable',
             'phone'             => 'nullable|string',
         ];

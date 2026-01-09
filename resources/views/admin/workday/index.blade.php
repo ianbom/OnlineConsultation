@@ -130,7 +130,10 @@
                                             </div>
 
                                             <span class="block text-xs font-semibold px-2 py-1 rounded bg-primary/10 text-primary">
-                                                Harga : Rp {{ number_format($workDay->counselor->price_per_session,0,',','.') }}
+                                                Offline : Rp {{ number_format($workDay->counselor->price_per_session,0,',','.') }}
+                                            </span>
+                                            <span class="block text-xs font-semibold px-2 py-1 rounded bg-green-100 text-green-700 mt-1">
+                                                Online : Rp {{ number_format($workDay->counselor->online_price_per_session,0,',','.') }}
                                             </span>
 
                                             <div class="flex gap-1">

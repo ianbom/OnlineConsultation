@@ -37,7 +37,8 @@
                             <th>Counselor</th>
                             <th>Email</th>
                             <th>Spesialisasi</th>
-                            <th>Harga Sesi</th>
+                            <th>Harga Offline</th>
+                            <th>Harga Online</th>
                             <th>Status</th>
                             <th class="text-center">Aksi</th>
                         </tr>
@@ -62,6 +63,7 @@
                                 <td>{{ $counselor->specialization }}</td>
 
                                 <td>Rp {{ number_format($counselor->price_per_session, 0, ',', '.') }}</td>
+                                <td>Rp {{ number_format($counselor->online_price_per_session, 0, ',', '.') }}</td>
 
                                 <td>
                                     @if ($counselor->status === 'active')
@@ -88,7 +90,7 @@
 
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center p-4">Tidak ada data counselor</td>
+                                <td colspan="8" class="text-center p-4">Tidak ada data counselor</td>
                             </tr>
                         @endforelse
                     </tbody>

@@ -38,11 +38,14 @@ export default function CounselorInfoCard({ counselor }: Props) {
                         </h2>
 
                         <p className="text-sm text-muted-foreground">
-                            Rp{' '}
+                            Offline: Rp{' '}
                             {counselor.price_per_session.toLocaleString(
                                 'id-ID',
                             )}{' '}
-                            per sesi
+                            / Online: Rp{' '}
+                            {counselor.online_price_per_session.toLocaleString(
+                                'id-ID',
+                            )}
                         </p>
 
                         <p className="mt-1 text-xs text-muted-foreground">

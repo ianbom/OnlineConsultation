@@ -127,19 +127,6 @@ export default function CounselorProfile({ counselor }: Props) {
                                     </Badge>
                                 </div>
                             </div>
-
-                            {/* Harga */}
-                            <div className="text-right">
-                                <span className="text-2xl font-semibold text-foreground">
-                                    Rp{' '}
-                                    {counselor.price_per_session.toLocaleString(
-                                        'id-ID',
-                                    )}
-                                </span>
-                                <span className="text-muted-foreground">
-                                    /sesi
-                                </span>
-                            </div>
                         </div>
                     </CardContent>
                 </Card>
@@ -258,11 +245,25 @@ export default function CounselorProfile({ counselor }: Props) {
                                     </span>
                                 </div>
 
-                                <div className="text-2xl font-semibold text-foreground">
-                                    Rp{' '}
-                                    {counselor.price_per_session.toLocaleString(
-                                        'id-ID',
-                                    )}
+                                <div>
+                                    <div className="text-xl font-semibold text-foreground">
+                                        Rp{' '}
+                                        {counselor.price_per_session.toLocaleString(
+                                            'id-ID',
+                                        )}
+                                        <span className="text-sm font-normal text-muted-foreground">
+                                            {' '}/offline
+                                        </span>
+                                    </div>
+                                    <div className="text-lg font-medium text-green-600">
+                                        Rp{' '}
+                                        {counselor.online_price_per_session.toLocaleString(
+                                            'id-ID',
+                                        )}
+                                        <span className="text-sm font-normal text-muted-foreground">
+                                            {' '}/online
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <div className="space-y-2">

@@ -22,6 +22,7 @@ return new class extends Migration
         $table->string('specialization');
         $table->text('description');
         $table->integer('price_per_session');
+        $table->integer('online_price_per_session');
 
         $table->enum('status', ['active', 'inactive'])
               ->default('active');
