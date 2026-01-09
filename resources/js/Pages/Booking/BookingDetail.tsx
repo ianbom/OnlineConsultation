@@ -156,20 +156,20 @@ Mohon informasi terkait proses refund saya. Terima kasih! 🙏`;
                     </Link>
                 </Button>
 
-                <div className="mb-6 flex items-center justify-between">
+                <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 className="font-display text-2xl font-semibold text-foreground">
+                        <h1 className="font-display text-xl font-semibold text-foreground sm:text-2xl">
                             Detail Booking
                         </h1>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                         {/* Status Badge */}
                         <Badge
                             variant={
                                 getBookingStatusBadge(booking.status) as any
                             }
-                            className="text-sm"
+                            className="text-xs sm:text-sm"
                         >
                             {formatStatus(booking.status)}
                         </Badge>
@@ -178,10 +178,10 @@ Mohon informasi terkait proses refund saya. Terima kasih! 🙏`;
                         {timeLeft &&
                             !booking.is_expired &&
                             booking.status == 'pending_payment' && (
-                                <div className="rounded-md border border-red-200 bg-red-50 px-3 py-1 text-xs font-medium text-red-600">
+                                <div className="rounded-md border border-red-200 bg-red-50 px-2 py-1 text-xs font-medium text-red-600">
                                     {timeLeft === 'Kadaluarsa'
                                         ? 'Kadaluarsa'
-                                        : `Sisa waktu: ${timeLeft}`}
+                                        : `Sisa: ${timeLeft}`}
                                 </div>
                             )}
 
@@ -192,21 +192,22 @@ Mohon informasi terkait proses refund saya. Terima kasih! 🙏`;
                                     variant="destructive"
                                     size="sm"
                                     onClick={() => handleCancelBooking()}
+                                    className="text-xs sm:text-sm"
                                 >
-                                    Cancel Booking
+                                    <span className="sm:hidden">Batal</span>
+                                    <span className="hidden sm:inline">Cancel Booking</span>
                                 </Button>
                             )}
 
-                        {/* Print Button */}
+                        {/* Print Button - Icon only */}
                         {['paid', 'completed'].includes(booking.status) && (
                             <Button
                                 variant="outline"
-                                size="sm"
+                                size="icon"
                                 onClick={() => handlePrintBooking()}
-                                className="gap-1"
+                                title="Print Bukti Booking"
                             >
                                 <Printer className="h-4 w-4" />
-                                Print Bukti Booking
                             </Button>
                         )}
                     </div>

@@ -38,7 +38,7 @@ class CounselorWorkDayController extends Controller
         try {
             $this->counselorWorkDayService->store($request->validated());
 
-            return redirect()->route('admin.workday.index')->with('success', 'Workday berhasil dibuat dan jadwal 30 hari ke depan telah digenerate.');
+            return redirect()->route('admin.workday.index')->with('success', 'Workday berhasil dibuat dan jadwal 7 hari ke depan telah digenerate.');
         } catch (\Exception $e) {
 
             return redirect()->back()->with('error', 'Gagal membuat workday: ' . $e->getMessage());
