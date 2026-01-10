@@ -5,7 +5,7 @@ export default interface Schedule {
   date: string; // YYYY-MM-DD
   start_time: string; // HH:MM:SS
   end_time: string; // HH:MM:SS
-  is_available: number;
+  is_available: boolean;
   created_at: string;
   updated_at: string;
 }

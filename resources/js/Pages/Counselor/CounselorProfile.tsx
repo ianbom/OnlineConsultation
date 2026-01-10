@@ -48,14 +48,14 @@ export default function CounselorProfile({ counselor }: Props) {
         (acc, day) => {
             const workDay = counselor.work_days.find(
                 (wd) =>
-                    wd.day_of_week.toLowerCase() === day && wd.is_active === 1,
+                    wd.day_of_week.toLowerCase() === day && wd.is_active,
             );
 
             if (workDay) {
                 const slots = counselor.schedules.filter(
                     (schedule) =>
                         schedule.workday_id === workDay.id &&
-                        schedule.is_available === 1,
+                        schedule.is_available,
                 );
                 acc[day] = slots.length;
             } else {

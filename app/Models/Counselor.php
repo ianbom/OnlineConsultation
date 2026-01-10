@@ -13,6 +13,11 @@ class Counselor extends Model
     protected $primaryKey = 'id';
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'price_per_session' => 'integer',
+        'online_price_per_session' => 'integer',
+    ];
+
 
     public function user()
     {

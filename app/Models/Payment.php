@@ -13,6 +13,15 @@ class Payment extends Model
     protected $primaryKey = 'id';
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'amount' => 'integer',
+        'refund_amount' => 'integer',
+        'settlement_time' => 'datetime',
+        'paid_at' => 'datetime',
+        'refund_time' => 'datetime',
+        'expiry_time' => 'datetime',
+    ];
+
     public function booking()
     {
         return $this->belongsTo(Booking::class, 'booking_id');
