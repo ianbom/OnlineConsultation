@@ -51,12 +51,15 @@ export const formatScheduleDateTime = (
 
 /**
  * Get profile picture URL with fallback to default avatar
+ * Uses relative URL to avoid mixed content issues when VITE_APP_URL doesn't match production
  */
 export const getProfilePicUrl = (profilePic: string | null): string => {
-    const baseUrl = import.meta.env.VITE_APP_URL;
-    return profilePic
-        ? `${baseUrl}/storage/${profilePic}`
-        : '/default-avatar.png';
+    if (!profilePic) {
+        return '/default-avatar.png';
+    }
+    // Use relative URL to let browser use current origin
+    // This avoids mixed content issues in production
+    return `/storage/${profilePic}`;
 };
 
 /**
