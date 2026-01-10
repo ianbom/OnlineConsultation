@@ -28,6 +28,11 @@ Route::get('/dbs', function () {
     return view('dashboard');
 });
 
+// Public FAQ route (accessible without login)
+Route::get('/faq', function () {
+    return Inertia::render('FAQPage');
+})->name('faq');
+
 
 Route::get('/tes', function () {
     return view('admin.dashboard.dashboard');
