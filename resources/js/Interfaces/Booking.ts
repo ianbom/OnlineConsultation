@@ -22,11 +22,11 @@ export default interface Booking {
     link_status: 'pending' | 'sent' | null;
 
     status:
-        | 'pending_payment'
-        | 'paid'
-        | 'cancelled'
-        | 'completed'
-        | 'rescheduled';
+    | 'pending_payment'
+    | 'paid'
+    | 'cancelled'
+    | 'completed'
+    | 'rescheduled';
 
     notes: string | null;
     counselor_notes: string | null;
@@ -36,7 +36,7 @@ export default interface Booking {
     cancel_reason: string | null;
     cancelled_at: string | null;
 
-    refund_status: 'none' | 'requested' | 'processed';
+    refund_status: 'none' | 'requested' | 'processed' | 'done';
     refund_processed_at: string | null;
 
     is_expired: boolean;

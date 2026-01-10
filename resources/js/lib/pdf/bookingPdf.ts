@@ -293,11 +293,11 @@ export const generateBookingPdf = async (
         doc.rect(margin, y - 4, contentWidth, paymentRows * 7, 'S');
 
         const paymentStatus =
-            booking.payment.status === 'paid'
+            booking.payment.status === 'success'
                 ? '✓ LUNAS'
                 : booking.payment.status === 'pending'
-                  ? '⏳ Menunggu Pembayaran'
-                  : formatStatus(booking.payment.status);
+                    ? '⏳ Menunggu Pembayaran'
+                    : formatStatus(booking.payment.status);
 
         y = drawRow(
             doc,

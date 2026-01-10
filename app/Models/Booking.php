@@ -13,6 +13,14 @@ class Booking extends Model
     protected $primaryKey = 'id';
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'price' => 'integer',
+        'duration_hours' => 'integer',
+        'is_expired' => 'boolean',
+        'cancelled_at' => 'datetime',
+        'refund_processed_at' => 'datetime',
+    ];
+
     public function client()
     {
         return $this->belongsTo(User::class, 'client_id', 'id');
