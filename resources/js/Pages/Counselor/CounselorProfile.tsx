@@ -4,6 +4,7 @@ import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Counselor } from '@/Interfaces';
+import { getProfilePicUrl } from '@/utils/booking';
 import { Link } from '@inertiajs/react';
 import {
     Briefcase,
@@ -59,9 +60,7 @@ export default function CounselorProfile({ counselor }: Props) {
         {} as Record<string, number>,
     );
 
-    const profilePicUrl = counselor.user.profile_pic
-        ? `/storage/${counselor.user.profile_pic}`
-        : null;
+    const profilePicUrl = getProfilePicUrl(counselor.user.profile_pic);
 
     const isAvailable = counselor.status === 'active';
 
@@ -86,13 +85,11 @@ export default function CounselorProfile({ counselor }: Props) {
                         <div className="-mt-12 flex flex-col gap-4 sm:flex-row sm:items-end">
                             {/* Foto Profil */}
                             <Avatar className="h-24 w-24 rounded-xl border-4 border-card">
-                                {profilePicUrl && (
-                                    <AvatarImage
-                                        src={profilePicUrl}
-                                        alt={counselor.user.name}
-                                        className="object-cover"
-                                    />
-                                )}
+                                <AvatarImage
+                                    src={profilePicUrl}
+                                    alt={counselor.user.name}
+                                    className="object-cover"
+                                />
                                 <AvatarFallback className="rounded-xl text-2xl">
                                     {counselor.user.name
                                         .split(' ')

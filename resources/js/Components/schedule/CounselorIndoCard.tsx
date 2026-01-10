@@ -3,15 +3,14 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Card, CardContent } from '@/Components/ui/card';
 import Counselor from '@/Interfaces/Counselor';
+import { getProfilePicUrl } from '@/utils/booking';
 
 interface Props {
     counselor: Counselor;
 }
 
 export default function CounselorInfoCard({ counselor }: Props) {
-    const profilePicUrl = counselor.user.profile_pic
-        ? `/storage/${counselor.user.profile_pic}`
-        : null;
+    const profilePicUrl = getProfilePicUrl(counselor.user.profile_pic);
 
     return (
         <Card className="mb-6">
@@ -20,7 +19,7 @@ export default function CounselorInfoCard({ counselor }: Props) {
                     {/* Avatar */}
                     <Avatar className="h-14 w-14 rounded-lg">
                         <AvatarImage
-                            src={profilePicUrl || undefined}
+                            src={profilePicUrl}
                             alt={counselor.user.name}
                         />
                         <AvatarFallback className="rounded-lg">

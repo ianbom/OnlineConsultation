@@ -11,6 +11,7 @@ import { Calendar, ChevronLeft, Clock } from 'lucide-react';
 import { useState } from 'react';
 
 import { Counselor, Schedule } from '@/Interfaces';
+import { getProfilePicUrl } from '@/utils/booking';
 
 interface Props {
     counselor: Counselor;
@@ -77,9 +78,7 @@ export default function BookingConfirmation({ counselor, schedules }: Props) {
         });
     };
 
-    const profilePicUrl = counselor.user.profile_pic
-        ? `/storage/${counselor.user.profile_pic}`
-        : undefined;
+    const profilePicUrl = getProfilePicUrl(counselor.user.profile_pic);
 
     return (
         <PageLayout>
