@@ -43,24 +43,16 @@ export default function CounselorProfile({ counselor }: Props) {
 
     const educationList = [counselor.education];
 
-    // Hitung slot ketersediaan
+    // Hitung ketersediaan berdasarkan work_days
     const availabilityByDay = dayNames.reduce(
         (acc, day) => {
-            const workDay = counselor.work_days.find(
-                (wd) =>
-                    wd.day_of_week.toLowerCase() === day && wd.is_active,
+            // Cek apakah ada workDay aktif untuk hari ini
+            const workDay = counselor.work_days?.find(
+                (wd) => wd.day_of_week.toLowerCase() === day && wd.is_active,
             );
 
-            if (workDay) {
-                const slots = counselor.schedules.filter(
-                    (schedule) =>
-                        schedule.workday_id === workDay.id &&
-                        schedule.is_available,
-                );
-                acc[day] = slots.length;
-            } else {
-                acc[day] = 0;
-            }
+            // Jika workDay ditemukan dan aktif, tandai sebagai tersedia
+            acc[day] = workDay ? 1 : 0;
 
             return acc;
         },
