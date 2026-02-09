@@ -29,9 +29,9 @@ Route::get('/dbs', function () {
 });
 
 // Public FAQ route (accessible without login)
-Route::get('/faq', function () {
-    return Inertia::render('FAQPage');
-})->name('faq');
+// Route::get('/faq', function () {
+//     return Inertia::render('FAQPage');
+// })->name('faq');
 
 
 Route::get('/tes', function () {

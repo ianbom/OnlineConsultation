@@ -133,7 +133,7 @@
 
             <!-- Link Notes Form -->
             @if($booking->status === 'paid')
-            <x-booking.link-notes-form :booking="$booking" :action="route('admin.booking.update', $booking->id)" />
+            <x-booking.link-notes-form :booking="$booking" :action="route('counselor.booking.inputLinkandNotes', $booking->id)" />
             @endif
         </div>
 
