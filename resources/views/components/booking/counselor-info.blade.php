@@ -55,8 +55,12 @@
                 </span>
             </div>
             <div>
-                <p class="text-xs font-semibold text-[#83676c] uppercase tracking-wider mb-1">Harga per Sesi</p>
+                <p class="text-xs font-semibold text-[#83676c] uppercase tracking-wider mb-1">Harga Offline</p>
                 <p class="text-base font-bold text-[#7b1e2d]">Rp {{ number_format($counselor->price_per_session ?? 0, 0, ',', '.') }}</p>
+            </div>
+            <div>
+                <p class="text-xs font-semibold text-[#83676c] uppercase tracking-wider mb-1">Harga Online</p>
+                <p class="text-base font-bold text-green-700">Rp {{ number_format($counselor->online_price_per_session ?? 0, 0, ',', '.') }}</p>
             </div>
         </div>
     </div>

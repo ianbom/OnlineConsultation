@@ -22,5 +22,15 @@ class UserSeeder extends Seeder
             'created_at' => now(), 
             'updated_at' => now()
         ]);
+
+        User::create([ 
+            'name' => 'ian', 
+            'email' => 'ianalebom@gmail.com', 
+            'password'=> Hash::make('ianbom123'),
+            'role' => 'client',
+            'created_at' => now(), 
+            'updated_at' => now(), 
+            'email_verified_at' => now()
+        ]);
     }
 }

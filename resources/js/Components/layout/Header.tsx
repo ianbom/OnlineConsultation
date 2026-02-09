@@ -105,7 +105,7 @@ export function Header() {
                                 <AvatarImage
                                     src={
                                         user?.profile_pic
-                                            ? `${import.meta.env.VITE_APP_URL}/storage/${user.profile_pic}`
+                                            ? `/storage/${user.profile_pic}`
                                             : '/default-avatar.png'
                                     }
                                 />

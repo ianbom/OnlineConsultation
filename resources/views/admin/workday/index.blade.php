@@ -130,8 +130,72 @@
                                             </div>
 
                                             <span class="block text-xs font-semibold px-2 py-1 rounded bg-primary/10 text-primary">
-                                                Harga : Rp {{ number_format($workDay->counselor->price_per_session,0,',','.') }}
+                                                Offline : Rp {{ number_format($workDay->counselor->price_per_session,0,',','.') }}
                                             </span>
+                                            <span class="block text-xs font-semibold px-2 py-1 rounded bg-green-100 text-green-700 mt-1">
+                                                Online : Rp {{ number_format($workDay->counselor->online_price_per_session,0,',','.') }}
+                                            </span>
+
+                                            {{-- SCHEDULES SECTION --}}
+                                            @php
+                                                $futureSchedules = $workDay->schedules->filter(function($schedule) {
+                                                    return \Carbon\Carbon::parse($schedule->date)->isFuture() || 
+                                                           \Carbon\Carbon::parse($schedule->date)->isToday();
+                                                })->take(5);
+                                            @endphp
+
+                                            @if($futureSchedules->count() > 0)
+                                                <div class="mt-3 pt-3 border-t border-gray-200">
+                                                    <details class="group">
+                                                        <summary class="cursor-pointer text-xs font-semibold text-gray-700 flex items-center justify-between hover:text-primary">
+                                                            <span class="flex items-center gap-1">
+                                                                <svg class="w-3.5 h-3.5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                                                </svg>
+                                                                Jadwal ({{ $futureSchedules->count() }})
+                                                            </span>
+                                                            <svg class="w-3 h-3 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                                            </svg>
+                                                        </summary>
+                                                        
+                                                        <div class="mt-2 space-y-1.5 max-h-48 overflow-y-auto">
+                                                            @foreach($futureSchedules as $schedule)
+                                                                <div class="text-[10px] p-2 rounded border {{ $schedule->is_available ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200' }}">
+                                                                    <div class="flex items-center justify-between">
+                                                                        <span class="font-medium text-gray-700">
+                                                                            {{ \Carbon\Carbon::parse($schedule->date)->format('D, d M Y') }}
+                                                                        </span>
+                                                                        @if($schedule->is_available)
+                                                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded-full bg-green-100 text-green-700">
+                                                                                <svg class="w-2.5 h-2.5 mr-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                                                </svg>
+                                                                                Tersedia
+                                                                            </span>
+                                                                        @else
+                                                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600">
+                                                                                <svg class="w-2.5 h-2.5 mr-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                                                                </svg>
+                                                                                Tidak Tersedia
+                                                                            </span>
+                                                                        @endif
+                                                                    </div>
+                                                                    <div class="text-gray-600 mt-1 flex items-center gap-1">
+                                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                                        </svg>
+                                                                        {{ \Carbon\Carbon::parse($schedule->start_time)->format('H:i') }} 
+                                                                        - 
+                                                                        {{ \Carbon\Carbon::parse($schedule->end_time)->format('H:i') }}
+                                                                    </div>
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+                                                    </details>
+                                                </div>
+                                            @endif
 
                                             <div class="flex gap-1">
                                                 <a href="{{ route('admin.workday.edit',$workDay->id) }}"

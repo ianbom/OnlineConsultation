@@ -35,6 +35,7 @@ class UpdateCounselorRequest extends FormRequest
             'specialization'    => 'required|string',
             'description'       => 'required|string',
             'price_per_session' => 'required|integer|min:0',
+            'online_price_per_session' => 'required|integer|min:0',
             'status'            => 'required|in:active,inactive',
         ];
     }

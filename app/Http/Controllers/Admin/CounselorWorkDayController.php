@@ -22,7 +22,12 @@ class CounselorWorkDayController extends Controller
 
 
     public function index(){
-        $counselorsWorkDays = CounselorsWorkDay::with('counselor.user')->get();
+        $counselorsWorkDays = CounselorsWorkDay::with([
+            'counselor.user',
+            'schedules' => function($query) {
+                $query->orderBy('date')->orderBy('start_time');
+            }
+        ])->get();
         return view('admin.workday.index', ['counselorsWorkDays' => $counselorsWorkDays]);
     }
 
@@ -38,7 +43,7 @@ class CounselorWorkDayController extends Controller
         try {
             $this->counselorWorkDayService->store($request->validated());
 
-            return redirect()->route('admin.workday.index')->with('success', 'Workday berhasil dibuat dan jadwal 30 hari ke depan telah digenerate.');
+            return redirect()->route('admin.workday.index')->with('success', 'Workday berhasil dibuat dan jadwal 7 hari ke depan telah digenerate.');
         } catch (\Exception $e) {
 
             return redirect()->back()->with('error', 'Gagal membuat workday: ' . $e->getMessage());
@@ -66,7 +71,12 @@ class CounselorWorkDayController extends Controller
     public function destroy(CounselorsWorkDay $workday)
     {
         try {
+            // Soft delete all related schedules first
+            $workday->schedules()->delete();
+            
+            // Then soft delete the workday
             $workday->delete();
+            
             return redirect()
                 ->route('admin.workday.index')
                 ->with('success', 'Jadwal konselor berhasil dihapus.');

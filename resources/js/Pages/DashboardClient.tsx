@@ -8,6 +8,7 @@ import { Calendar, ChevronRight, Clock, CreditCard, Users } from 'lucide-react';
 import { CtaCard } from '@/Components/ui/CtaCard';
 import { Booking } from '@/Interfaces';
 import { PageProps } from '@/types';
+import { getProfilePicUrl } from '@/utils/booking';
 
 interface DashboardProps {
     upcomingBooking: Booking[];
@@ -59,12 +60,6 @@ export default function Dashboard({
             month: 'long',
             day: 'numeric',
         });
-    };
-
-    const getImageUrl = (profilePic: string) => {
-        if (!profilePic) return '/images/default-avatar.png';
-        if (profilePic.startsWith('http')) return profilePic;
-        return `/storage/${profilePic}`;
     };
 
     return (
@@ -128,19 +123,19 @@ export default function Dashboard({
                                         counselorName={
                                             booking.counselor.user.name
                                         }
-                                        counselorPhoto={getImageUrl(
+                                        counselorPhoto={getProfilePicUrl(
                                             booking.counselor.user
-                                                .profile_pic ?? '',
+                                                .profile_pic,
                                         )}
                                         date={formatDate(booking.schedule.date)}
                                         time={`${formatTime(booking.schedule.start_time)} - ${booking.second_schedule
-                                                ? formatTime(
-                                                    booking.second_schedule
-                                                        .end_time,
-                                                )
-                                                : formatTime(
-                                                    booking.schedule.end_time,
-                                                )
+                                            ? formatTime(
+                                                booking.second_schedule
+                                                    .end_time,
+                                            )
+                                            : formatTime(
+                                                booking.schedule.end_time,
+                                            )
                                             }`}
                                         duration={`${booking.duration_hours} hour${booking.duration_hours > 1 ? 's' : ''}`}
                                         status={booking.status as any}
@@ -208,19 +203,19 @@ export default function Dashboard({
                                         counselorName={
                                             booking.counselor.user.name
                                         }
-                                        counselorPhoto={getImageUrl(
+                                        counselorPhoto={getProfilePicUrl(
                                             booking.counselor.user
-                                                .profile_pic ?? '',
+                                                .profile_pic,
                                         )}
                                         date={formatDate(booking.schedule.date)}
                                         time={`${formatTime(booking.schedule.start_time)} - ${booking.second_schedule
-                                                ? formatTime(
-                                                    booking.second_schedule
-                                                        .end_time,
-                                                )
-                                                : formatTime(
-                                                    booking.schedule.end_time,
-                                                )
+                                            ? formatTime(
+                                                booking.second_schedule
+                                                    .end_time,
+                                            )
+                                            : formatTime(
+                                                booking.schedule.end_time,
+                                            )
                                             }`}
                                         duration={`${booking.duration_hours} hour${booking.duration_hours > 1 ? 's' : ''}`}
                                         status={booking.status as any}

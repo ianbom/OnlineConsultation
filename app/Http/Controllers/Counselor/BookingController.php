@@ -63,6 +63,7 @@ class BookingController extends Controller
     }
 
     public function inputLinkandNotes(Request $request, $bookingId){
+
     $request->validate([
         'meeting_link'   => 'nullable|string|max:500',
         'counselor_notes'=> 'nullable|string',
@@ -70,11 +71,7 @@ class BookingController extends Controller
     ]);
 
     try {
-       $counselorId = Auth::user()->counselor->id;
-
-    // pastikan booking milik counselor yang sedang login
-    $booking = Booking::where('counselor_id', $counselorId)
-        ->findOrFail($bookingId);
+    $booking = Booking::findOrFail($bookingId);
 
     $booking->update([
         'meeting_link'    => $request->meeting_link,

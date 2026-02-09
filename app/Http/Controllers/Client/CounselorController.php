@@ -31,7 +31,13 @@ class CounselorController extends Controller
 
     public function pickCounselorSchedule($counselorId)
     {
-        $counselor = Counselor::with('user','schedules')->findOrFail($counselorId);
+        $counselor = Counselor::with(['user', 'schedules' => function($query) {
+            $query->where('is_available', true)
+                  ->where('date', '>=', now()->toDateString())
+                  ->orderBy('date')
+                  ->orderBy('start_time');
+        }])->findOrFail($counselorId);
+        
         return Inertia::render('Counselor/SchedulePicker', [
             'counselor' => $counselor,
         ]);

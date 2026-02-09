@@ -14,10 +14,8 @@ interface Props {
 }
 
 export default function BookingDetailCard({ booking }: Props) {
-    const baseUrl = import.meta.env.VITE_APP_URL;
-
     const photoUrl = booking.counselor.user.profile_pic
-        ? `${baseUrl}/storage/${booking.counselor.user.profile_pic}`
+        ? `/storage/${booking.counselor.user.profile_pic}`
         : '/default-avatar.png';
 
     const sessionDate = new Date(booking.schedule.date);

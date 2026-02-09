@@ -13,6 +13,14 @@ class Booking extends Model
     protected $primaryKey = 'id';
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'price' => 'integer',
+        'duration_hours' => 'integer',
+        'is_expired' => 'boolean',
+        'cancelled_at' => 'datetime',
+        'refund_processed_at' => 'datetime',
+    ];
+
     public function client()
     {
         return $this->belongsTo(User::class, 'client_id', 'id');
@@ -25,22 +33,22 @@ class Booking extends Model
 
      public function schedule()
     {
-        return $this->belongsTo(Schedule::class, 'schedule_id', 'id');
+        return $this->belongsTo(Schedule::class, 'schedule_id', 'id')->withTrashed();
     }
 
     public function secondSchedule()
     {
-        return $this->belongsTo(Schedule::class, 'second_schedule_id', 'id');
+        return $this->belongsTo(Schedule::class, 'second_schedule_id', 'id')->withTrashed();
     }
 
     public function previousSchedule()
     {
-        return $this->belongsTo(Schedule::class, 'previous_schedule_id', 'id');
+        return $this->belongsTo(Schedule::class, 'previous_schedule_id', 'id')->withTrashed();
     }
 
     public function previousSecondSchedule()
     {
-        return $this->belongsTo(Schedule::class, 'previous_second_schedule_id', 'id');
+        return $this->belongsTo(Schedule::class, 'previous_second_schedule_id', 'id')->withTrashed();
     }
 
     public function payment()

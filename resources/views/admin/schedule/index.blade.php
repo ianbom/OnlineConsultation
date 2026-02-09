@@ -132,9 +132,12 @@
                                             </div>
 
                                             <!-- Price -->
-                                            <div class="mb-3">
+                                            <div class="mb-3 space-y-1">
                                                 <span class="inline-block w-full px-2 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded">
-                                                   Harga : Rp {{ number_format($workDay->counselor->price_per_session, 0, ',', '.') }}
+                                                   Offline : Rp {{ number_format($workDay->counselor->price_per_session, 0, ',', '.') }}
+                                                </span>
+                                                <span class="inline-block w-full px-2 py-1 bg-green-50 text-green-700 text-xs font-semibold rounded">
+                                                   Online : Rp {{ number_format($workDay->counselor->online_price_per_session, 0, ',', '.') }}
                                                 </span>
                                             </div>
 

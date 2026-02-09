@@ -53,7 +53,10 @@
                                             </div>
 
                                             <div class="mt-2 text-xs font-semibold bg-primary text-white px-2 py-1 rounded">
-                                                Rp {{ number_format($workDay->counselor->price_per_session, 0, ',', '.') }}
+                                                Offline: Rp {{ number_format($workDay->counselor->price_per_session, 0, ',', '.') }}
+                                            </div>
+                                            <div class="mt-1 text-xs font-semibold bg-green-600 text-white px-2 py-1 rounded">
+                                                Online: Rp {{ number_format($workDay->counselor->online_price_per_session, 0, ',', '.') }}
                                             </div>
                                         </div>
 
@@ -130,7 +133,10 @@
                             </div>
                         
                             <div class="mt-2 text-xs font-semibold bg-primary text-white px-2 py-1 rounded">
-                                Rp {{ number_format($workDay->counselor->price_per_session, 0, ',', '.') }}
+                                Offline: Rp {{ number_format($workDay->counselor->price_per_session, 0, ',', '.') }}
+                            </div>
+                            <div class="mt-1 text-xs font-semibold bg-green-600 text-white px-2 py-1 rounded">
+                                Online: Rp {{ number_format($workDay->counselor->online_price_per_session, 0, ',', '.') }}
                             </div>
                         </div>
 

@@ -27,6 +27,7 @@ return new class extends Migration
         $table->time('end_time');
 
         $table->boolean('is_available')->default(true);
+        $table->softDeletes();
 
         $table->timestamps();
     });

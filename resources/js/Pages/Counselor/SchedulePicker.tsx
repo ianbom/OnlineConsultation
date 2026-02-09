@@ -37,8 +37,9 @@ export default function SchedulePicker({ counselor }: Props) {
         const grouped: Record<string, Schedule[]> = {};
 
         counselor.schedules.forEach((schedule) => {
-            if (schedule.is_available === 1) {
-                const dateKey = schedule.date;
+            if (schedule.is_available) {
+                // Normalize date ke format yyyy-MM-dd untuk konsistensi
+                const dateKey = format(new Date(schedule.date), 'yyyy-MM-dd');
                 if (!grouped[dateKey]) {
                     grouped[dateKey] = [];
                 }
@@ -125,14 +126,9 @@ export default function SchedulePicker({ counselor }: Props) {
         }
     };
 
-    const availableSlots = selectedDate ? getAvailableSlots(selectedDate) : [];
-
-    const profilePicUrl = counselor.user.profile_pic
-        ? `/storage/${counselor.user.profile_pic}`
-        : null;
-
     // Hitung total harga
-    const totalPrice = counselor.price_per_session * selectedSlots.length;
+    const totalOfflinePrice = counselor.price_per_session * selectedSlots.length;
+    const totalOnlinePrice = counselor.online_price_per_session * selectedSlots.length;
 
     return (
         <PageLayout>
@@ -150,8 +146,8 @@ export default function SchedulePicker({ counselor }: Props) {
 
                 <CalendarHeader
                     weekStart={weekStart}
-                    onPrevWeek={() => setWeekStart(addDays(weekStart, -7))}
-                    onNextWeek={() => setWeekStart(addDays(weekStart, 7))}
+                    onPrevWeek={handlePrevWeek}
+                    onNextWeek={handleNextWeek}
                 />
 
                 {/* Grid Tanggal */}
@@ -188,11 +184,17 @@ export default function SchedulePicker({ counselor }: Props) {
                                         .map((s) => s.time)
                                         .join(', ')}
                                 </p>
-                                <p className="mt-1 text-sm text-muted-foreground">
-                                    Total: Rp{' '}
-                                    {totalPrice.toLocaleString('id-ID')} (
-                                    {selectedSlots.length} sesi)
-                                </p>
+                                <div className="mt-1 space-y-0.5">
+                                    <p className="text-sm text-muted-foreground">
+                                        Offline: Rp{' '}
+                                        {totalOfflinePrice.toLocaleString('id-ID')} ({selectedSlots.length} sesi)
+                                    </p>
+                                    <p className="text-sm text-green-600">
+                                        Online: Rp{' '}
+                                        {totalOnlinePrice.toLocaleString('id-ID')} ({selectedSlots.length} sesi)
+                                    </p>
+                                </div>
+
                             </div>
 
                             {/* Tombol */}

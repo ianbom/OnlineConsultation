@@ -9,6 +9,7 @@ export default interface Counselor {
     specialization: string;
     description: string;
     price_per_session: number;
+    online_price_per_session: number;
     status: string;
     created_at: string;
     updated_at: string;

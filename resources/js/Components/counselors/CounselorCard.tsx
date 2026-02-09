@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import { Card, CardContent } from '@/Components/ui/card';
+import { getProfilePicUrl } from '@/utils/booking';
 import { Link } from '@inertiajs/react';
 
 interface CounselorCardProps {
@@ -21,10 +22,7 @@ export function CounselorCard({
     pricePerSession,
     isAvailable,
 }: CounselorCardProps) {
-    const baseUrl = import.meta.env.VITE_APP_URL;
-    const photoUrl = photo
-        ? `${baseUrl}/storage/${photo}`
-        : '/default-avatar.png';
+    const photoUrl = getProfilePicUrl(photo || null);
 
     return (
         <Card className="rounded-xl border transition-all duration-200 hover:shadow-md">

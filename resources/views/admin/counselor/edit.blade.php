@@ -137,6 +137,15 @@
                                        required>
                             </div>
 
+                            {{-- ONLINE PRICE --}}
+                            <div>
+                                <label>Harga Online per Sesi (IDR)</label>
+                                <input type="number" class="form-input"
+                                       name="online_price_per_session"
+                                       value="{{ old('online_price_per_session', $counselor->online_price_per_session) }}"
+                                       required>
+                            </div>
+
                             {{-- STATUS --}}
                             <div>
                                 <label>Status</label>

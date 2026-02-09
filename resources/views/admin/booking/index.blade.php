@@ -54,9 +54,9 @@
 
                                 {{-- JADWAL --}}
                                 <td>
-                                    <div class="font-medium">{{ $booking->schedule->date }}</div>
+                                    <div class="font-medium">{{ \Carbon\Carbon::parse($booking->schedule->date)->format('d-m-Y') }}</div>
                                     <div class="text-xs text-gray-500">
-                                        {{ $booking->schedule->start_time }}
+                                        {{ \Carbon\Carbon::parse($booking->schedule->start_time)->format('H:i') }}
                                     </div>
 
                                 </td>

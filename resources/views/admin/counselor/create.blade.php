@@ -79,6 +79,12 @@
                             </div>
 
                             <div>
+                                <label>Harga Online per Sesi (IDR)</label>
+                                <input type="number" class="form-input" name="online_price_per_session" placeholder="Contoh: 120000"
+                                    x-model="form.online_price" required>
+                            </div>
+
+                            <div>
                                 <label>Status</label>
                                 <select class="form-select" name="status" x-model="form.status">
                                     <option value="active">Aktif</option>
@@ -135,6 +141,7 @@
                     specialization: '',
                     description: '',
                     price: '',
+                    online_price: '',
                     status: 'active'
                 }
             }))

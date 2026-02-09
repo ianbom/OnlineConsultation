@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Input } from '@/Components/ui/input';
 import { Label } from '@/Components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { getProfilePicUrl } from '@/utils/booking';
 import { router } from '@inertiajs/react';
 import { format } from 'date-fns';
 import { Calendar, Camera, Lock, Mail, Phone, User } from 'lucide-react';
@@ -32,7 +33,7 @@ export default function ClientProfile({ user }: Props) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [processing, setProcessing] = useState(false);
     const [profilePicPreview, setProfilePicPreview] = useState<string | null>(
-        user.profile_pic ? `/storage/${user.profile_pic}` : null,
+        getProfilePicUrl(user.profile_pic),
     );
     const [profilePicFile, setProfilePicFile] = useState<File | null>(null);
     const [cropDialogOpen, setCropDialogOpen] = useState(false);
