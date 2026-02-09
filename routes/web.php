@@ -38,7 +38,7 @@ Route::get('/tes', function () {
     return view('admin.dashboard.dashboard');
 });
 
-Route::middleware(['auth'])->prefix('admin')->as('admin.')->group(function () {
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(function () {
     Route::get('/dashboard', [AdmDashboardController::class, 'index'])->name('dashboard');
     Route::resource('counselor', AdmCounselorController::class);
     Route::resource('workday', AdmCounselorWorkDayController::class);
@@ -62,7 +62,7 @@ Route::middleware(['role:counselor,admin'])->prefix('counselor')->as('counselor.
 
 
 
-Route::middleware(['role:client'])->prefix('client')->as('client.')->group(function () {
+Route::middleware(['role:client', 'verified'])->prefix('client')->as('client.')->group(function () {
     Route::get('/list-counselors', [ClientCounselorController::class, 'counselorList'])->name('counselor.list');
     Route::get('/counselor/{counselorId}', [ClientCounselorController::class, 'detailCounselor'])->name('counselor.show');
     Route::get('/pick-counselor/schedule/{counselorId}', [ClientCounselorController::class, 'pickCounselorSchedule'])->name('pick.schedule');

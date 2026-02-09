@@ -97,7 +97,6 @@ class BookingController extends Controller
             ->where('client_id', $client->id)
             ->orderBy('created_at', 'desc')
             ->get();
-
         return Inertia::render('Booking/BookingHistory', [
             'bookings' => $bookings,
         ]);
