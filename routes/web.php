@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\ClientController as AdmClientController;
 use App\Http\Controllers\Admin\CounselorController as AdmCounselorController;
 use App\Http\Controllers\Admin\CounselorWorkDayController as AdmCounselorWorkDayController;
 use App\Http\Controllers\Admin\DashboardController as AdmDashboardController;
+use App\Http\Controllers\Admin\ProfileController as AdmProfileController;
 use App\Http\Controllers\Admin\RefundController as AdmRefundController;
 use App\Http\Controllers\Client\BookingController as ClientBookingController;
 use App\Http\Controllers\Client\CounselorController as ClientCounselorController;
@@ -46,6 +47,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::resource('refund', AdmRefundController::class);
     Route::put('refund-approve/{paymendId}',[ AdmRefundController::class, 'changeRefundStatus'])->name('payment.changeRefundStatus');
     Route::resource('client', AdmClientController::class);
+    Route::get('/profile', [AdmProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile/update', [AdmProfileController::class, 'update'])->name('profile.update');
 });
 
 Route::middleware(['role:counselor,admin'])->prefix('counselor')->as('counselor.')->group(function () {
@@ -62,7 +65,7 @@ Route::middleware(['role:counselor,admin'])->prefix('counselor')->as('counselor.
 
 
 
-Route::middleware(['role:client', 'verified'])->prefix('client')->as('client.')->group(function () {
+Route::middleware(['auth', 'verified'])->prefix('client')->as('client.')->group(function () {
     Route::get('/list-counselors', [ClientCounselorController::class, 'counselorList'])->name('counselor.list');
     Route::get('/counselor/{counselorId}', [ClientCounselorController::class, 'detailCounselor'])->name('counselor.show');
     Route::get('/pick-counselor/schedule/{counselorId}', [ClientCounselorController::class, 'pickCounselorSchedule'])->name('pick.schedule');

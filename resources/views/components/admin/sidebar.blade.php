@@ -201,6 +201,61 @@
 
                     </ul>
                 </li>
+
+                <h2
+                    class="py-3 px-7 flex items-center uppercase font-extrabold bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] -mx-4 mb-1">
+
+                    <svg class="w-4 h-5 flex-none hidden" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"
+                        fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    <span>Account</span>
+                </h2>
+
+                <li class="nav-item">
+                    <ul>
+                        <li class="nav-item">
+                            <a href="/admin/profile" class="group">
+                                <div class="flex items-center">
+                                    <svg class="group-hover:!text-primary shrink-0" width="20" height="20"
+                                        viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path opacity="0.5"
+                                            d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z"
+                                            fill="currentColor" />
+                                        <path
+                                            d="M4 20C4 16.6863 7.58172 14 12 14C16.4183 14 20 16.6863 20 20C20 21.1046 19.1046 22 18 22H6C4.89543 22 4 21.1046 4 20Z"
+                                            fill="currentColor" />
+                                    </svg>
+                                    <span
+                                        class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Profile</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="group w-full text-left">
+                                    <div class="flex items-center">
+                                        <svg class="group-hover:!text-danger shrink-0" width="20" height="20"
+                                            viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path opacity="0.5"
+                                                d="M15 2H14C11.1716 2 9.75736 2 8.87868 2.87868C8 3.75736 8 5.17157 8 8V16C8 18.8284 8 20.2426 8.87868 21.1213C9.75736 22 11.1716 22 14 22H15C17.8284 22 19.2426 22 20.1213 21.1213C21 20.2426 21 18.8284 21 16V8C21 5.17157 21 3.75736 20.1213 2.87868C19.2426 2 17.8284 2 15 2Z"
+                                                fill="currentColor" />
+                                            <path
+                                                d="M8 8C8 6.46249 8 5.34287 8.14114 4.5H8C5.17157 4.5 3.75736 4.5 2.87868 5.37868C2 6.25736 2 7.67157 2 10.5V13.5C2 16.3284 2 17.7426 2.87868 18.6213C3.75736 19.5 5.17157 19.5 8 19.5H8.14114C8 18.6571 8 17.5375 8 16V8Z"
+                                                fill="currentColor" />
+                                            <path
+                                                d="M12.2929 8.29289C12.6834 7.90237 13.3166 7.90237 13.7071 8.29289L16.7071 11.2929C17.0976 11.6834 17.0976 12.3166 16.7071 12.7071L13.7071 15.7071C13.3166 16.0976 12.6834 16.0976 12.2929 15.7071C11.9024 15.3166 11.9024 14.6834 12.2929 14.2929L13.5858 13H5C4.44772 13 4 12.5523 4 12C4 11.4477 4.44772 11 5 11H13.5858L12.2929 9.70711C11.9024 9.31658 11.9024 8.68342 12.2929 8.29289Z"
+                                                fill="currentColor" />
+                                        </svg>
+                                        <span
+                                            class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Logout</span>
+                                    </div>
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </nav>
