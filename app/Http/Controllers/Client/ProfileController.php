@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateClientProfileRequest;
 use App\Services\ClientProfileService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class ProfileController extends Controller
@@ -34,7 +35,8 @@ class ProfileController extends Controller
             $updatedUser = $this->clientProfileService->update($user, $data);
             return redirect()->back()->with('success', 'Profile berhasil diubah');
         } catch (\Throwable $th) {
-           return redirect()->back()->with('error', 'Terjadi kesalahan saat memperbarui profil: ' );
+            Log::error('Profile update failed: ' . $th->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat memperbarui profil.');
         }
 
     }

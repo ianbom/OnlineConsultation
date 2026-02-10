@@ -11,6 +11,7 @@ use App\Services\BookingService;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class BookingController extends Controller
@@ -26,20 +27,36 @@ class BookingController extends Controller
 
 
     public function bookingSchedule(BookingRequest $request, $counselorId){
-        $booking = $this->bookingService->createBooking(
-            Auth::user(),
-            $counselorId,
-            $request->schedule_id,
-            $request->second_schedule_id,
-            $request->notes,
-            $request->consultation_type
-        );
+        $schedule = Schedule::findOrFail($request->schedule_id);
+        if (!$schedule->is_available) {
+            return redirect()->back()->with('error', 'Jadwal yang dipilih sudah tidak tersedia.');
+        }
 
-        // create payment + snap token
-        $payment = $this->paymentService->createPayment($booking);
+        if ($request->second_schedule_id) {
+            $secondSchedule = Schedule::findOrFail($request->second_schedule_id);
+            if (!$secondSchedule->is_available) {
+                return redirect()->back()->with('error', 'Jadwal kedua yang dipilih sudah tidak tersedia.');
+            }
+        }
 
-        return redirect()->route('client.booking.detail', ['bookingId' => $booking->id])
-            ->with('success', 'Booking berhasil dibuat. Silakan lanjutkan ke pembayaran.');
+        try {
+            $booking = $this->bookingService->createBooking(
+                Auth::user(),
+                $counselorId,
+                $request->schedule_id,
+                $request->second_schedule_id,
+                $request->notes,
+                $request->consultation_type
+            );
+
+            $payment = $this->paymentService->createPayment($booking);
+
+            return redirect()->route('client.booking.detail', ['bookingId' => $booking->id])
+                ->with('success', 'Booking berhasil dibuat. Silakan lanjutkan ke pembayaran.');
+        } catch (\Throwable $th) {
+            Log::error('Booking failed: ' . $th->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat membuat booking. Silakan coba lagi.');
+        }
     }
 
     public function bookingDetail($bookingId){
@@ -102,19 +119,22 @@ class BookingController extends Controller
         ]);
     }
 
-    public function rescheduleBooking($bookingId, Request $request){
-       $data = $request->validate([
-           'schedule_id' => 'required',
-           'second_schedule_id' => 'nullable',
-       ]);
+    public function rescheduleBooking($bookingId, Request $request)
+    {
+        $data = $request->validate([
+            'schedule_id' => 'required',
+            'second_schedule_id' => 'nullable',
+        ]);
 
-       try {
-           $this->bookingService->updateRescheduleBooking($bookingId, $data);
-           return redirect()->route('client.booking.detail', ['bookingId' => $bookingId])->with('success', 'Booking berhasil dijadwalkan ulang.');
-       } catch (\Throwable $th) {
-           return redirect()->back()->with('error', 'Terjadi kesalahan');
-       }
-   }
+        try {
+            $this->bookingService->updateRescheduleBooking($bookingId, $data);
+            return redirect()->route('client.booking.detail', ['bookingId' => $bookingId])
+                ->with('success', 'Booking berhasil dijadwalkan ulang.');
+        } catch (\Throwable $th) {
+            Log::error('Reschedule failed: ' . $th->getMessage());
+            return redirect()->back()->with('error', $th->getMessage());
+        }
+    }
 
     public function cancelBooking(Request $request, $bookingId)
     {

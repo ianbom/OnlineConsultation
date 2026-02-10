@@ -22,29 +22,31 @@ class BookingService
 
     public function createBooking($client, $counselorId, $scheduleId, $secondId, $notes, $type)
     {
-        $counselor = Counselor::findOrFail($counselorId);
+        return DB::transaction(function () use ($client, $counselorId, $scheduleId, $secondId, $notes, $type) {
+            $counselor = Counselor::findOrFail($counselorId);
 
-        $duration = $secondId ? 2 : 1;
-        $pricePerSession = $type === 'online' 
-            ? $counselor->online_price_per_session 
-            : $counselor->price_per_session;
-        $price = $duration * $pricePerSession;
+            $duration = $secondId ? 2 : 1;
+            $pricePerSession = $type === 'online' 
+                ? $counselor->online_price_per_session 
+                : $counselor->price_per_session;
+            $price = $duration * $pricePerSession;
 
-        $booking = Booking::create([
-            'client_id' => $client->id,
-            'counselor_id' => $counselorId,
-            'schedule_id' => $scheduleId,
-            'second_schedule_id' => $secondId,
-            'price' => $price,
-            'duration_hours' => $duration,
-            'consultation_type' => $type,
-            'notes' => $notes,
-            'status' => 'pending_payment'
-        ]);
+            $booking = Booking::create([
+                'client_id' => $client->id,
+                'counselor_id' => $counselorId,
+                'schedule_id' => $scheduleId,
+                'second_schedule_id' => $secondId,
+                'price' => $price,
+                'duration_hours' => $duration,
+                'consultation_type' => $type,
+                'notes' => $notes,
+                'status' => 'pending_payment'
+            ]);
 
-        $this->changeScheduleStatus($scheduleId, $secondId);
+            $this->changeScheduleStatus($scheduleId, $secondId);
 
-        return $booking;
+            return $booking;
+        });
     }
 
     public function changeScheduleStatus($scheduleId, $secondId = null){
@@ -59,34 +61,37 @@ class BookingService
         }
     }
 
-    public function updateRescheduleBooking($bookingId, $data){
-        $booking = Booking::findOrFail($bookingId);
+    public function updateRescheduleBooking($bookingId, $data)
+    {
+        return DB::transaction(function () use ($bookingId, $data) {
+            $booking = Booking::findOrFail($bookingId);
 
-    if ($booking->status === 'cancelled') {
-        return back()->with('error', 'Booking yang dibatalkan tidak dapat dijadwalkan ulang.');
-    }
+            if ($booking->status === 'cancelled') {
+                throw new \Exception('Booking yang dibatalkan tidak dapat dijadwalkan ulang.');
+            }
 
-    if ($booking->is_expired) {
-        return back()->with('error', 'Booking kedaluwarsa tidak bisa dijadwalkan ulang.');
-    }
+            if ($booking->is_expired) {
+                throw new \Exception('Booking kedaluwarsa tidak bisa dijadwalkan ulang.');
+            }
 
-    $newSchedule = $data['schedule_id'];
-    $newSecondSchedule = $data['second_schedule_id'] ?? null;
+            $newSchedule = $data['schedule_id'];
+            $newSecondSchedule = $data['second_schedule_id'] ?? null;
 
-    $booking->previous_schedule_id = $booking->schedule_id;
-    $booking->previous_second_schedule_id = $booking->second_schedule_id;
+            $booking->previous_schedule_id = $booking->schedule_id;
+            $booking->previous_second_schedule_id = $booking->second_schedule_id;
 
-    $booking->schedule_id = $newSchedule;
-    $booking->second_schedule_id = $newSecondSchedule;
+            $booking->schedule_id = $newSchedule;
+            $booking->second_schedule_id = $newSecondSchedule;
 
-    $booking->status = 'rescheduled';
-    $booking->reschedule_status = 'pending';
-    $booking->reschedule_by = Auth::user()->role;
+            $booking->status = 'rescheduled';
+            $booking->reschedule_status = 'pending';
+            $booking->reschedule_by = Auth::user()->role;
+            $booking->meeting_link = null;
 
+            $booking->save();
 
-    $booking->meeting_link = null;
-
-    $booking->save();
+            return $booking;
+        });
     }
 
     public function cancelBooking(Booking $booking, array $data){
