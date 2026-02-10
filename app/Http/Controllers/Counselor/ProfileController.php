@@ -7,17 +7,16 @@ use App\Http\Requests\UpdateCounselorProfileRequest;
 use App\Services\CounselorProfileService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ProfileController extends Controller
 {
-
     protected $counselorProfileService;
 
     public function __construct(CounselorProfileService $counselorProfileService)
     {
         $this->counselorProfileService = $counselorProfileService;
-     }
-
+    }
 
     public function index()
     {
@@ -30,12 +29,12 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         try {
-        $this->counselorProfileService->update($user, $request->validated());
-        return redirect()->back()->with('success', 'Profil berhasil diperbarui!');
+            $this->counselorProfileService->update($user, $request->validated());
+            return redirect()->back()->with('success', 'Profil berhasil diperbarui!');
         } catch (\Throwable $th) {
-        // return response()->json(['error' => 'Terjadi kesalahan saat memperbarui profil: ' . $th->getMessage()], 500);
-        return redirect()->back()->with('error', 'Terjadi kesalahan saat memperbarui profil: ' . $th->getMessage());
+            Log::error('Counselor profile update failed: ' . $th->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat memperbarui profil.');
         }
-
     }
 }
+

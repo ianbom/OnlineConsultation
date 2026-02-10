@@ -9,10 +9,10 @@ use App\Models\Counselor;
 use App\Services\CounselorService;
 use App\Services\DashboardService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class CounselorController extends Controller
 {
-
     protected $counselorService;
     protected $dashboardService;
 
@@ -25,9 +25,7 @@ class CounselorController extends Controller
     public function index()
     {
         $counselors = Counselor::with('user')->get();
-        return view('admin.counselor.index', [
-            'counselors' => $counselors
-        ]);
+        return view('admin.counselor.index', ['counselors' => $counselors]);
     }
 
     public function create()
@@ -38,49 +36,42 @@ class CounselorController extends Controller
     public function store(StoreCounselorRequest $request)
     {
         try {
-            $counselor = $this->counselorService->create($request->validated());
-        return redirect()
-            ->route('admin.counselor.index')
-            ->with('success', 'Counselor created successfully!');
+            $this->counselorService->create($request->validated());
+            return redirect()->route('admin.counselor.index')
+                ->with('success', 'Counselor created successfully!');
         } catch (\Throwable $th) {
-            return redirect()
-                ->back()
-                ->withInput()
+            Log::error('Create counselor failed: ' . $th->getMessage());
+            return redirect()->back()->withInput()
                 ->with('error', 'Failed to create counselor: ' . $th->getMessage());
         }
-
     }
 
-    public function edit(Counselor $counselor){
+    public function edit(Counselor $counselor)
+    {
         return view('admin.counselor.edit', ['counselor' => $counselor]);
     }
 
-    public function update(UpdateCounselorRequest $request, Counselor $counselor){
+    public function update(UpdateCounselorRequest $request, Counselor $counselor)
+    {
         try {
             $this->counselorService->update($counselor, $request->validated());
-
-            return redirect()
-                ->route('admin.counselor.index')
+            return redirect()->route('admin.counselor.index')
                 ->with('success', 'Counselor berhasil diperbarui.');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Gagal memperbarui data counselor: ' . $e->getMessage());
+        } catch (\Throwable $th) {
+            Log::error('Update counselor failed: ' . $th->getMessage());
+            return back()->with('error', 'Gagal memperbarui data counselor: ' . $th->getMessage());
         }
     }
 
     public function show($counselorId)
     {
-        // Get counselor detail
         $counselor = Counselor::with('user')->findOrFail($counselorId);
-
-        // Get all dashboard data using DashboardService
         $dashboardData = $this->dashboardService->getCounselorDashboardData($counselor->id);
 
-        // Return view with counselor and dashboard data
         return view('admin.counselor.detail', array_merge(
             ['counselor' => $counselor],
             $dashboardData
         ));
     }
-
-
 }
+
