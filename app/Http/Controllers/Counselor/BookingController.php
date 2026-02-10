@@ -99,10 +99,9 @@ class BookingController extends Controller
     {
         try {
             DB::transaction(function () use ($bookingId) {
-                $counselorId = Auth::user()->counselor->id;
+                // $counselorId = Auth::user()->counselor->id;
 
-                $booking = Booking::where('counselor_id', $counselorId)
-                    ->with('schedule')
+                $booking = Booking::with('schedule')
                     ->findOrFail($bookingId);
 
                 if ($booking->status === 'cancelled') {
