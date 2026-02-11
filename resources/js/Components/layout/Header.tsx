@@ -14,6 +14,7 @@ import {
     Calendar,
     HelpCircle,
     LayoutDashboard,
+    LogOut,
     Menu,
     User,
     Users,
@@ -180,6 +181,19 @@ export function Header() {
                                 </Link>
                             );
                         })}
+
+                        <div className="my-1 border-t border-border" />
+
+                        <button
+                            onClick={() => {
+                                setMobileMenuOpen(false);
+                                handleLogout();
+                            }}
+                            className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+                        >
+                            <LogOut className="h-5 w-5" />
+                            Logout
+                        </button>
                     </div>
                 </nav>
             )}
