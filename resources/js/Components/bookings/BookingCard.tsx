@@ -176,10 +176,10 @@ export function BookingCard({
                                 <p className="text-sm text-muted-foreground">
                                     {specialization}
                                 </p>
-                                <p className="mt-0.5 text-xs text-muted-foreground">
+                                {/* <p className="mt-0.5 text-xs text-muted-foreground">
                                     Booking ID:{' '}
                                     <span className="font-medium">#{id}</span>
-                                </p>
+                                </p> */}
                             </div>
 
                             <div className="flex flex-col items-end gap-1">

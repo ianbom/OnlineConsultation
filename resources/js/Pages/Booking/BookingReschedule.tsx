@@ -199,7 +199,7 @@ export default function BookingReschedule({
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="relative h-12 w-12 overflow-hidden rounded-full bg-muted">
+                                    {/* <div className="relative h-12 w-12 overflow-hidden rounded-full bg-muted">
                                         <img
                                             src={photoUrl}
                                             alt={counselor.user.name}
@@ -209,7 +209,7 @@ export default function BookingReschedule({
                                                     '/default-avatar.png';
                                             }}
                                         />
-                                    </div>
+                                    </div> */}
                                     <div>
                                         <p className="font-medium">
                                             {counselor.user.name}

@@ -87,23 +87,23 @@ class BookingController extends Controller
         ->orderBy('start_time')
         ->get();
 
-    $schedulesByDate = $availableSchedules->groupBy('date')->map(function($schedules) {
-        return $schedules->map(function($schedule) {
-            return [
-                'id' => $schedule->id,
-                'date' => $schedule->date,
-                'start_time' => $schedule->start_time,
-                'end_time' => $schedule->end_time,
-                'is_available' => $schedule->is_available,
-            ];
-        })->values();
-    });
+    $schedulesByDate = [];
+    foreach ($availableSchedules as $schedule) {
+        $dateKey = $schedule->date->format('Y-m-d');
+        $schedulesByDate[$dateKey][] = [
+            'id' => $schedule->id,
+            'date' => $dateKey,
+            'start_time' => $schedule->start_time,
+            'end_time' => $schedule->end_time,
+            'is_available' => $schedule->is_available,
+        ];
+    }
 
     return Inertia::render('Booking/BookingReschedule', [
         'booking' => $booking,
         'counselor' => $counselor,
-        'schedulesByDate' => $schedulesByDate]);
-
+        'schedulesByDate' => $schedulesByDate,
+    ]);
     }
 
 

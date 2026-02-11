@@ -22,7 +22,7 @@ import {
 import { Link, router } from '@inertiajs/react';
 import { format } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
-import { ChevronLeft, MessageCircle, Printer } from 'lucide-react';
+import { Calendar, ChevronLeft, MessageCircle, Printer } from 'lucide-react';
 
 interface Props {
     booking: Booking;
@@ -188,6 +188,33 @@ Mohon informasi terkait proses refund saya. Terima kasih! 🙏`;
                                 </div>
                             )}
 
+                        {/* Reschedule Button */}
+                        {['paid', 'rescheduled'].includes(booking.status) &&
+                            !booking.is_expired &&
+                            booking.reschedule_status === 'none' && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    asChild
+                                    className="text-xs sm:text-sm"
+                                >
+                                    <Link
+                                        href={route(
+                                            'client.pick.reschedule',
+                                            booking.id
+                                        )}
+                                    >
+                                        <Calendar className="mr-2 h-4 w-4" />
+                                        <span className="sm:hidden">
+                                            Reschedule
+                                        </span>
+                                        <span className="hidden sm:inline">
+                                            Reschedule Booking
+                                        </span>
+                                    </Link>
+                                </Button>
+                            )}
+
                         {/* Cancel Button */}
                         {['paid', 'rescheduled'].includes(booking.status) &&
                             !booking.is_expired && (
@@ -268,7 +295,7 @@ Mohon informasi terkait proses refund saya. Terima kasih! 🙏`;
                         </div>
                     </div>
                 </div>
-            </div>
-        </PageLayout>
+            </div >
+        </PageLayout >
     );
 }

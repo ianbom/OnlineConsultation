@@ -128,7 +128,8 @@ export function PaidStatus({ booking }: StatusComponentProps) {
     const showRescheduleButton =
         booking.status === 'paid' &&
         !booking.is_expired &&
-        booking.reschedule_status === 'none' &&
+        (booking.reschedule_status === 'none' ||
+            booking.reschedule_status === null) &&
         hoursUntilSession >= 2; // Hanya tampilkan jika masih >= 2 jam
 
     const statusLabel = (value: string) => {
@@ -172,17 +173,16 @@ export function PaidStatus({ booking }: StatusComponentProps) {
                                 Status
                             </span>
                             <span
-                                className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                                    booking.reschedule_status === 'pending'
+                                className={`rounded-full px-3 py-1 text-xs font-semibold ${booking.reschedule_status === 'pending'
                                         ? 'bg-yellow-100 text-yellow-800'
                                         : booking.reschedule_status ===
                                             'approved'
-                                          ? 'bg-green-100 text-green-800'
-                                          : booking.reschedule_status ===
-                                              'rejected'
-                                            ? 'bg-red-100 text-red-800'
-                                            : 'bg-gray-100 text-gray-700'
-                                }`}
+                                            ? 'bg-green-100 text-green-800'
+                                            : booking.reschedule_status ===
+                                                'rejected'
+                                                ? 'bg-red-100 text-red-800'
+                                                : 'bg-gray-100 text-gray-700'
+                                    }`}
                             >
                                 {statusLabel(booking.reschedule_status ?? '')}
                             </span>
@@ -241,25 +241,27 @@ export function PaidStatus({ booking }: StatusComponentProps) {
             {/* RESCHEDULE BUTTON               */}
             {/* =============================== */}
             {/* Peringatan jika terlalu dekat dengan sesi */}
-            {isTooCloseToSession && booking.reschedule_status === 'none' && (
-                <Card className="border-orange-300 bg-orange-50">
-                    <CardContent className="p-4">
-                        <div className="flex items-start gap-3">
-                            <Clock className="mt-0.5 h-5 w-5 text-orange-600" />
-                            <div className="flex-1">
-                                <h4 className="mb-1 font-medium text-foreground">
-                                    Reschedule Tidak Tersedia
-                                </h4>
-                                <p className="text-sm text-muted-foreground">
-                                    Reschedule hanya dapat dilakukan minimal 2
-                                    jam sebelum sesi dimulai. Silakan hubungi
-                                    konselor jika ada kendala.
-                                </p>
+            {isTooCloseToSession &&
+                (booking.reschedule_status === 'none' ||
+                    booking.reschedule_status === null) && (
+                    <Card className="border-orange-300 bg-orange-50">
+                        <CardContent className="p-4">
+                            <div className="flex items-start gap-3">
+                                <Clock className="mt-0.5 h-5 w-5 text-orange-600" />
+                                <div className="flex-1">
+                                    <h4 className="mb-1 font-medium text-foreground">
+                                        Reschedule Tidak Tersedia
+                                    </h4>
+                                    <p className="text-sm text-muted-foreground">
+                                        Reschedule hanya dapat dilakukan minimal 2
+                                        jam sebelum sesi dimulai. Silakan hubungi
+                                        konselor jika ada kendala.
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
+                        </CardContent>
+                    </Card>
+                )}
 
             {showRescheduleButton && (
                 <Card className="border-primary/20 bg-primary/5">
@@ -358,10 +360,10 @@ export function CancelledStatus({ booking }: StatusComponentProps) {
         booking.cancelled_by === 'client'
             ? 'Dibatalkan oleh Anda'
             : booking.cancelled_by === 'counselor'
-              ? 'Dibatalkan oleh Konselor'
-              : booking.cancelled_by === 'admin'
-                ? 'Dibatalkan oleh Admin'
-                : 'Dibatalkan oleh Sistem';
+                ? 'Dibatalkan oleh Konselor'
+                : booking.cancelled_by === 'admin'
+                    ? 'Dibatalkan oleh Admin'
+                    : 'Dibatalkan oleh Sistem';
 
     return (
         <div className="space-y-4">
