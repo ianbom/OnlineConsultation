@@ -54,7 +54,17 @@ export default interface Booking {
     reschedule_by: string | null;
     reschedule_reason: string | null;
 
-    payment: Payment | null; // pendukung jika booking belum punya payment
+    payment: Payment | null;
+
+    rating: {
+        id: number;
+        counselor_id: number;
+        booking_id: number;
+        rating: number;
+        commentar: string | null;
+        created_at: string;
+        updated_at: string;
+    } | null;
 
     created_at: string;
     updated_at: string;

@@ -61,6 +61,11 @@ class Booking extends Model
         return $this->hasOne(SessionLog::class, 'booking_id', 'id');
     }
 
+    public function rating()
+    {
+        return $this->hasOne(RatingCounselor::class, 'booking_id', 'id');
+    }
+
     public function scopeForClient($query, $clientId)
 {
     return $query->where('client_id', $clientId);

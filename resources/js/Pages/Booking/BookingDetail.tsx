@@ -7,6 +7,7 @@ import {
     RescheduledStatus,
 } from '@/Components/bookings/BookingStatusComponents';
 import BookingDetailCard from '@/Components/bookings/DetailBookingCard';
+import RatingModal from '@/Components/bookings/RatingModal';
 import { PageLayout } from '@/Components/layout/PageLayout';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
@@ -22,7 +23,7 @@ import {
 import { Link, router } from '@inertiajs/react';
 import { format } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
-import { Calendar, ChevronLeft, MessageCircle, Printer } from 'lucide-react';
+import { Calendar, ChevronLeft, MessageCircle, Printer, Star } from 'lucide-react';
 
 interface Props {
     booking: Booking;
@@ -33,9 +34,6 @@ export default function BookingDetail({ booking }: Props) {
         ? new Date(booking.payment.expiry_time)
         : null;
     const timeLeft = useCountdown(expiryTime);
-
-    console.log(expiryTime);
-    console.log(timeLeft);
 
     // Generate WhatsApp message based on status
     const getWhatsAppMessage = () => {
@@ -267,6 +265,35 @@ Mohon informasi terkait proses refund saya. Terima kasih! 🙏`;
                                         </p>
                                     </CardContent>
                                 </Card>
+                            )}
+
+                            {/* Rating Section */}
+                            {booking.status === 'completed' && (
+                                <>
+                                    {booking.rating && (
+                                        <Card className="my-3 border-yellow-200 bg-yellow-50">
+                                            <CardContent className="pt-6">
+                                                <div className="flex items-center gap-1 mb-2">
+                                                    {[1, 2, 3, 4, 5].map((star) => (
+                                                        <Star
+                                                            key={star}
+                                                            className={`h-5 w-5 ${star <= booking.rating!.rating
+                                                                    ? 'fill-yellow-400 text-yellow-400'
+                                                                    : 'text-muted-foreground/30'
+                                                                }`}
+                                                        />
+                                                    ))}
+                                                </div>
+                                                {booking.rating.commentar && (
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {booking.rating.commentar}
+                                                    </p>
+                                                )}
+                                            </CardContent>
+                                        </Card>
+                                    )}
+                                    <RatingModal booking={booking} />
+                                </>
                             )}
 
                             {/* WhatsApp CTA Button */}

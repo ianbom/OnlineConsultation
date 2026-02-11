@@ -12,6 +12,7 @@ use App\Http\Controllers\Client\CounselorController as ClientCounselorController
 use App\Http\Controllers\Client\DashboardController as ClientDashboardController;
 use App\Http\Controllers\Client\PaymentController as ClientPaymentController;
 use App\Http\Controllers\Client\ProfileController as ClientProfileController;
+use App\Http\Controllers\Client\RatingController as ClientRatingController;
 use App\Http\Controllers\Counselor\BookingController as CounselorBookingController;
 use App\Http\Controllers\Counselor\DashboardController as CounselorDashboardController;
 use App\Http\Controllers\Counselor\ProfileController as CounselorProfileController;
@@ -81,6 +82,8 @@ Route::middleware(['auth', 'verified'])->prefix('client')->as('client.')->group(
     Route::post('/update-profile', [ClientProfileController::class, 'updateProfile'])->name('profile.update');
     Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard');
     Route::get('/faq', [ClientDashboardController::class, 'faq'])->name('faq');
+    Route::post('/rating', [ClientRatingController::class, 'store'])->name('rating.store');
+    Route::put('/rating/{ratingId}', [ClientRatingController::class, 'update'])->name('rating.update');
 });
 
 
