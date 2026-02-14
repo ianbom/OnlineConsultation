@@ -17,7 +17,9 @@ class BookingController extends Controller
 
     public function show($bookingId){
         $booking = Booking::with('client', 'schedule', 'secondSchedule', 'previousSchedule',
-         'previousSecondSchedule', 'payment', 'counselor.user')->findOrFail($bookingId);
+         'previousSecondSchedule', 'payment', 'counselor.user', 'rating')->findOrFail($bookingId);
+
+        //  return response()->json(['booking' => $booking]);
 
         return view('admin.booking.show', ['booking' => $booking]);
     }

@@ -214,10 +214,11 @@ export default function BookingConfirmation({ counselor, schedules }: Props) {
                             {/* Offline Option */}
                             <button
                                 onClick={() => setConsultationType('offline')}
-                                className={`flex items-center gap-3 rounded-lg border p-4 text-left transition-all ${consultationType === 'offline'
-                                    ? 'border-primary bg-primary/5'
-                                    : 'border-border hover:border-primary/50'
-                                    } `}
+                                className={`flex items-center gap-3 rounded-lg border p-4 text-left transition-all ${
+                                    consultationType === 'offline'
+                                        ? 'border-primary bg-primary/5'
+                                        : 'border-border hover:border-primary/50'
+                                } `}
                             >
                                 <div
                                     className={`h-4 w-4 rounded-full border ${consultationType === 'offline' ? 'border-primary bg-primary' : 'border-muted-foreground'} `}
@@ -235,10 +236,11 @@ export default function BookingConfirmation({ counselor, schedules }: Props) {
                             {/* Online Option */}
                             <button
                                 onClick={() => setConsultationType('online')}
-                                className={`flex items-center gap-3 rounded-lg border p-4 text-left transition-all ${consultationType === 'online'
-                                    ? 'border-primary bg-primary/5'
-                                    : 'border-border hover:border-primary/50'
-                                    } `}
+                                className={`flex items-center gap-3 rounded-lg border p-4 text-left transition-all ${
+                                    consultationType === 'online'
+                                        ? 'border-primary bg-primary/5'
+                                        : 'border-border hover:border-primary/50'
+                                } `}
                             >
                                 <div
                                     className={`h-4 w-4 rounded-full border ${consultationType === 'online' ? 'border-primary bg-primary' : 'border-muted-foreground'} `}
@@ -284,6 +286,6 @@ export default function BookingConfirmation({ counselor, schedules }: Props) {
                     {isSubmitting ? 'Memproses...' : 'Lanjut ke Pembayaran'}
                 </Button>
             </div>
-        </PageLayout >
+        </PageLayout>
     );
 }

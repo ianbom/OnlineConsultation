@@ -22,11 +22,11 @@ export default interface Booking {
     link_status: 'pending' | 'sent' | null;
 
     status:
-    | 'pending_payment'
-    | 'paid'
-    | 'cancelled'
-    | 'completed'
-    | 'rescheduled';
+        | 'pending_payment'
+        | 'paid'
+        | 'cancelled'
+        | 'completed'
+        | 'rescheduled';
 
     notes: string | null;
     counselor_notes: string | null;

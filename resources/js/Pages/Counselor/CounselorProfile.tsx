@@ -244,7 +244,8 @@ export default function CounselorProfile({ counselor }: Props) {
                                             'id-ID',
                                         )}
                                         <span className="text-sm font-normal text-muted-foreground">
-                                            {' '}/offline
+                                            {' '}
+                                            /offline
                                         </span>
                                     </div>
                                     <div className="text-lg font-medium text-green-600">
@@ -253,7 +254,8 @@ export default function CounselorProfile({ counselor }: Props) {
                                             'id-ID',
                                         )}
                                         <span className="text-sm font-normal text-muted-foreground">
-                                            {' '}/online
+                                            {' '}
+                                            /online
                                         </span>
                                     </div>
                                 </div>

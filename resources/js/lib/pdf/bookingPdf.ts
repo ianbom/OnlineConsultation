@@ -296,8 +296,8 @@ export const generateBookingPdf = async (
             booking.payment.status === 'success'
                 ? '✓ LUNAS'
                 : booking.payment.status === 'pending'
-                    ? '⏳ Menunggu Pembayaran'
-                    : formatStatus(booking.payment.status);
+                  ? '⏳ Menunggu Pembayaran'
+                  : formatStatus(booking.payment.status);
 
         y = drawRow(
             doc,

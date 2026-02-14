@@ -124,19 +124,19 @@ export default function Dashboard({
                                             booking.counselor.user.name
                                         }
                                         counselorPhoto={getProfilePicUrl(
-                                            booking.counselor.user
-                                                .profile_pic,
+                                            booking.counselor.user.profile_pic,
                                         )}
                                         date={formatDate(booking.schedule.date)}
-                                        time={`${formatTime(booking.schedule.start_time)} - ${booking.second_schedule
-                                            ? formatTime(
-                                                booking.second_schedule
-                                                    .end_time,
-                                            )
-                                            : formatTime(
-                                                booking.schedule.end_time,
-                                            )
-                                            }`}
+                                        time={`${formatTime(booking.schedule.start_time)} - ${
+                                            booking.second_schedule
+                                                ? formatTime(
+                                                      booking.second_schedule
+                                                          .end_time,
+                                                  )
+                                                : formatTime(
+                                                      booking.schedule.end_time,
+                                                  )
+                                        }`}
                                         duration={`${booking.duration_hours} hour${booking.duration_hours > 1 ? 's' : ''}`}
                                         status={booking.status as any}
                                         specialization={
@@ -204,19 +204,19 @@ export default function Dashboard({
                                             booking.counselor.user.name
                                         }
                                         counselorPhoto={getProfilePicUrl(
-                                            booking.counselor.user
-                                                .profile_pic,
+                                            booking.counselor.user.profile_pic,
                                         )}
                                         date={formatDate(booking.schedule.date)}
-                                        time={`${formatTime(booking.schedule.start_time)} - ${booking.second_schedule
-                                            ? formatTime(
-                                                booking.second_schedule
-                                                    .end_time,
-                                            )
-                                            : formatTime(
-                                                booking.schedule.end_time,
-                                            )
-                                            }`}
+                                        time={`${formatTime(booking.schedule.start_time)} - ${
+                                            booking.second_schedule
+                                                ? formatTime(
+                                                      booking.second_schedule
+                                                          .end_time,
+                                                  )
+                                                : formatTime(
+                                                      booking.schedule.end_time,
+                                                  )
+                                        }`}
                                         duration={`${booking.duration_hours} hour${booking.duration_hours > 1 ? 's' : ''}`}
                                         status={booking.status as any}
                                         specialization={

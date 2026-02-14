@@ -25,9 +25,7 @@ export default function RatingModal({ booking }: Props) {
     const [open, setOpen] = useState(false);
     const [rating, setRating] = useState(existingRating?.rating ?? 0);
     const [hoveredRating, setHoveredRating] = useState(0);
-    const [commentar, setCommentar] = useState(
-        existingRating?.commentar ?? '',
-    );
+    const [commentar, setCommentar] = useState(existingRating?.commentar ?? '');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleSubmit = () => {
@@ -63,17 +61,12 @@ export default function RatingModal({ booking }: Props) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button
-                    variant={isEditing ? 'outline' : 'default'}
-                    className={
-                        isEditing
-                            ? 'my-2 w-full gap-2'
-                            : 'my-2 w-full gap-2 bg-yellow-500 hover:bg-yellow-600'
-                    }
-                >
-                    <Star className="h-4 w-4" />
-                    {isEditing ? 'Ubah Rating' : 'Beri Rating'}
-                </Button>
+                <button className="flex aspect-square flex-col items-center justify-center gap-2 rounded-xl border border-yellow-200 bg-yellow-50 p-4 text-yellow-600 transition-all hover:border-yellow-400 hover:bg-yellow-100 dark:border-yellow-900/50 dark:bg-yellow-900/20 dark:text-yellow-400 dark:hover:border-yellow-700 dark:hover:bg-yellow-900/30">
+                    <Star className="h-6 w-6" />
+                    <span className="text-center text-xs font-medium">
+                        {isEditing ? 'Ubah Rating' : 'Beri Rating'}
+                    </span>
+                </button>
             </DialogTrigger>
 
             <DialogContent className="sm:max-w-md">
@@ -99,17 +92,16 @@ export default function RatingModal({ booking }: Props) {
                                     key={star}
                                     type="button"
                                     onClick={() => setRating(star)}
-                                    onMouseEnter={() =>
-                                        setHoveredRating(star)
-                                    }
+                                    onMouseEnter={() => setHoveredRating(star)}
                                     onMouseLeave={() => setHoveredRating(0)}
                                     className="rounded-sm p-1 transition-transform hover:scale-110"
                                 >
                                     <Star
-                                        className={`h-8 w-8 transition-colors ${star <= displayRating
+                                        className={`h-8 w-8 transition-colors ${
+                                            star <= displayRating
                                                 ? 'fill-yellow-400 text-yellow-400'
                                                 : 'text-muted-foreground/30'
-                                            }`}
+                                        }`}
                                     />
                                 </button>
                             ))}
@@ -160,8 +152,8 @@ export default function RatingModal({ booking }: Props) {
                         {isSubmitting
                             ? 'Menyimpan...'
                             : isEditing
-                                ? 'Perbarui Rating'
-                                : 'Kirim Rating'}
+                              ? 'Perbarui Rating'
+                              : 'Kirim Rating'}
                     </Button>
                 </DialogFooter>
             </DialogContent>

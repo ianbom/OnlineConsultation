@@ -127,8 +127,10 @@ export default function SchedulePicker({ counselor }: Props) {
     };
 
     // Hitung total harga
-    const totalOfflinePrice = counselor.price_per_session * selectedSlots.length;
-    const totalOnlinePrice = counselor.online_price_per_session * selectedSlots.length;
+    const totalOfflinePrice =
+        counselor.price_per_session * selectedSlots.length;
+    const totalOnlinePrice =
+        counselor.online_price_per_session * selectedSlots.length;
 
     return (
         <PageLayout>
@@ -187,14 +189,19 @@ export default function SchedulePicker({ counselor }: Props) {
                                 <div className="mt-1 space-y-0.5">
                                     <p className="text-sm text-muted-foreground">
                                         Offline: Rp{' '}
-                                        {totalOfflinePrice.toLocaleString('id-ID')} ({selectedSlots.length} sesi)
+                                        {totalOfflinePrice.toLocaleString(
+                                            'id-ID',
+                                        )}{' '}
+                                        ({selectedSlots.length} sesi)
                                     </p>
                                     <p className="text-sm text-green-600">
                                         Online: Rp{' '}
-                                        {totalOnlinePrice.toLocaleString('id-ID')} ({selectedSlots.length} sesi)
+                                        {totalOnlinePrice.toLocaleString(
+                                            'id-ID',
+                                        )}{' '}
+                                        ({selectedSlots.length} sesi)
                                     </p>
                                 </div>
-
                             </div>
 
                             {/* Tombol */}
