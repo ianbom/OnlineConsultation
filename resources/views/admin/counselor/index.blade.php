@@ -52,15 +52,17 @@
                                 {{-- FOTO + NAMA --}}
                                 <td>
                                     <div class="flex items-center">
-                                        <div>
-                                            <div class="font-medium">{{ $counselor->user->name }}</div>
-                                            <div class="text-xs text-gray-500">{{ $counselor->education }}</div>
+                                        <div class="max-w-[200px]">
+                                            <div class="font-medium truncate" title="{{ $counselor->user->name }}">{{ $counselor->user->name }}</div>
+                                            <div class="text-xs text-gray-500 truncate" title="{{ $counselor->education }}">{{ $counselor->education }}</div>
                                         </div>
                                     </div>
                                 </td>
 
                                 <td>{{ $counselor->user->email }}</td>
-                                <td>{{ $counselor->specialization }}</td>
+                                <td>
+                                    <span class="block max-w-[200px] truncate" title="{{ $counselor->specialization }}">{{ $counselor->specialization }}</span>
+                                </td>
 
                                 <td>Rp {{ number_format($counselor->price_per_session, 0, ',', '.') }}</td>
                                 <td>Rp {{ number_format($counselor->online_price_per_session, 0, ',', '.') }}</td>

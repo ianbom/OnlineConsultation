@@ -65,43 +65,52 @@
             </div>
         </div>
 
-        {{-- APPROVE / REJECT BUTTONS --}}
+        {{-- APPROVE / REJECT ACTIONS --}}
         @if($showActions && $booking->reschedule_status === 'pending')
-        <div class="border-t border-[#e6e0e0] pt-4">
-            <p class="text-xs font-semibold text-[#83676c] uppercase tracking-wider mb-3">Aksi</p>
-            <div class="flex flex-col gap-3">
-                {{-- Approve Button --}}
-                <form method="POST" action="{{ route('counselor.change.reshceduleStatus', $booking->id) }}">
+        <div class="border-t border-[#e6e0e0] pt-4 space-y-3">
+            <p class="text-xs font-semibold text-[#83676c] uppercase tracking-wider">Aksi</p>
+
+            {{-- Rejection Reason Input --}}
+            <div>
+                <label for="rejection_reason_input" class="text-xs text-[#83676c] mb-1 block">Alasan penolakan (opsional)</label>
+                <input
+                    type="text"
+                    id="rejection_reason_input"
+                    form="rejectForm"
+                    name="rejection_reason"
+                    placeholder="Tulis alasan jika ingin menolak..."
+                    class="w-full h-10 px-3 bg-[#f8f6f6] border border-[#e6e0e0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#7b1e2d]/20 focus:border-[#7b1e2d] transition-colors"
+                >
+            </div>
+
+            {{-- Side-by-side Buttons --}}
+            <div class="flex gap-3">
+                {{-- Approve --}}
+                <form method="POST" action="{{ route('counselor.change.reshceduleStatus', $booking->id) }}" class="flex-1">
                     @csrf
                     @method('PUT')
                     <input type="hidden" name="statusReschedule" value="approved">
                     <button
                         type="submit"
-                        class="w-full h-11 rounded-xl bg-green-600 text-white text-sm font-bold shadow-md hover:bg-green-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="w-full h-10 rounded-xl bg-green-600 text-white text-sm font-bold hover:bg-green-700 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                         @if($anyUnavailable) disabled @endif
                     >
-                        <span class="material-symbols-outlined text-[18px]">check_circle</span>
-                        Setujui Jadwal Ulang
+                        <span class="material-symbols-outlined text-[16px]">check_circle</span>
+                        Setujui
                     </button>
                 </form>
 
-                {{-- Reject Form --}}
-                <form method="POST" action="{{ route('counselor.change.reshceduleStatus', $booking->id) }}" class="space-y-2">
+                {{-- Reject --}}
+                <form id="rejectForm" method="POST" action="{{ route('counselor.change.reshceduleStatus', $booking->id) }}" class="flex-1">
                     @csrf
                     @method('PUT')
                     <input type="hidden" name="statusReschedule" value="rejected">
-                    <input
-                        type="text"
-                        name="rejection_reason"
-                        placeholder="Alasan penolakan (opsional)"
-                        class="w-full h-11 px-4 border border-[#e6e0e0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-400"
-                    >
                     <button
                         type="submit"
-                        class="w-full h-11 rounded-xl bg-red-600 text-white text-sm font-bold shadow-md hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+                        class="w-full h-10 rounded-xl bg-white text-red-600 text-sm font-bold border border-red-200 hover:bg-red-50 transition-colors flex items-center justify-center gap-1.5"
                     >
-                        <span class="material-symbols-outlined text-[18px]">cancel</span>
-                        Tolak Jadwal Ulang
+                        <span class="material-symbols-outlined text-[16px]">cancel</span>
+                        Tolak
                     </button>
                 </form>
             </div>

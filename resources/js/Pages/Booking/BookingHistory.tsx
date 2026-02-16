@@ -141,8 +141,8 @@ export default function BookingHistory({ bookings }: Props) {
 
     return (
         <PageLayout
-            title="My Bookings"
-            description="View and manage your consultation bookings"
+            title="Riwayat Booking"
+            description="Lihat dan kelola riwayat booking Anda"
         >
             <Tabs
                 value={activeTab}

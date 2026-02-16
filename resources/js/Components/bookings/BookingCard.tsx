@@ -13,11 +13,11 @@ interface BookingCardProps {
     time: string;
     duration: string;
     status:
-        | 'pending_payment'
-        | 'paid'
-        | 'cancelled'
-        | 'completed'
-        | 'rescheduled';
+    | 'pending_payment'
+    | 'paid'
+    | 'cancelled'
+    | 'completed'
+    | 'rescheduled';
     specialization: string;
     bookingType: 'online' | 'offline';
     paymentStatus?: string;
@@ -173,7 +173,7 @@ export function BookingCard({
                                 <h4 className="font-medium text-foreground">
                                     {counselorName}
                                 </h4>
-                                <p className="text-sm text-muted-foreground">
+                                <p className="max-w-[150px] truncate text-sm text-muted-foreground sm:max-w-none">
                                     {specialization}
                                 </p>
                                 {/* <p className="mt-0.5 text-xs text-muted-foreground">

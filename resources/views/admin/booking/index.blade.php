@@ -42,14 +42,18 @@
 
                                 {{-- KLIEN --}}
                                 <td>
-                                    <div class="font-medium">{{ $booking->client->name }}</div>
-                                    <div class="text-xs text-gray-500">{{ $booking->client->email }}</div>
+                                    <div class="max-w-[100px]">
+                                        <div class="font-medium truncate" title="{{ $booking->client->name }}">{{ $booking->client->name }}</div>
+                                        <div class="text-xs text-gray-500 truncate" title="{{ $booking->client->email }}">{{ $booking->client->email }}</div>
+                                    </div>
                                 </td>
 
                                 {{-- COUNSELOR --}}
                                 <td>
-                                    <div class="font-medium">{{ $booking->counselor->user->name }}</div>
-                                    <div class="text-xs text-gray-500">{{ $booking->counselor->specialization }}</div>
+                                    <div class="max-w-[100px]">
+                                        <div class="font-medium truncate" title="{{ $booking->counselor->user->name }}">{{ $booking->counselor->user->name }}</div>
+                                        <div class="text-xs text-gray-500 truncate" title="{{ $booking->counselor->specialization }}">{{ $booking->counselor->specialization }}</div>
+                                    </div>
                                 </td>
 
                                 {{-- JADWAL --}}
