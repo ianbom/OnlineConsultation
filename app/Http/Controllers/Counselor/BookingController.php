@@ -39,7 +39,7 @@ class BookingController extends Controller
             ->with('client', 'schedule', 'secondSchedule', 'previousSchedule', 'previousSecondSchedule', 'payment')
             ->findOrFail($bookingId);
 
-        return view('counselor.booking.detail', ['booking' => $booking]);
+        return view('tes', ['booking' => $booking]);
     }
 
     public function changeStatusReschedule(Request $request, $bookingId)

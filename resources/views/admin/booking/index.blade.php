@@ -1,8 +1,12 @@
 <x-admin.app>
 
-    <script src="/assets/js/simple-datatables.js"></script>
+    @php
+        $currentSort = request('sort_by', 'created_at');
+        $currentDir = request('sort_dir', 'desc');
+        $perPage = request('per_page', 10);
+    @endphp
 
-    <div x-data="bookingTable">
+    <div>
         <div class="flex items-center p-3 overflow-x-auto panel whitespace-nowrap text-primary">
             <div class="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 ltr:mr-3 rtl:ml-3">
                 <svg width="24" height="24" fill="none" class="h-3.5 w-3.5">
@@ -18,27 +22,135 @@
                 <h5 class="text-lg font-semibold dark:text-white-light">Daftar Booking</h5>
             </div>
 
+            {{-- TOOLBAR: Search + Filters + Per Page --}}
+            <form method="GET" action="{{ route('admin.booking.index') }}" class="mb-5">
+                {{-- Preserve sort params --}}
+                <input type="hidden" name="sort_by" value="{{ $currentSort }}">
+                <input type="hidden" name="sort_dir" value="{{ $currentDir }}">
+
+                <div class="flex flex-wrap items-end gap-3">
+                    {{-- Search --}}
+                    <div class="flex-1 min-w-[200px]">
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Cari</label>
+                        <input type="text" name="search" value="{{ request('search') }}"
+                            placeholder="Cari nama klien, konselor, atau ID..."
+                            class="form-input w-full" />
+                    </div>
+
+                    {{-- Status Filter --}}
+                    <div class="w-[160px]">
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Status</label>
+                        <select name="status" class="form-select w-full">
+                            <option value="">Semua Status</option>
+                            <option value="pending_payment" {{ request('status') === 'pending_payment' ? 'selected' : '' }}>Pending Payment</option>
+                            <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Paid</option>
+                            <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Completed</option>
+                            <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                            <option value="rescheduled" {{ request('status') === 'rescheduled' ? 'selected' : '' }}>Rescheduled</option>
+                        </select>
+                    </div>
+
+                    {{-- Type Filter --}}
+                    <div class="w-[130px]">
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Tipe</label>
+                        <select name="type" class="form-select w-full">
+                            <option value="">Semua Tipe</option>
+                            <option value="online" {{ request('type') === 'online' ? 'selected' : '' }}>Online</option>
+                            <option value="offline" {{ request('type') === 'offline' ? 'selected' : '' }}>Offline</option>
+                        </select>
+                    </div>
+
+                    {{-- Per Page --}}
+                    <div class="w-[100px]">
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Per Halaman</label>
+                        <select name="per_page" class="form-select w-full">
+                            <option value="5" {{ $perPage == '5' ? 'selected' : '' }}>5</option>
+                            <option value="10" {{ $perPage == '10' ? 'selected' : '' }}>10</option>
+                            <option value="50" {{ $perPage == '50' ? 'selected' : '' }}>50</option>
+                            <option value="100" {{ $perPage == '100' ? 'selected' : '' }}>100</option>
+                            <option value="all" {{ $perPage === 'all' ? 'selected' : '' }}>Semua</option>
+                        </select>
+                    </div>
+
+                    {{-- Buttons --}}
+                    <div class="flex gap-2">
+                        <button type="submit" class="btn btn-primary h-[38px]">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="mr-1">
+                                <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+                                <path d="M20 20L17 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            Cari
+                        </button>
+                        <a href="{{ route('admin.booking.index') }}" class="btn btn-outline-dark h-[38px]">Reset</a>
+                    </div>
+                </div>
+            </form>
+
             <div class="table-responsive">
-                <table id="tableBooking" class="whitespace-nowrap table-hover">
+                <table class="whitespace-nowrap table-hover">
                     <thead>
                         <tr>
                             <th>No</th>
                             <th>Klien</th>
                             <th>Counselor</th>
                             <th>Jadwal</th>
-                            <th>Durasi</th>
+                            <th>
+                                <a href="{{ route('admin.booking.index', array_merge(request()->all(), ['sort_by' => 'duration_hours', 'sort_dir' => ($currentSort === 'duration_hours' && $currentDir === 'asc') ? 'desc' : 'asc'])) }}"
+                                    class="flex items-center gap-1 hover:text-primary">
+                                    Durasi
+                                    @if($currentSort === 'duration_hours')
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="{{ $currentDir === 'asc' ? '' : 'rotate-180' }}">
+                                            <path d="M12 4l-6 8h12z"/>
+                                        </svg>
+                                    @endif
+                                </a>
+                            </th>
                             <th>Tipe</th>
-                            <th>Harga</th>
-                            <th>Status</th>
-                            <th>Dibuat Pada</th>
+                            <th>
+                                <a href="{{ route('admin.booking.index', array_merge(request()->all(), ['sort_by' => 'price', 'sort_dir' => ($currentSort === 'price' && $currentDir === 'asc') ? 'desc' : 'asc'])) }}"
+                                    class="flex items-center gap-1 hover:text-primary">
+                                    Harga
+                                    @if($currentSort === 'price')
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="{{ $currentDir === 'asc' ? '' : 'rotate-180' }}">
+                                            <path d="M12 4l-6 8h12z"/>
+                                        </svg>
+                                    @endif
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ route('admin.booking.index', array_merge(request()->all(), ['sort_by' => 'status', 'sort_dir' => ($currentSort === 'status' && $currentDir === 'asc') ? 'desc' : 'asc'])) }}"
+                                    class="flex items-center gap-1 hover:text-primary">
+                                    Status
+                                    @if($currentSort === 'status')
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="{{ $currentDir === 'asc' ? '' : 'rotate-180' }}">
+                                            <path d="M12 4l-6 8h12z"/>
+                                        </svg>
+                                    @endif
+                                </a>
+                            </th>
+                            <th>
+                                <a href="{{ route('admin.booking.index', array_merge(request()->all(), ['sort_by' => 'created_at', 'sort_dir' => ($currentSort === 'created_at' && $currentDir === 'asc') ? 'desc' : 'asc'])) }}"
+                                    class="flex items-center gap-1 hover:text-primary">
+                                    Dibuat Pada
+                                    @if($currentSort === 'created_at')
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="{{ $currentDir === 'asc' ? '' : 'rotate-180' }}">
+                                            <path d="M12 4l-6 8h12z"/>
+                                        </svg>
+                                    @endif
+                                </a>
+                            </th>
                             <th class="text-center">Aksi</th>
                         </tr>
                     </thead>
 
                     <tbody>
+                        @php
+                            $isCollection = $bookings instanceof \Illuminate\Support\Collection;
+                            $startNum = $isCollection ? 1 : $bookings->firstItem();
+                        @endphp
                         @forelse($bookings as $index => $booking)
                             <tr>
-                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $startNum + $index }}</td>
 
                                 {{-- KLIEN --}}
                                 <td>
@@ -62,7 +174,6 @@
                                     <div class="text-xs text-gray-500">
                                         {{ \Carbon\Carbon::parse($booking->schedule->start_time)->format('H:i') }}
                                     </div>
-
                                 </td>
 
                                 {{-- DURASI --}}
@@ -113,7 +224,6 @@
                                 </td>
 
                             </tr>
-
                         @empty
                             <tr>
                                 <td colspan="10" class="text-center p-4">Tidak ada data booking</td>
@@ -123,22 +233,23 @@
 
                 </table>
             </div>
+
+            {{-- PAGINATION + INFO --}}
+            @if(!$isCollection)
+            <div class="flex flex-wrap items-center justify-between gap-3 mt-5">
+                <div class="text-sm text-gray-500">
+                    Menampilkan {{ $bookings->firstItem() ?? 0 }} - {{ $bookings->lastItem() ?? 0 }} dari {{ $bookings->total() }} data
+                </div>
+                <div>
+                    {{ $bookings->links() }}
+                </div>
+            </div>
+            @else
+            <div class="mt-5 text-sm text-gray-500">
+                Menampilkan semua {{ $bookings->count() }} data
+            </div>
+            @endif
         </div>
     </div>
-
-    <script>
-        document.addEventListener("alpine:init", () => {
-            Alpine.data("bookingTable", () => ({
-                init() {
-                    new simpleDatatables.DataTable('#tableBooking', {
-                        searchable: true,
-                        sortable: true,
-                        perPage: 10,
-                        perPageSelect: [10, 25, 50, 100]
-                    });
-                }
-            }));
-        });
-    </script>
 
 </x-admin.app>

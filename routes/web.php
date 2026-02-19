@@ -30,15 +30,11 @@ Route::get('/dbs', function () {
     return view('dashboard');
 });
 
-// Public FAQ route (accessible without login)
-// Route::get('/faq', function () {
-//     return Inertia::render('FAQPage');
-// })->name('faq');
-
-
-Route::get('/tes', function () {
-    return view('admin.dashboard.dashboard');
-});
+Route::get('/tes/{bookingId}', function ($bookingId) {
+    $booking = \App\Models\Booking::with('client', 'schedule', 'secondSchedule', 'previousSchedule',
+        'previousSecondSchedule', 'payment', 'counselor.user', 'rating')->findOrFail($bookingId);
+    return view('tes', ['booking' => $booking]);
+})->name('tes');
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(function () {
     Route::get('/dashboard', [AdmDashboardController::class, 'index'])->name('dashboard');
@@ -50,6 +46,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::resource('client', AdmClientController::class);
     Route::get('/profile', [AdmProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile/update', [AdmProfileController::class, 'update'])->name('profile.update');
+    
 });
 
 Route::middleware(['role:counselor,admin'])->prefix('counselor')->as('counselor.')->group(function () {

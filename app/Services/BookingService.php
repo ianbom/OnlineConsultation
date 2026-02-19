@@ -158,15 +158,22 @@ class BookingService
 
     public function releaseSchedules(Booking $booking)
     {
-
-        Log::info("Jadwal di service balik");
-
         if ($booking->schedule) {
             $booking->schedule->update(['is_available' => true]);
         }
 
-        if ($booking->second_schedule) {
-            $booking->second_schedule->update(['is_available' => true]);
+        if ($booking->secondSchedule) {
+            $booking->secondSchedule->update(['is_available' => true]);
+        }
+
+        if ($booking->reschedule_status !== 'none') {
+            if ($booking->previousSchedule) {
+                $booking->previousSchedule->update(['is_available' => true]);
+            }
+
+            if ($booking->previousSecondSchedule) {
+                $booking->previousSecondSchedule->update(['is_available' => true]);
+            }
         }
     }
 
