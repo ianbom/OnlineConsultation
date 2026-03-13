@@ -63,13 +63,30 @@ class CounselorController extends Controller
         }
     }
 
-    public function show($counselorId)
+    public function show(Request $request, $counselorId)
     {
         $counselor = Counselor::with('user')->findOrFail($counselorId);
         $dashboardData = $this->dashboardService->getCounselorDashboardData($counselor->id);
 
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDir = $request->input('sort_dir', 'desc');
+        $allowedSorts = ['rating', 'created_at'];
+        if (!in_array($sortBy, $allowedSorts)) $sortBy = 'created_at';
+        if (!in_array($sortDir, ['asc', 'desc'])) $sortDir = 'desc';
+
+        $ratings = \App\Models\RatingCounselor::where('counselor_id', $counselor->user->id)
+            ->with(['booking.client'])
+            ->orderBy($sortBy, $sortDir)
+            ->paginate(5, ['*'], 'ratings_page')
+            ->withQueryString();
+
         return view('admin.counselor.detail', array_merge(
-            ['counselor' => $counselor],
+            [
+                'counselor' => $counselor,
+                'ratings' => $ratings,
+                'ratingsSortBy' => $sortBy,
+                'ratingsSortDir' => $sortDir,
+            ],
             $dashboardData
         ));
     }

@@ -13,11 +13,11 @@ interface BookingCardProps {
     time: string;
     duration: string;
     status:
-    | 'pending_payment'
-    | 'paid'
-    | 'cancelled'
-    | 'completed'
-    | 'rescheduled';
+        | 'pending_payment'
+        | 'paid'
+        | 'cancelled'
+        | 'completed'
+        | 'rescheduled';
     specialization: string;
     bookingType: 'online' | 'offline';
     paymentStatus?: string;
