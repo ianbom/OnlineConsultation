@@ -40,6 +40,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->as('admin.')->group(
     Route::get('/dashboard', [AdmDashboardController::class, 'index'])->name('dashboard');
     Route::resource('counselor', AdmCounselorController::class);
     Route::resource('workday', AdmCounselorWorkDayController::class);
+    Route::get('booking/export', [AdmBookingController::class, 'export'])->name('booking.export');
     Route::resource('booking', AdmBookingController::class);
     Route::resource('refund', AdmRefundController::class);
     Route::put('refund-approve/{paymendId}',[ AdmRefundController::class, 'changeRefundStatus'])->name('payment.changeRefundStatus');
@@ -96,5 +97,4 @@ Route::middleware('auth')->group(function () {
 
 
 require __DIR__.'/auth.php';
-
 

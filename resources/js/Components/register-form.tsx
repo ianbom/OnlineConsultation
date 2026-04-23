@@ -11,6 +11,7 @@ interface RegisterFormProps extends React.ComponentProps<'div'> {}
 export function RegisterForm({ className, ...props }: RegisterFormProps) {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
+        phone: '',
         email: '',
         password: '',
         password_confirmation: '',
@@ -53,6 +54,12 @@ export function RegisterForm({ className, ...props }: RegisterFormProps) {
                                 </div>
                             )}
 
+                            {errors.phone && (
+                                <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+                                    {errors.phone}
+                                </div>
+                            )}
+
                             <div className="grid gap-2">
                                 <Label htmlFor="name">Nama</Label>
                                 <Input
@@ -68,6 +75,24 @@ export function RegisterForm({ className, ...props }: RegisterFormProps) {
                                     autoFocus
                                     className={
                                         errors.name ? 'border-red-500' : ''
+                                    }
+                                />
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="phone">Nomor Telepon</Label>
+                                <Input
+                                    id="phone"
+                                    type="text"
+                                    placeholder="08xxxxxxxxxx"
+                                    value={data.phone}
+                                    onChange={(e) =>
+                                        setData('phone', e.target.value)
+                                    }
+                                    required
+                                    autoComplete="tel"
+                                    className={
+                                        errors.phone ? 'border-red-500' : ''
                                     }
                                 />
                             </div>
@@ -170,11 +195,11 @@ export function RegisterForm({ className, ...props }: RegisterFormProps) {
                     </div>
                 </CardContent>
             </Card>
-            <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary">
+            {/* <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary">
                 By clicking continue, you agree to our{' '}
                 <a href="#">Terms of Service</a> and{' '}
                 <a href="#">Privacy Policy</a>.
-            </div>
+            </div> */}
         </div>
     );
 }

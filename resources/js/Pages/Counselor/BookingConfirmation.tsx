@@ -32,6 +32,8 @@ export default function BookingConfirmation({ counselor, schedules }: Props) {
             : counselor.price_per_session;
     const sessionFee = pricePerSession * schedules.length;
     const total = sessionFee;
+    const trimmedNotes = notes.trim();
+    const isNotesValid = trimmedNotes.length > 0;
 
     const specializations = counselor.specialization
         .split(',')
@@ -58,6 +60,10 @@ export default function BookingConfirmation({ counselor, schedules }: Props) {
     };
 
     const handleProceed = () => {
+        if (!isNotesValid) {
+            return;
+        }
+
         setIsSubmitting(true);
 
         // Prepare data sesuai dengan BookingRequest validation
@@ -65,7 +71,7 @@ export default function BookingConfirmation({ counselor, schedules }: Props) {
             schedule_id: schedules[0].id,
             second_schedule_id: schedules.length > 1 ? schedules[1].id : null,
             consultation_type: consultationType,
-            notes: notes || null,
+            notes: trimmedNotes,
         };
 
         // Submit ke controller store
@@ -262,7 +268,7 @@ export default function BookingConfirmation({ counselor, schedules }: Props) {
                 <Card className="mb-6">
                     <CardHeader className="pb-4">
                         <CardTitle className="text-lg">
-                            Keluhan yang dialami (Opsional)
+                            Keluhan yang dialami
                         </CardTitle>
                     </CardHeader>
 
@@ -273,6 +279,13 @@ export default function BookingConfirmation({ counselor, schedules }: Props) {
                             placeholder="Ceritakan keluhan Anda sebelum sesi dimulai "
                             className="h-28 w-full resize-none rounded-lg border border-border bg-background p-3 text-sm text-foreground focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary"
                         />
+                        <p
+                            className={`mt-2 text-sm ${isNotesValid ? 'text-muted-foreground' : 'text-red-600'}`}
+                        >
+                            {isNotesValid
+                                ? 'Keluhan wajib diisi agar konselor dapat memahami kondisi Anda sebelum sesi.'
+                                : 'Keluhan wajib diisi sebelum melanjutkan ke pembayaran.'}
+                        </p>
                     </CardContent>
                 </Card>
 
@@ -281,7 +294,7 @@ export default function BookingConfirmation({ counselor, schedules }: Props) {
                     className="w-full"
                     size="lg"
                     onClick={handleProceed}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || !isNotesValid}
                 >
                     {isSubmitting ? 'Memproses...' : 'Lanjut ke Pembayaran'}
                 </Button>

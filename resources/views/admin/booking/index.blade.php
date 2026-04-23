@@ -22,6 +22,32 @@
                 <h5 class="text-lg font-semibold dark:text-white-light">Daftar Booking</h5>
             </div>
 
+            <form method="GET" action="{{ route('admin.booking.export') }}" class="mb-5">
+                <div class="rounded-md border border-primary/20 bg-primary/5 p-4">
+                    <div class="flex flex-wrap items-end gap-3">
+                        <div class="w-full md:w-[180px]">
+                            <label class="block text-xs font-medium text-gray-500 mb-1">Tanggal Mulai Jadwal</label>
+                            <input type="date" name="date_from" value="{{ request('date_from') }}" class="form-input w-full" />
+                        </div>
+                        <div class="w-full md:w-[180px]">
+                            <label class="block text-xs font-medium text-gray-500 mb-1">Tanggal Akhir Jadwal</label>
+                            <input type="date" name="date_to" value="{{ request('date_to') }}" class="form-input w-full" />
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="submit" name="export" value="range" class="btn btn-success h-[38px]">
+                                Export Rentang Tanggal
+                            </button>
+                            <button type="submit" name="export" value="all" class="btn btn-outline-success h-[38px]">
+                                Export Semua
+                            </button>
+                        </div>
+                    </div>
+                    <p class="mt-2 text-xs text-gray-500">
+                        Export menggunakan tanggal jadwal sesi konsultasi.
+                    </p>
+                </div>
+            </form>
+
             {{-- TOOLBAR: Search + Filters + Per Page --}}
             <form method="GET" action="{{ route('admin.booking.index') }}" class="mb-5">
                 {{-- Preserve sort params --}}

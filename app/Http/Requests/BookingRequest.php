@@ -6,6 +6,15 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class BookingRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('notes')) {
+            $this->merge([
+                'notes' => trim((string) $this->input('notes')),
+            ]);
+        }
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -25,7 +34,7 @@ class BookingRequest extends FormRequest
             'schedule_id' => 'required|exists:schedules,id',
             'second_schedule_id' => 'nullable|exists:schedules,id',
             'consultation_type' => 'required|in:online,offline',
-            'notes' => 'nullable|string',
+            'notes' => 'required|string',
         ];
     }
 }

@@ -121,12 +121,13 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
                             </Button>
 
                             <div className="text-center text-sm">
-                                Don&apos;t have an account?{' '}
+                                Silahkan membuat akun untuk melakukan reservasi
+                                di Persona Quality.{' '}
                                 <a
                                     href={route('register')}
                                     className="underline underline-offset-4"
                                 >
-                                    Sign up
+                                    Daftar
                                 </a>
                             </div>
                         </div>
@@ -140,11 +141,11 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
                     </div>
                 </CardContent>
             </Card>
-            <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary">
+            {/* <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary">
                 By clicking continue, you agree to our{' '}
                 <a href="#">Terms of Service</a> and{' '}
                 <a href="#">Privacy Policy</a>.
-            </div>
+            </div> */}
         </div>
     );
 }
