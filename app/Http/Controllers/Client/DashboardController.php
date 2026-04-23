@@ -23,7 +23,10 @@ class DashboardController extends Controller
         ->get()
         ->groupBy('status');
 
-    $upcoming = $bookings['paid'] ?? collect();
+    $upcoming = collect()
+        ->concat($bookings['paid'] ?? collect())
+        ->concat($bookings['dp_paid'] ?? collect())
+        ->values();
     $completed = $bookings['completed'] ?? collect();
     $pendingPayment = $bookings['pending_payment'] ?? collect();
 

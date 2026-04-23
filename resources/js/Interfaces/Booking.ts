@@ -18,12 +18,19 @@ export default interface Booking {
     price: number;
     duration_hours: number;
     consultation_type: 'online' | 'offline';
+    payment_scheme: 'full' | 'dp';
+    down_payment_percentage: number | null;
+    down_payment_amount: number | null;
+    remaining_amount: number | null;
+    settled_at: string | null;
+    settled_by_admin_id: number | null;
     meeting_link: string | null;
     link_status: 'pending' | 'sent' | null;
 
     status:
         | 'pending_payment'
         | 'paid'
+        | 'dp_paid'
         | 'cancelled'
         | 'completed'
         | 'rescheduled';

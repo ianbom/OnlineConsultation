@@ -1,6 +1,7 @@
 import {
     CancelledStatus,
     CompletedStatus,
+    DpPaidStatus,
     ExpiredStatus,
     PaidStatus,
     PendingPaymentStatus,
@@ -107,7 +108,7 @@ Mohon informasi terkait proses refund saya. Terima kasih! 🙏`;
     };
 
     const showWhatsAppButton =
-        ['paid', 'rescheduled'].includes(booking.status) ||
+        ['paid', 'dp_paid', 'rescheduled'].includes(booking.status) ||
         ['requested', 'processed'].includes(booking.refund_status);
 
     const renderStatusComponent = () => {
@@ -124,6 +125,8 @@ Mohon informasi terkait proses refund saya. Terima kasih! 🙏`;
                 return <PendingPaymentStatus booking={booking} />;
             case 'paid':
                 return <PaidStatus booking={booking} />;
+            case 'dp_paid':
+                return <DpPaidStatus booking={booking} />;
             case 'completed':
                 return <CompletedStatus booking={booking} />;
             case 'rescheduled':
@@ -229,7 +232,7 @@ Mohon informasi terkait proses refund saya. Terima kasih! 🙏`;
                                 {/* Action Buttons - 2 Column Grid */}
                                 <div className="grid grid-cols-2 gap-3">
                                     {/* Reschedule */}
-                                    {['paid', 'rescheduled'].includes(
+                                    {['paid', 'dp_paid', 'rescheduled'].includes(
                                         booking.status,
                                     ) &&
                                         !booking.is_expired &&
@@ -250,7 +253,7 @@ Mohon informasi terkait proses refund saya. Terima kasih! 🙏`;
                                         )}
 
                                     {/* Cancel Booking */}
-                                    {['paid', 'rescheduled'].includes(
+                                    {['paid', 'dp_paid', 'rescheduled'].includes(
                                         booking.status,
                                     ) &&
                                         !booking.is_expired && (

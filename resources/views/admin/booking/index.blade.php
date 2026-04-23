@@ -69,6 +69,7 @@
                         <select name="status" class="form-select w-full">
                             <option value="">Semua Status</option>
                             <option value="pending_payment" {{ request('status') === 'pending_payment' ? 'selected' : '' }}>Pending Payment</option>
+                            <option value="dp_paid" {{ request('status') === 'dp_paid' ? 'selected' : '' }}>DP Dibayar</option>
                             <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Paid</option>
                             <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Completed</option>
                             <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
@@ -132,6 +133,7 @@
                                 </a>
                             </th>
                             <th>Tipe</th>
+                            <th>Skema Bayar</th>
                             <th>
                                 <a href="{{ route('admin.booking.index', array_merge(request()->all(), ['sort_by' => 'price', 'sort_dir' => ($currentSort === 'price' && $currentDir === 'asc') ? 'desc' : 'asc'])) }}"
                                     class="flex items-center gap-1 hover:text-primary">
@@ -214,13 +216,35 @@
                                     @endif
                                 </td>
 
+                                {{-- SKEMA BAYAR --}}
+                                <td>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="badge {{ $booking->payment_scheme === 'dp' ? 'bg-warning' : 'bg-success' }}">
+                                            {{ $booking->payment_scheme === 'dp' ? 'DP 50%' : 'Lunas' }}
+                                        </span>
+                                        @if($booking->payment_scheme === 'dp')
+                                            <div class="text-[11px] text-gray-500">DP: Rp {{ number_format($booking->down_payment_amount ?? 0, 0, ',', '.') }}</div>
+                                            <div class="text-[11px] text-gray-500">Sisa: Rp {{ number_format($booking->remaining_amount ?? 0, 0, ',', '.') }}</div>
+                                        @endif
+                                    </div>
+                                </td>
+
                                 {{-- HARGA --}}
-                                <td>Rp {{ number_format($booking->price, 0, ',', '.') }}</td>
+                                <td>
+                                    <div>Rp {{ number_format($booking->price, 0, ',', '.') }}</div>
+                                    @if($booking->payment)
+                                        <div class="text-[11px] text-gray-500">
+                                            Bayar sekarang: Rp {{ number_format($booking->payment->amount, 0, ',', '.') }}
+                                        </div>
+                                    @endif
+                                </td>
 
                                 {{-- STATUS --}}
                                 <td>
                                     @if ($booking->status === 'pending_payment')
                                         <span class="badge bg-warning">Pending Payment</span>
+                                    @elseif ($booking->status === 'dp_paid')
+                                        <span class="badge bg-warning">DP Dibayar</span>
                                     @elseif ($booking->status === 'paid')
                                         <span class="badge bg-success">Paid</span>
                                     @elseif ($booking->status === 'cancelled')
@@ -241,18 +265,32 @@
 
                                 {{-- AKSI --}}
                                 <td class="text-center">
-                                    <div class="flex items-center justify-center gap-2">
+                                    <div class="flex items-center justify-center gap-2 flex-wrap">
                                         <a href="{{ route('admin.booking.show', $booking->id) }}"
                                             class="btn btn-sm btn-outline-info" title="Detail">
                                             Detail
                                         </a>
+                                        @if(
+                                            $booking->consultation_type === 'offline' &&
+                                            $booking->payment_scheme === 'dp' &&
+                                            $booking->status === 'dp_paid'
+                                        )
+                                            <form method="POST" action="{{ route('admin.booking.mark-settled', $booking->id) }}">
+                                                @csrf
+                                                @method('PUT')
+                                                <button type="submit" class="btn btn-sm btn-success"
+                                                    onclick="return confirm('Tandai booking ini sebagai lunas?')">
+                                                    Tandai Lunas
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </td>
 
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="10" class="text-center p-4">Tidak ada data booking</td>
+                                <td colspan="11" class="text-center p-4">Tidak ada data booking</td>
                             </tr>
                         @endforelse
                     </tbody>

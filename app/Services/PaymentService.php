@@ -22,11 +22,14 @@ class PaymentService
 public function createPayment($booking)
 {
     $orderId = "ORDER-" . time() . "-" . $booking->id;
+    $grossAmount = $booking->payment_scheme === 'dp' && $booking->consultation_type === 'offline'
+        ? $booking->down_payment_amount
+        : $booking->price;
 
     $params = [
         'transaction_details' => [
             'order_id'      => $orderId,
-            'gross_amount'  => $booking->price,
+            'gross_amount'  => $grossAmount,
         ],
         'customer_details' => [
             'first_name' => $booking->client->name,
@@ -54,7 +57,7 @@ public function createPayment($booking)
     // Simpan ke table payments
     $payment = Payment::create([
         'booking_id'          => $booking->id,
-        'amount'              => $booking->price,
+        'amount'              => $grossAmount,
         'method'              => null,
         'order_id'            => $orderId,
         'snap_token'          => $snapToken,

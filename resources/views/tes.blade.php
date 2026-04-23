@@ -10,14 +10,27 @@
 </style>
 
 @php
+    $isAdmin = auth()->user()?->role === 'admin';
+    $isCounselor = auth()->user()?->role === 'counselor';
     $statusConfig = match($booking->status) {
         'pending_payment' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800', 'border' => 'border-yellow-200', 'label' => 'Menunggu Pembayaran', 'icon' => 'hourglass_empty'],
+        'dp_paid' => ['bg' => 'bg-amber-100', 'text' => 'text-amber-800', 'border' => 'border-amber-200', 'label' => 'DP Dibayar', 'icon' => 'payments'],
         'paid' => ['bg' => 'bg-green-100', 'text' => 'text-green-800', 'border' => 'border-green-200', 'label' => 'Dibayar', 'icon' => 'check_circle'],
         'completed' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800', 'border' => 'border-blue-200', 'label' => 'Selesai', 'icon' => 'task_alt'],
         'cancelled' => ['bg' => 'bg-red-100', 'text' => 'text-red-800', 'border' => 'border-red-200', 'label' => 'Dibatalkan', 'icon' => 'cancel'],
         'rescheduled' => ['bg' => 'bg-orange-100', 'text' => 'text-orange-800', 'border' => 'border-orange-200', 'label' => 'Dijadwal Ulang', 'icon' => 'event_repeat'],
         default => ['bg' => 'bg-gray-100', 'text' => 'text-gray-800', 'border' => 'border-gray-200', 'label' => ucfirst($booking->status), 'icon' => 'info'],
     };
+    $paymentConfig = $booking->payment
+        ? match($booking->payment->status) {
+            'success' => ['bg' => 'bg-green-100', 'text' => 'text-green-800', 'label' => 'Success'],
+            'partial' => ['bg' => 'bg-amber-100', 'text' => 'text-amber-800', 'label' => 'Partial / DP'],
+            'pending' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800', 'label' => 'Pending'],
+            'failed' => ['bg' => 'bg-red-100', 'text' => 'text-red-800', 'label' => 'Failed'],
+            'refund', 'refunded' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800', 'label' => ucfirst($booking->payment->status)],
+            default => ['bg' => 'bg-gray-100', 'text' => 'text-gray-800', 'label' => ucfirst($booking->payment->status)],
+        }
+        : null;
 @endphp
 
 {{-- ===== BREADCRUMBS ===== --}}
@@ -93,7 +106,15 @@
                     <span class="material-symbols-outlined text-[16px]">open_in_new</span> Payment Link
                 </a>
             @endif
-            @if($booking->status == 'paid')
+            @if($isAdmin && $booking->consultation_type === 'offline' && $booking->payment_scheme === 'dp' && $booking->status === 'dp_paid')
+                <form method="POST" action="{{ route('admin.booking.mark-settled', $booking->id) }}">
+                    @csrf @method('PUT')
+                    <button type="submit" onclick="return confirm('Tandai booking ini sebagai lunas?')" class="inline-flex items-center gap-2 h-9 px-4 rounded-lg bg-amber-500 text-white text-sm font-medium hover:bg-amber-600 transition-colors">
+                        <span class="material-symbols-outlined text-[16px]">payments</span> Tandai Lunas
+                    </button>
+                </form>
+            @endif
+            @if($isCounselor && $booking->status == 'paid')
                 <form id="completeBookingForm" method="POST" action="{{ route('counselor.booking.completeBooking', $booking->id) }}">
                     @csrf @method('PUT')
                     <button type="button" onclick="confirmCompleteBooking()" class="inline-flex items-center gap-2 h-9 px-4 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors">
@@ -116,11 +137,48 @@
         </div>
         <div class="flex items-center gap-2 text-gray-600">
             <span class="material-symbols-outlined text-[#7e1b2b] text-[18px]">{{ $booking->consultation_type === 'online' ? 'videocam' : 'location_on' }}</span>
-            <span>{{ ucfirst($booking->consultation_type) }} · {{ $booking->duration_hours }} jam</span>
+            <span>{{ ucfirst($booking->consultation_type) }} · {{ $booking->duration_hours }} jam · {{ $booking->payment_scheme === 'dp' ? 'DP 50%' : 'Lunas' }}</span>
         </div>
         <div class="ml-auto flex items-center gap-1 text-[#7e1b2b] font-bold text-base">
             Rp {{ number_format($booking->price, 0, ',', '.') }}
         </div>
+
+        @if($booking->payment_scheme === 'dp')
+        <div class="bg-amber-50 rounded-xl border border-amber-200 shadow-sm p-5">
+            <div class="flex items-center gap-2 mb-4">
+                <span class="material-symbols-outlined text-amber-600 text-[18px]">payments</span>
+                <h2 class="text-xs uppercase tracking-wider text-amber-600 font-bold">Informasi DP Offline</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div>
+                    <p class="text-xs text-amber-600/70 mb-1">DP Dibayar</p>
+                    <p class="font-semibold text-amber-900">Rp {{ number_format($booking->down_payment_amount ?? 0, 0, ',', '.') }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-amber-600/70 mb-1">Sisa Pelunasan</p>
+                    <p class="font-semibold text-amber-900">Rp {{ number_format($booking->remaining_amount ?? 0, 0, ',', '.') }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-amber-600/70 mb-1">Status Pelunasan</p>
+                    <p class="font-semibold text-amber-900">
+                        {{ $booking->remaining_amount > 0 ? 'Belum Lunas' : 'Sudah Lunas' }}
+                    </p>
+                </div>
+            </div>
+            @if($booking->settled_at)
+                <div class="mt-4 pt-4 border-t border-amber-200 text-sm text-amber-900">
+                    Dilunasi pada {{ $booking->settled_at->format('d M Y, H:i') }}
+                    @if($booking->settledByAdmin)
+                        oleh {{ $booking->settledByAdmin->name }}
+                    @endif
+                </div>
+            @elseif($booking->status === 'dp_paid')
+                <p class="mt-4 text-sm text-amber-900/80">
+                    Booking tetap aktif, tetapi sesi offline belum bisa dijalankan sampai admin menandai pelunasan.
+                </p>
+            @endif
+        </div>
+        @endif
     </div>
 </div>
 
@@ -302,6 +360,18 @@
         </div>
         @endif
 
+        @if($isCounselor && $booking->status === 'dp_paid')
+        <div class="bg-amber-50 rounded-xl border border-amber-200 shadow-sm p-5">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="material-symbols-outlined text-amber-600 text-[18px]">warning</span>
+                <h2 class="text-xs uppercase tracking-wider text-amber-600 font-bold">Menunggu Pelunasan</h2>
+            </div>
+            <p class="text-sm text-amber-900 leading-relaxed">
+                Booking offline ini baru membayar DP. Input data meeting dan penyelesaian sesi akan aktif setelah admin mengonfirmasi pelunasan penuh.
+            </p>
+        </div>
+        @endif
+
      
         <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
             <h2 class="text-xs uppercase tracking-wider text-gray-400 font-bold mb-4">Catatan</h2>
@@ -399,6 +469,7 @@
                         <div><p class="text-xs text-gray-400 mb-0.5">Tipe</p><p class="font-medium text-gray-900">{{ ucfirst($booking->consultation_type) }}</p></div>
                         <div><p class="text-xs text-gray-400 mb-0.5">Durasi</p><p class="font-medium text-gray-900">{{ $booking->duration_hours }} jam</p></div>
                         <div><p class="text-xs text-gray-400 mb-0.5">Status</p><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $statusConfig['bg'] }} {{ $statusConfig['text'] }}">{{ $statusConfig['label'] }}</span></div>
+                        <div><p class="text-xs text-gray-400 mb-0.5">Skema Bayar</p><p class="font-medium text-gray-900">{{ $booking->payment_scheme === 'dp' ? 'DP 50%' : 'Lunas' }}</p></div>
                         <div>
                             <p class="text-xs text-gray-400 mb-0.5">Meeting Link</p>
                             @if($booking->meeting_link)
@@ -412,23 +483,30 @@
                         <span class="text-sm text-gray-500">Total Harga</span>
                         <span class="text-lg font-bold text-[#7e1b2b]">Rp {{ number_format($booking->price, 0, ',', '.') }}</span>
                     </div>
+                    @if($booking->payment_scheme === 'dp')
+                    <div class="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                        <div class="rounded-lg bg-amber-50 border border-amber-200 p-3">
+                            <p class="text-xs text-amber-600/70 mb-1">DP Dibayar</p>
+                            <p class="font-semibold text-amber-900">Rp {{ number_format($booking->down_payment_amount ?? 0, 0, ',', '.') }}</p>
+                        </div>
+                        <div class="rounded-lg bg-amber-50 border border-amber-200 p-3">
+                            <p class="text-xs text-amber-600/70 mb-1">Sisa</p>
+                            <p class="font-semibold text-amber-900">Rp {{ number_format($booking->remaining_amount ?? 0, 0, ',', '.') }}</p>
+                        </div>
+                        <div class="rounded-lg bg-amber-50 border border-amber-200 p-3">
+                            <p class="text-xs text-amber-600/70 mb-1">Pelunasan Admin</p>
+                            <p class="font-semibold text-amber-900">{{ $booking->settled_at ? 'Sudah' : 'Belum' }}</p>
+                        </div>
+                    </div>
+                    @endif
                 </div>
 
                 {{-- Payment Tab --}}
                 <div x-show="tab === 'payment'" style="display: none;">
                     @if($booking->payment)
-                    @php
-                        $paymentConfig = match($booking->payment->status) {
-                            'success' => ['bg' => 'bg-green-100', 'text' => 'text-green-800'],
-                            'pending' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800'],
-                            'failed' => ['bg' => 'bg-red-100', 'text' => 'text-red-800'],
-                            'refund', 'refunded' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800'],
-                            default => ['bg' => 'bg-gray-100', 'text' => 'text-gray-800'],
-                        };
-                    @endphp
                     <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-sm">
                         <div><p class="text-xs text-gray-400 mb-0.5">Order ID</p><p class="font-medium text-gray-900 font-mono text-xs break-all">{{ $booking->payment->order_id }}</p></div>
-                        <div><p class="text-xs text-gray-400 mb-0.5">Status</p><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $paymentConfig['bg'] }} {{ $paymentConfig['text'] }}">{{ ucfirst($booking->payment->status) }}</span></div>
+                        <div><p class="text-xs text-gray-400 mb-0.5">Status</p><span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $paymentConfig['bg'] }} {{ $paymentConfig['text'] }}">{{ $paymentConfig['label'] }}</span></div>
                         <div><p class="text-xs text-gray-400 mb-0.5">Metode</p><p class="font-medium text-gray-900">{{ $booking->payment->method ?? $booking->payment->payment_type ?? '-' }}</p></div>
                         <div><p class="text-xs text-gray-400 mb-0.5">Transaction Status</p><p class="font-medium text-gray-900">{{ $booking->payment->transaction_status ?? '-' }}</p></div>
                         @if($booking->payment->va_number)
@@ -450,9 +528,14 @@
                         @endif
                     </div>
                     <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center bg-gray-50 rounded-lg p-3">
-                        <span class="text-sm text-gray-500">Jumlah</span>
+                        <span class="text-sm text-gray-500">{{ $booking->payment_scheme === 'dp' ? 'Jumlah Dibayar Sekarang' : 'Jumlah' }}</span>
                         <span class="text-lg font-bold text-[#7e1b2b]">Rp {{ number_format($booking->payment->amount, 0, ',', '.') }}</span>
                     </div>
+                    @if($booking->payment_scheme === 'dp')
+                    <div class="mt-3 rounded-lg bg-amber-50 border border-amber-200 p-3 text-sm text-amber-900">
+                        Sisa pelunasan: <strong>Rp {{ number_format($booking->remaining_amount ?? 0, 0, ',', '.') }}</strong>
+                    </div>
+                    @endif
                     @if($booking->payment->payment_url)
                     <div class="mt-3">
                         <a href="{{ $booking->payment->payment_url }}" target="_blank" class="inline-flex items-center gap-1 text-sm text-[#7e1b2b] hover:underline">
@@ -546,9 +629,20 @@
                 @if($booking->payment && $booking->payment->paid_at)
                 <div class="relative">
                     <span class="absolute -left-[17px] top-0.5 h-3 w-3 rounded-full bg-[#7e1b2b] border-2 border-white"></span>
-                    <p class="text-sm font-semibold text-gray-900 leading-tight">Pembayaran Terverifikasi</p>
+                    <p class="text-sm font-semibold text-gray-900 leading-tight">{{ $booking->payment_scheme === 'dp' ? 'DP Terverifikasi' : 'Pembayaran Terverifikasi' }}</p>
                     <p class="text-xs text-gray-400">{{ \Carbon\Carbon::parse($booking->payment->paid_at)->format('d M Y, H:i') }}</p>
                     <p class="text-xs text-green-600 font-medium">via {{ $booking->payment->method ?? $booking->payment->payment_type ?? '-' }}</p>
+                </div>
+                @endif
+
+                @if($booking->settled_at)
+                <div class="relative">
+                    <span class="absolute -left-[17px] top-0.5 h-3 w-3 rounded-full bg-amber-500 border-2 border-white"></span>
+                    <p class="text-sm font-semibold text-amber-700 leading-tight">Pelunasan Manual Dikonfirmasi</p>
+                    <p class="text-xs text-gray-400">{{ $booking->settled_at->format('d M Y, H:i') }}</p>
+                    @if($booking->settledByAdmin)
+                    <p class="text-xs text-amber-600 font-medium">oleh {{ $booking->settledByAdmin->name }}</p>
+                    @endif
                 </div>
                 @endif
 
@@ -578,10 +672,12 @@
                 </div>
                 @endif
 
-                @if(in_array($booking->status, ['paid', 'pending_payment']))
+                @if(in_array($booking->status, ['paid', 'pending_payment', 'dp_paid']))
                 <div class="relative">
                     <span class="absolute -left-[17px] top-0.5 h-3 w-3 rounded-full bg-white border-2 border-[#7e1b2b] animate-pulse"></span>
-                    <p class="text-sm font-semibold text-[#7e1b2b] leading-tight">{{ $booking->status === 'paid' ? 'Menunggu Sesi' : 'Menunggu Pembayaran' }}</p>
+                    <p class="text-sm font-semibold text-[#7e1b2b] leading-tight">
+                        {{ $booking->status === 'paid' ? 'Menunggu Sesi' : ($booking->status === 'dp_paid' ? 'Menunggu Pelunasan Offline' : 'Menunggu Pembayaran') }}
+                    </p>
                 </div>
                 @endif
             </div>

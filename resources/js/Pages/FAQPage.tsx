@@ -42,7 +42,7 @@ const FAQ_DATA: FAQCategory[] = [
             },
             {
                 question: 'Apa makna dari setiap status booking?',
-                answer: 'Pending Payment = menunggu pembayaran | Paid = pembayaran berhasil, menunggu sesi | Completed = sesi konsultasi telah selesai | Cancelled = booking dibatalkan | Rescheduled = jadwal telah diubah.',
+                answer: 'Pending Payment = menunggu pembayaran | DP Dibayar = DP offline sudah masuk dan menunggu pelunasan | Paid = pembayaran berhasil/lunas dan sesi siap dijalankan | Completed = sesi konsultasi telah selesai | Cancelled = booking dibatalkan | Rescheduled = jadwal telah diubah.',
             },
             {
                 question: 'Berapa durasi satu sesi konsultasi?',
@@ -56,6 +56,14 @@ const FAQ_DATA: FAQCategory[] = [
             {
                 question: 'Metode pembayaran apa saja yang diterima?',
                 answer: 'Kami menerima berbagai metode pembayaran melalui Midtrans, termasuk transfer bank, e-wallet (GoPay, OVO, Dana), kartu kredit/debit, dan virtual account dari berbagai bank.',
+            },
+            {
+                question: 'Apakah saya bisa membayar DP untuk konsultasi offline?',
+                answer: 'Bisa. Konsultasi offline menyediakan opsi pembayaran DP 50% atau langsung lunas. Setelah DP berhasil dibayar, booking tetap aktif tetapi sesi offline baru bisa dijalankan setelah admin mengonfirmasi pelunasan sisa tagihan.',
+            },
+            {
+                question: 'Apakah konsultasi online bisa dibayar dengan DP?',
+                answer: 'Tidak. Konsultasi online harus dibayar lunas saat booking agar jadwal dan proses pengiriman link meeting dapat berjalan normal.',
             },
             {
                 question: 'Berapa lama batas waktu pembayaran?',

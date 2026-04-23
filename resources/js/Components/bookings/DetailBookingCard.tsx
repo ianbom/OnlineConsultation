@@ -28,7 +28,7 @@ export default function BookingDetailCard({ booking }: Props) {
         booking.schedule.end_time.substring(0, 5);
 
     const timeRange = `${startTime} - ${endTime}`;
-    const total = booking.payment?.amount ?? 0;
+    const total = booking.price;
 
     const formatCurrency = (amount: number) =>
         new Intl.NumberFormat('id-ID', {
@@ -215,6 +215,11 @@ export default function BookingDetailCard({ booking }: Props) {
                                               text: 'Paid',
                                               variant: 'green' as const,
                                           }
+                                        : booking.payment?.status === 'partial'
+                                          ? {
+                                                text: 'DP',
+                                                variant: 'yellow' as const,
+                                            }
                                         : booking.payment?.status === 'pending'
                                           ? {
                                                 text: 'Pending',
@@ -242,6 +247,48 @@ export default function BookingDetailCard({ booking }: Props) {
                         </div>
                         <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
                             {booking.notes}
+                        </p>
+                    </div>
+                )}
+
+                {(booking.payment_scheme === 'dp' ||
+                    booking.status === 'dp_paid') && (
+                    <div className="rounded-lg border border-amber-100 bg-amber-50 p-5 dark:border-amber-900/30 dark:bg-amber-900/10">
+                        <div className="mb-3 flex items-center gap-2">
+                            <CreditCard className="h-4 w-4 text-amber-600/70 dark:text-amber-400" />
+                            <h4 className="text-sm font-semibold uppercase tracking-wider text-amber-900 dark:text-amber-100">
+                                Informasi DP Offline
+                            </h4>
+                        </div>
+                        <div className="space-y-2 text-sm text-amber-900/80 dark:text-amber-100/80">
+                            <div className="flex items-center justify-between gap-4">
+                                <span>Total Booking</span>
+                                <span className="font-semibold">
+                                    {formatCurrency(booking.price)}
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between gap-4">
+                                <span>DP Dibayar</span>
+                                <span className="font-semibold">
+                                    {formatCurrency(
+                                        booking.down_payment_amount ??
+                                            booking.payment?.amount ??
+                                            0,
+                                    )}
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between gap-4">
+                                <span>Sisa Pelunasan</span>
+                                <span className="font-semibold">
+                                    {formatCurrency(
+                                        booking.remaining_amount ?? 0,
+                                    )}
+                                </span>
+                            </div>
+                        </div>
+                        <p className="mt-3 text-xs leading-relaxed text-amber-800/80 dark:text-amber-200/80">
+                            Sesi offline baru dapat dijalankan setelah admin
+                            mengonfirmasi pelunasan penuh.
                         </p>
                     </div>
                 )}

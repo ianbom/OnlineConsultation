@@ -156,6 +156,33 @@ export function PaidStatus({ booking }: StatusComponentProps) {
     );
 }
 
+export function DpPaidStatus({ booking }: StatusComponentProps) {
+    return (
+        <div className="space-y-4">
+            <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/40 dark:bg-amber-900/10">
+                <div className="rounded-lg bg-amber-100 p-1.5 dark:bg-amber-900/30">
+                    <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                </div>
+                <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-amber-900 dark:text-amber-100">
+                        DP Berhasil Dibayar
+                    </p>
+                    <p className="mt-0.5 text-xs text-amber-700/80 dark:text-amber-300/70">
+                        Sisa pelunasan{' '}
+                        {new Intl.NumberFormat('id-ID', {
+                            style: 'currency',
+                            currency: 'IDR',
+                            minimumFractionDigits: 0,
+                        }).format(booking.remaining_amount ?? 0)}{' '}
+                        harus dikonfirmasi admin sebelum sesi offline dapat
+                        dijalankan.
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 // Status: cancelled
 export function CancelledStatus({ booking }: StatusComponentProps) {
     const cancelledBy =

@@ -23,6 +23,7 @@ export default function BookingConfirmation({ counselor, schedules }: Props) {
     const [consultationType, setConsultationType] = useState<
         'online' | 'offline'
     >('offline');
+    const [paymentScheme, setPaymentScheme] = useState<'full' | 'dp'>('full');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const totalDuration = schedules.length * 60;
@@ -32,6 +33,16 @@ export default function BookingConfirmation({ counselor, schedules }: Props) {
             : counselor.price_per_session;
     const sessionFee = pricePerSession * schedules.length;
     const total = sessionFee;
+    const dpAmount =
+        consultationType === 'offline' ? Math.ceil(total * 0.5) : total;
+    const payableNow =
+        consultationType === 'offline' && paymentScheme === 'dp'
+            ? dpAmount
+            : total;
+    const remainingAmount =
+        consultationType === 'offline' && paymentScheme === 'dp'
+            ? total - payableNow
+            : 0;
     const trimmedNotes = notes.trim();
     const isNotesValid = trimmedNotes.length > 0;
 
@@ -71,6 +82,8 @@ export default function BookingConfirmation({ counselor, schedules }: Props) {
             schedule_id: schedules[0].id,
             second_schedule_id: schedules.length > 1 ? schedules[1].id : null,
             consultation_type: consultationType,
+            payment_scheme:
+                consultationType === 'online' ? 'full' : paymentScheme,
             notes: trimmedNotes,
         };
 
@@ -203,6 +216,27 @@ export default function BookingConfirmation({ counselor, schedules }: Props) {
                                     {formatRupiah(total)}
                                 </span>
                             </div>
+                            {consultationType === 'offline' &&
+                                paymentScheme === 'dp' && (
+                                    <>
+                                        <div className="flex items-center justify-between text-sm">
+                                            <span className="text-muted-foreground">
+                                                Bayar Sekarang (DP 50%)
+                                            </span>
+                                            <span className="font-medium text-foreground">
+                                                {formatRupiah(payableNow)}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center justify-between text-sm">
+                                            <span className="text-muted-foreground">
+                                                Sisa Pelunasan
+                                            </span>
+                                            <span className="font-medium text-amber-600">
+                                                {formatRupiah(remainingAmount)}
+                                            </span>
+                                        </div>
+                                    </>
+                                )}
                         </div>
                     </CardContent>
                 </Card>
@@ -241,7 +275,10 @@ export default function BookingConfirmation({ counselor, schedules }: Props) {
 
                             {/* Online Option */}
                             <button
-                                onClick={() => setConsultationType('online')}
+                                onClick={() => {
+                                    setConsultationType('online');
+                                    setPaymentScheme('full');
+                                }}
                                 className={`flex items-center gap-3 rounded-lg border p-4 text-left transition-all ${
                                     consultationType === 'online'
                                         ? 'border-primary bg-primary/5'
@@ -263,6 +300,64 @@ export default function BookingConfirmation({ counselor, schedules }: Props) {
                         </div>
                     </CardContent>
                 </Card>
+
+                {consultationType === 'offline' && (
+                    <Card className="mb-6">
+                        <CardHeader className="pb-4">
+                            <CardTitle className="text-lg">
+                                Skema Pembayaran
+                            </CardTitle>
+                        </CardHeader>
+
+                        <CardContent className="space-y-3">
+                            <button
+                                onClick={() => setPaymentScheme('full')}
+                                className={`flex w-full items-center gap-3 rounded-lg border p-4 text-left transition-all ${
+                                    paymentScheme === 'full'
+                                        ? 'border-primary bg-primary/5'
+                                        : 'border-border hover:border-primary/50'
+                                }`}
+                            >
+                                <div
+                                    className={`h-4 w-4 rounded-full border ${paymentScheme === 'full' ? 'border-primary bg-primary' : 'border-muted-foreground'}`}
+                                />
+                                <div>
+                                    <p className="font-medium text-foreground">
+                                        Lunas
+                                    </p>
+                                    <p className="text-sm text-muted-foreground">
+                                        Bayar penuh sekarang sebesar{' '}
+                                        {formatRupiah(total)}
+                                    </p>
+                                </div>
+                            </button>
+
+                            <button
+                                onClick={() => setPaymentScheme('dp')}
+                                className={`flex w-full items-center gap-3 rounded-lg border p-4 text-left transition-all ${
+                                    paymentScheme === 'dp'
+                                        ? 'border-primary bg-primary/5'
+                                        : 'border-border hover:border-primary/50'
+                                }`}
+                            >
+                                <div
+                                    className={`h-4 w-4 rounded-full border ${paymentScheme === 'dp' ? 'border-primary bg-primary' : 'border-muted-foreground'}`}
+                                />
+                                <div>
+                                    <p className="font-medium text-foreground">
+                                        DP 50%
+                                    </p>
+                                    <p className="text-sm text-muted-foreground">
+                                        Bayar sekarang {formatRupiah(dpAmount)}{' '}
+                                        dan sisa{' '}
+                                        {formatRupiah(total - dpAmount)} akan
+                                        dikonfirmasi admin
+                                    </p>
+                                </div>
+                            </button>
+                        </CardContent>
+                    </Card>
+                )}
 
                 {/* Notes for Counselor */}
                 <Card className="mb-6">

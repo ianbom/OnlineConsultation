@@ -48,6 +48,7 @@ class DashboardService
             'cancelled' => (clone $query)->where('status', 'cancelled')->count(),
             'rescheduled' => (clone $query)->where('status', 'rescheduled')->count(),
             'paid' => (clone $query)->where('status', 'paid')->count(),
+            'dp_paid' => (clone $query)->where('status', 'dp_paid')->count(),
         ];
     }
 

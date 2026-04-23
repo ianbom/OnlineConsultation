@@ -16,7 +16,13 @@ export default interface Payment {
     refund_amount: number | null;
     refund_reason: string | null;
     refund_time: string | null;
-    status: 'pending' | 'success' | 'failed' | 'refund' | 'refunded';
+    status:
+        | 'pending'
+        | 'success'
+        | 'partial'
+        | 'failed'
+        | 'refund'
+        | 'refunded';
     paid_at: string | null;
     expiry_time: string | null;
     created_at: string;

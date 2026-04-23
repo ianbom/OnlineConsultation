@@ -16,9 +16,13 @@ class Booking extends Model
     protected $casts = [
         'price' => 'integer',
         'duration_hours' => 'integer',
+        'down_payment_percentage' => 'integer',
+        'down_payment_amount' => 'integer',
+        'remaining_amount' => 'integer',
         'is_expired' => 'boolean',
         'cancelled_at' => 'datetime',
         'refund_processed_at' => 'datetime',
+        'settled_at' => 'datetime',
     ];
 
     public function client()
@@ -66,6 +70,11 @@ class Booking extends Model
         return $this->hasOne(RatingCounselor::class, 'booking_id', 'id');
     }
 
+    public function settledByAdmin()
+    {
+        return $this->belongsTo(User::class, 'settled_by_admin_id', 'id');
+    }
+
     public function scopeForClient($query, $clientId)
 {
     return $query->where('client_id', $clientId);
@@ -73,7 +82,7 @@ class Booking extends Model
 
 public function scopeUpcoming($query)
 {
-    return $query->where('status', 'paid');
+    return $query->whereIn('status', ['paid', 'dp_paid']);
 }
 
 public function scopeCompleted($query)
@@ -88,7 +97,7 @@ public function scopePendingPayment($query)
 
 public function scopeRecentConsultations($query)
 {
-    return $query->whereIn('status', ['completed', 'rescheduled'])
+    return $query->whereIn('status', ['completed', 'rescheduled', 'dp_paid'])
                  ->orderBy('created_at', 'desc')
                  ->limit(5);
 }

@@ -25,6 +25,8 @@
                         <td class="px-4 py-3 text-sm">
                             @if($booking->status === 'completed')
                                 <span class="px-3 py-1 rounded-full text-xs font-semibold bg-success/10 text-success">Completed</span>
+                            @elseif($booking->status === 'dp_paid')
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-warning/10 text-warning">DP Dibayar</span>
                             @elseif($booking->status === 'cancelled')
                                 <span class="px-3 py-1 rounded-full text-xs font-semibold bg-danger/10 text-danger">Cancelled</span>
                             @elseif($booking->status === 'rescheduled')
@@ -36,6 +38,8 @@
                         <td class="px-4 py-3 text-sm dark:text-white-light">
                             @if($booking->payment && $booking->payment->status === 'success')
                                 <span class="px-3 py-1 rounded-full text-xs font-semibold bg-success/10 text-success">Paid</span>
+                            @elseif($booking->payment && $booking->payment->status === 'partial')
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-warning/10 text-warning">Partial / DP</span>
                             @elseif($booking->payment && $booking->payment->status === 'pending')
                                 <span class="px-3 py-1 rounded-full text-xs font-semibold bg-warning/10 text-warning">Pending</span>
                             @else

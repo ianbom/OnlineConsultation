@@ -28,8 +28,11 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping
             'Jadwal',
             'Durasi',
             'Status',
+            'Skema Bayar',
             'Type',
             'Harga',
+            'DP',
+            'Sisa',
             'Keluhan',
         ];
     }
@@ -53,8 +56,11 @@ class BookingsExport implements FromCollection, WithHeadings, WithMapping
             $scheduleText,
             $booking->duration_hours . ' jam',
             $booking->status,
+            $booking->payment_scheme,
             $booking->consultation_type,
             $booking->price,
+            $booking->down_payment_amount,
+            $booking->remaining_amount,
             $booking->notes,
         ];
     }

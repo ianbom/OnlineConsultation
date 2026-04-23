@@ -6,10 +6,17 @@ use App\Exports\BookingsExport;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Services\BookingService;
 
 class BookingController extends Controller
 {
+    public function __construct(
+        protected BookingService $bookingService
+    ) {
+    }
+
     public function index(Request $request)
     {
         $query = $this->buildIndexQuery($request);
@@ -60,13 +67,26 @@ class BookingController extends Controller
 
     public function show($bookingId){
         $booking = Booking::with('client', 'schedule', 'secondSchedule', 'previousSchedule',
-         'previousSecondSchedule', 'payment', 'counselor.user', 'rating')->findOrFail($bookingId);
+         'previousSecondSchedule', 'payment', 'counselor.user', 'rating', 'settledByAdmin')->findOrFail($bookingId);
         return view('tes', ['booking' => $booking]);
+    }
+
+    public function markSettled($bookingId)
+    {
+        $booking = Booking::with('payment')->findOrFail($bookingId);
+
+        try {
+            $this->bookingService->settleOfflineDpBooking($booking, Auth::id());
+
+            return back()->with('success', 'Pelunasan booking berhasil ditandai lunas.');
+        } catch (\Throwable $th) {
+            return back()->with('error', $th->getMessage());
+        }
     }
 
     private function buildIndexQuery(Request $request)
     {
-        $query = Booking::with(['client', 'counselor.user', 'schedule']);
+        $query = Booking::with(['client', 'counselor.user', 'schedule', 'payment']);
 
         // Search by client name, counselor name, or booking id
         if ($search = $request->input('search')) {

@@ -91,6 +91,7 @@ export default function BookingHistory({ bookings }: Props) {
                 (b) => b.status === 'pending_payment',
             ).length,
             paid: bookings.filter((b) => b.status === 'paid').length,
+            dp_paid: bookings.filter((b) => b.status === 'dp_paid').length,
             completed: bookings.filter((b) => b.status === 'completed').length,
             cancelled: bookings.filter((b) => b.status === 'cancelled').length,
             rescheduled: bookings.filter((b) => b.status === 'rescheduled')
@@ -123,6 +124,11 @@ export default function BookingHistory({ bookings }: Props) {
         },
         { value: 'paid' as const, label: 'Dibayar', shortLabel: 'Dibayar' },
         {
+            value: 'dp_paid' as const,
+            label: 'DP Dibayar',
+            shortLabel: 'DP',
+        },
+        {
             value: 'completed' as const,
             label: 'Selesai',
             shortLabel: 'Selesai',
@@ -152,7 +158,7 @@ export default function BookingHistory({ bookings }: Props) {
                 {/* ============ SCROLLABLE TABS ============ */}
                 <div className="relative mb-4">
                     <div className="scrollbar-hide -mx-4 overflow-x-auto px-4 md:mx-0 md:px-0">
-                        <TabsList className="inline-flex h-auto w-max min-w-full gap-1 p-1 md:grid md:grid-cols-5">
+                        <TabsList className="inline-flex h-auto w-max min-w-full gap-1 p-1 md:grid md:grid-cols-6">
                             {tabConfig.map((tab) => (
                                 <TabsTrigger
                                     key={tab.value}

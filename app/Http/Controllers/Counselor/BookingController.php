@@ -36,7 +36,7 @@ class BookingController extends Controller
         $user = Auth::user();
 
         $booking = Booking::where('counselor_id', $user->counselor->id)
-            ->with('client', 'schedule', 'secondSchedule', 'previousSchedule', 'previousSecondSchedule', 'payment')
+            ->with('client', 'schedule', 'secondSchedule', 'previousSchedule', 'previousSecondSchedule', 'payment', 'settledByAdmin')
             ->findOrFail($bookingId);
 
         return view('tes', ['booking' => $booking]);
@@ -81,6 +81,10 @@ class BookingController extends Controller
             DB::transaction(function () use ($request, $bookingId) {
                 $booking = Booking::findOrFail($bookingId);
 
+                if ($booking->status !== 'paid') {
+                    throw new \Exception('Data meeting hanya dapat diinput setelah booking lunas.');
+                }
+
                 $booking->update([
                     'meeting_link'    => $request->meeting_link,
                     'link_status'     => $request->link_status ?? $booking->link_status,
@@ -124,4 +128,3 @@ class BookingController extends Controller
         }
     }
 }
-

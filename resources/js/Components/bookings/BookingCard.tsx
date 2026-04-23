@@ -15,6 +15,7 @@ interface BookingCardProps {
     status:
         | 'pending_payment'
         | 'paid'
+        | 'dp_paid'
         | 'cancelled'
         | 'completed'
         | 'rescheduled';
@@ -47,6 +48,8 @@ export function BookingCard({
                 return 'outline';
             case 'paid':
                 return 'default';
+            case 'dp_paid':
+                return 'outline';
             case 'completed':
                 return 'secondary';
             case 'cancelled':
@@ -74,6 +77,8 @@ export function BookingCard({
                 return 'Menunggu Pembayaran';
             case 'paid':
                 return 'Dibayar';
+            case 'dp_paid':
+                return 'DP Dibayar';
             case 'completed':
                 return 'Selesai';
             case 'rescheduled':

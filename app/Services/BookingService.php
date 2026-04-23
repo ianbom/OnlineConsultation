@@ -20,9 +20,9 @@ class BookingService
 
     }
 
-    public function createBooking($client, $counselorId, $scheduleId, $secondId, $notes, $type)
+    public function createBooking($client, $counselorId, $scheduleId, $secondId, $notes, $type, $paymentScheme = 'full')
     {
-        return DB::transaction(function () use ($client, $counselorId, $scheduleId, $secondId, $notes, $type) {
+        return DB::transaction(function () use ($client, $counselorId, $scheduleId, $secondId, $notes, $type, $paymentScheme) {
             $counselor = Counselor::findOrFail($counselorId);
 
             $duration = $secondId ? 2 : 1;
@@ -30,6 +30,9 @@ class BookingService
                 ? $counselor->online_price_per_session 
                 : $counselor->price_per_session;
             $price = $duration * $pricePerSession;
+            $downPaymentPercentage = $type === 'offline' && $paymentScheme === 'dp' ? 50 : null;
+            $downPaymentAmount = $downPaymentPercentage ? (int) ceil($price * ($downPaymentPercentage / 100)) : null;
+            $remainingAmount = $downPaymentAmount ? $price - $downPaymentAmount : null;
 
             $booking = Booking::create([
                 'client_id' => $client->id,
@@ -39,6 +42,10 @@ class BookingService
                 'price' => $price,
                 'duration_hours' => $duration,
                 'consultation_type' => $type,
+                'payment_scheme' => $paymentScheme,
+                'down_payment_percentage' => $downPaymentPercentage,
+                'down_payment_amount' => $downPaymentAmount,
+                'remaining_amount' => $remainingAmount,
                 'notes' => $notes,
                 'status' => 'pending_payment'
             ]);
@@ -120,9 +127,11 @@ class BookingService
 
         // Tentukan logika pembayaran
         if ($payment) {
-            if ($booking->status === 'paid' || $booking->status === 'rescheduled') {
+            if (in_array($booking->status, ['paid', 'dp_paid', 'rescheduled'], true)) {
                 // CASE: Sudah dibayar → harus refund
-                $payment->refund_amount = $payment->amount;
+                $payment->refund_amount = $booking->status === 'dp_paid'
+                    ? ($booking->down_payment_amount ?? $payment->amount)
+                    : $payment->amount;
                 $payment->refund_reason = $data['reason'] ?? 'Booking cancelled';
                 $payment->refund_time = Carbon::now();
                 $payment->status = 'refund';
@@ -138,7 +147,7 @@ class BookingService
         }
 
         // Tandai refund untuk booking
-        if ($booking->status === 'paid' || $booking->status === 'rescheduled') {
+        if (in_array($booking->status, ['paid', 'dp_paid', 'rescheduled'], true)) {
             $booking->refund_status = 'requested';
             $booking->refund_processed_at = Carbon::now();
         }
@@ -200,9 +209,8 @@ class BookingService
         }
 
         $booking->update([
-            'reschedule_status'            => 'approved',
-            'status'                       => 'paid',
-
+            'reschedule_status' => 'approved',
+            'status' => $this->getFinancialBookingStatus($booking),
         ]);
 
         DB::table('schedules')
@@ -237,11 +245,46 @@ class BookingService
             'previous_second_schedule_id'=> null,
             'reschedule_status'         => 'rejected',
             'reschedule_reason'         => $reason,
-            'status'                    => 'paid',
+            'status'                    => $this->getFinancialBookingStatus($booking),
         ]);
 
         return $booking->fresh();
     });
 }
+
+    public function settleOfflineDpBooking(Booking $booking, int $adminId): Booking
+    {
+        return DB::transaction(function () use ($booking, $adminId) {
+            if (
+                $booking->consultation_type !== 'offline' ||
+                $booking->payment_scheme !== 'dp' ||
+                $booking->status !== 'dp_paid'
+            ) {
+                throw new \Exception('Booking ini tidak dapat ditandai lunas.');
+            }
+
+            $booking->update([
+                'status' => 'paid',
+                'remaining_amount' => 0,
+                'settled_at' => now(),
+                'settled_by_admin_id' => $adminId,
+            ]);
+
+            return $booking->fresh();
+        });
+    }
+
+    private function getFinancialBookingStatus(Booking $booking): string
+    {
+        if (
+            $booking->consultation_type === 'offline' &&
+            $booking->payment_scheme === 'dp' &&
+            ($booking->remaining_amount ?? 0) > 0
+        ) {
+            return 'dp_paid';
+        }
+
+        return 'paid';
+    }
 
 }

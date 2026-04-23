@@ -83,12 +83,19 @@
                                     @if ($booking->consultation_type === 'online')
                                         <span class="badge bg-info">Online</span>
                                     @else
-                                        <span class="badge bg-primary">Offline</span>
+                                        <div class="flex flex-col gap-1">
+                                            <span class="badge bg-primary">Offline</span>
+                                            <span class="text-[11px] text-gray-500">
+                                                {{ $booking->payment_scheme === 'dp' ? 'DP 50%' : 'Lunas' }}
+                                            </span>
+                                        </div>
                                     @endif
                                 </td>
                                 <td>
                                     @if ($booking->status === 'pending_payment')
                                         <span class="badge bg-warning">Menunggu Pembayaran</span>
+                                    @elseif ($booking->status === 'dp_paid')
+                                        <span class="badge bg-warning">DP Dibayar</span>
                                     @elseif ($booking->status === 'paid')
                                         <span class="badge bg-success">Dibayar</span>
                                     @elseif ($booking->status === 'cancelled')
@@ -142,6 +149,13 @@
                                     @if($booking->payment)
                                         @if ($booking->payment->status === 'pending')
                                             <span class="badge bg-warning">Pending</span>
+                                        @elseif ($booking->payment->status === 'partial')
+                                            <div class="flex flex-col gap-1">
+                                                <span class="badge bg-warning">DP Masuk</span>
+                                                <span class="text-[11px] text-gray-500">
+                                                    Sisa: Rp {{ number_format($booking->remaining_amount ?? 0, 0, ',', '.') }}
+                                                </span>
+                                            </div>
                                         @elseif ($booking->payment->status === 'success')
                                             <span class="badge bg-success">Berhasil</span>
                                         @elseif ($booking->payment->status === 'failed')
@@ -246,7 +260,12 @@
                                 @if ($booking->consultation_type === 'online')
                                     <span class="badge bg-info text-xs">Online</span>
                                 @else
-                                    <span class="badge bg-primary text-xs">Offline</span>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="badge bg-primary text-xs">Offline</span>
+                                        <span class="text-[11px] text-gray-500">
+                                            {{ $booking->payment_scheme === 'dp' ? 'DP 50%' : 'Lunas' }}
+                                        </span>
+                                    </div>
                                 @endif
                             </div>
 
@@ -255,6 +274,8 @@
                                 <div class="text-xs font-medium text-gray-500 mb-1">Status</div>
                                 @if ($booking->status === 'pending_payment')
                                     <span class="badge bg-warning text-xs">Menunggu Pembayaran</span>
+                                @elseif ($booking->status === 'dp_paid')
+                                    <span class="badge bg-warning text-xs">DP Dibayar</span>
                                 @elseif ($booking->status === 'paid')
                                     <span class="badge bg-success text-xs">Dibayar</span>
                                 @elseif ($booking->status === 'cancelled')
@@ -317,6 +338,13 @@
                             @if($booking->payment)
                                 @if ($booking->payment->status === 'pending')
                                     <span class="badge bg-warning text-xs">Pending</span>
+                                @elseif ($booking->payment->status === 'partial')
+                                    <div class="flex flex-col gap-1">
+                                        <span class="badge bg-warning text-xs">DP Masuk</span>
+                                        <span class="text-[11px] text-gray-500">
+                                            Sisa: Rp {{ number_format($booking->remaining_amount ?? 0, 0, ',', '.') }}
+                                        </span>
+                                    </div>
                                 @elseif ($booking->payment->status === 'success')
                                     <span class="badge bg-success text-xs">Berhasil</span>
                                 @elseif ($booking->payment->status === 'failed')

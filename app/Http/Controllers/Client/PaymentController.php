@@ -29,16 +29,26 @@ class PaymentController extends Controller
                     $payment->status = 'pending';
                     $booking->status = 'pending_payment';
                 } else {
-                    $payment->status = 'success';
-                    $booking->status = 'paid';
+                    if ($booking->consultation_type === 'offline' && $booking->payment_scheme === 'dp') {
+                        $payment->status = 'partial';
+                        $booking->status = 'dp_paid';
+                    } else {
+                        $payment->status = 'success';
+                        $booking->status = 'paid';
+                    }
                     $payment->paid_at = now();
                 }
                 break;
 
             case 'settlement': // Transfer Bank / QRIS
-                $payment->status = 'success';
+                if ($booking->consultation_type === 'offline' && $booking->payment_scheme === 'dp') {
+                    $payment->status = 'partial';
+                    $booking->status = 'dp_paid';
+                } else {
+                    $payment->status = 'success';
+                    $booking->status = 'paid';
+                }
                 $payment->fraud_status = $fraudStatus;
-                $booking->status = 'paid';
                 $payment->paid_at = now();
                 break;
 

@@ -46,7 +46,8 @@ class BookingController extends Controller
                 $request->schedule_id,
                 $request->second_schedule_id,
                 $request->notes,
-                $request->consultation_type
+                $request->consultation_type,
+                $request->payment_scheme,
             );
 
             $payment = $this->paymentService->createPayment($booking);

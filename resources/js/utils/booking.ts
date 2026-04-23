@@ -68,6 +68,7 @@ export const getProfilePicUrl = (profilePic: string | null): string => {
 export const STATUS_BADGE_MAP: Record<string, string> = {
     pending_payment: 'warning',
     paid: 'success',
+    dp_paid: 'warning',
     completed: 'default',
     cancelled: 'destructive',
     rescheduled: 'secondary',
@@ -86,6 +87,7 @@ export const getBookingStatusBadge = (status: string): string => {
 export type BookingTabValue =
     | 'pending_payment'
     | 'paid'
+    | 'dp_paid'
     | 'completed'
     | 'cancelled'
     | 'rescheduled';
@@ -109,6 +111,7 @@ export const mapTabStatusToCardStatus = (
         case 'pending_payment':
             return 'pending';
         case 'paid':
+        case 'dp_paid':
         case 'rescheduled':
             return 'upcoming';
         case 'completed':
@@ -131,6 +134,8 @@ export const getBookingDisplayStatus = (
             return 'pending_payment';
         case 'paid':
             return 'paid';
+        case 'dp_paid':
+            return 'dp_paid';
         case 'completed':
             return 'completed';
         case 'cancelled':
